@@ -16,11 +16,6 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public List<Food> getAll() {
-        return foodRepository.findAll();
-    }
-
-    @Override
     public List<Food> search(String keyword, Long categoryId) {
 
         if (keyword != null && !keyword.isEmpty()) {
@@ -30,5 +25,14 @@ public class FoodServiceImpl implements FoodService {
             return foodRepository.findByCategory_CategoryId(categoryId);
         }
         return foodRepository.findAll();
+    }
+
+    @Override
+    public List<Food> getAllFoods() {
+        return foodRepository.findAll();
+    }
+
+    public List<Food> getByCategoryId(Long categoryId) {
+        return foodRepository.findByCategory_CategoryId(categoryId);
     }
 }

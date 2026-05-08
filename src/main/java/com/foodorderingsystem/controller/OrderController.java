@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+
 @Controller
+@SessionAttributes("cart")
 public class OrderController {
 
     private final OrderService orderService;
@@ -18,9 +22,12 @@ public class OrderController {
     }
 
     @PostMapping("/order/checkout")
-    public String checkout(@ModelAttribute("cart") Cart cart) {
+    public String checkout(@ModelAttribute("cart") Cart cart, SessionStatus status) {
 
-        orderService.saveOrder(cart, 1L);
+        orderService.createOrderFromCart(1L, cart);
+        
+        // Mark session as complete to clear the cart
+        status.setComplete();
 
         return "redirect:/orders";
     }
@@ -28,6 +35,6 @@ public class OrderController {
     @GetMapping("/orders")
     public String list(Model model) {
         model.addAttribute("orders", orderService.getAll());
-        return "order-list";
+        return "order";
     }
 }

@@ -1,0 +1,52 @@
+.logo {
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: baseline;
+  background: linear-gradient(135deg, #00b14f 0%, #00993d 50%, #00c853 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 177, 79, 0.3));
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Chữ "L" cách điệu lớn hơn, giống GrabFood có chữ cái đầu nhấn mạnh */
+.logo::first-letter {
+  font-size: 40px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #00c853 0%, #009624 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 3px 6px rgba(0, 150, 36, 0.4);
+}
+
+/* Hiệu ứng bo tròn đặc trưng GrabFood + viền xanh */
+.logo::before {
+  content: '🍃';
+  font-size: 26px;
+  margin-right: 6px;
+  background: linear-gradient(135deg, #00b14f, #00e676);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  animation: floatLeaf 2s ease-in-out infinite;
+}
+
+/* Hover giống GrabFood: nổi lên, sáng hơn */
+.logo:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 6px 12px rgba(0, 177, 79, 0.5));
+}
+
+/* Animation chiếc lá bay nhẹ */
+@keyframes floatLeaf {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(3deg); }
+}

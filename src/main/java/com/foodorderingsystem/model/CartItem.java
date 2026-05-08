@@ -1,12 +1,11 @@
 package com.foodorderingsystem.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class CartItem {
-
-    private Long foodId;
-    private String foodName;
-    private double price;
+    private Food food;
     private int quantity;
 }
