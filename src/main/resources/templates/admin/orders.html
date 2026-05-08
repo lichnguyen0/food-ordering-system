@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Orders</title>
+</head>
+<body>
+    <h1>Order Management</h1>
+    <nav>
+        <a href="/admin">Home</a> |
+        <a href="/admin/orders">Orders</a> |
+        <a href="/admin/foods">Food Management</a>
+    </nav>
+    <hr>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Current Status</th>
+            <th>Update Status</th>
+        </tr>
+        <tr th:each="o : ${orders}">
+            <td th:text="${o.orderId}"></td>
+            <td th:text="${o.user != null ? o.user.username : 'Guest'}"></td>
+            <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${o.totalAmount}"></td>
+            <td th:text="${o.status}"></td>
+            <td>
+                <form th:action="@{/admin/orders/update-status}" method="post">
+                    <input type="hidden" name="orderId" th:value="${o.orderId}">
+                    <select name="status">
+                        <option th:each="s : ${T(com.foodorderingsystem.model.OrderStatus).values()}"
+                                th:value="${s}" th:text="${s}"
+                                th:selected="${s == o.status}"></option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

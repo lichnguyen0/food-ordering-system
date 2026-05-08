@@ -1,0 +1,16 @@
+<form action="/foods" method="get">
+  <input name="keyword" placeholder="Search food">
+  <button>Search</button>
+</form>
+
+<table>
+  <tr>
+    <th>Name</th><th>Price</th><th>Add</th>
+  </tr>
+
+  <tr th:each="f : ${foods}">
+    <td th:text="${f.foodName}"></td>
+    <td th:text="${f.price}"></td>
+    <td><a th:href="@{'/cart/add/' + ${f.foodId}}">Add</a></td>
+  </tr>
+</table>

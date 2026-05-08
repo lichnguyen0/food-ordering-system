@@ -1,19 +1,27 @@
 package com.foodorderingsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long foodId;
+
+    @ManyToOne
+    @JoinColumn(name = "foodId")
+    private Food food;
+
     private int quantity;
     private double price;
 
     @ManyToOne
     @JoinColumn(name = "orderId")
+    @JsonIgnore
     private Order order;
 }

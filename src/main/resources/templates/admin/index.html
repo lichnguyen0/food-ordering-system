@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <nav>
+        <a href="/admin">Home</a> |
+        <a href="/admin/orders">Orders</a> |
+        <a href="/admin/foods">Food Management</a>
+    </nav>
+    <hr>
+    <div>
+        <h3>Statistics</h3>
+        <p>Total Orders: <span th:text="${totalOrders}">0</span></p>
+        <p>Total Revenue: <span th:text="${totalRevenue}">0.0</span> USD</p>
+        <p>Food Items: <span th:text="${totalFood}">0</span></p>
+    </div>
+    <hr>
+    <div>
+        <h3>Recent High-Value Orders</h3>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+            <tr th:each="o : ${recentOrders}">
+                <td th:text="${o.orderId}"></td>
+                <td th:text="${o.user != null ? o.user.username : 'Guest'}"></td>
+                <td th:text="${o.totalAmount}"></td>
+                <td th:text="${o.status}"></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

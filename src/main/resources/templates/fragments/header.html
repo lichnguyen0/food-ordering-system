@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+
+<header th:fragment="header" class="main-header">
+    <div class="container">
+        <div class="header-left">
+            <a href="/" class="logo">
+                <span class="logo-luno">Luno</span><span class="logo-food">Food</span>
+            </a>
+            
+            <form action="/foods" method="get" class="search-container">
+                <i class="fa-solid fa-location-dot"></i>
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Giao đến: Mỹ Đình Từ Liêm Hà Nội...">
+                <button type="submit" style="display: none;"></button>
+            </form>
+        </div>
+
+        <div class="header-right">
+            <!-- Cart Icon -->
+            <a href="/cart" class="icon-btn">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </a>
+
+            <!-- State: Not Logged In -->
+            <div sec:authorize="!isAuthenticated()">
+                <a href="/login" class="login-register-btn">Đăng nhập/Đăng ký</a>
+            </div>
+
+            <!-- State: Logged In -->
+            <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 15px;">
+                <div class="user-profile" id="profileTrigger" onclick="toggleSidebar()">
+                    <span th:text="${#authentication.name.substring(0, 1).toUpperCase()}">U</span>
+                </div>
+            </div>
+
+            <!-- Profile Sidebar (Off-canvas) -->
+            <div id="profileSidebar" class="profile-sidebar">
+                <div class="sidebar-header">
+                    <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+                </div>
+                <div class="sidebar-content">
+                    <a href="/orders" class="sidebar-link">Đơn hàng hiện có</a>
+                    <form th:action="@{/logout}" method="post" id="logoutForm">
+                        <a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit()" class="sidebar-link">Logout</a>
+                    </form>
+                </div>
+            </div>
+            <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+
+            <!-- Language Selector -->
+            <div class="lang-selector">
+                <span>VI</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        function toggleSidebar() {
+            const sidebar = document.getElementById('profileSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+                
+                if (sidebar.classList.contains('show')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+    </script>
+</header>
+
+
+
+</body>
+</html>

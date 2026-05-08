@@ -1,6 +1,5 @@
 package com.foodorderingsystem.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,19 @@ public class Food {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long foodId;
 
+    @Column(nullable = false)
     private String foodName;
+
+    @Column(nullable = false)
     private double price;
-    private String Description;
-    private String status;// AVAILABLE / SOLD_OUT
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private FoodStatus status; // AVAILABLE / SOLD_OUT
+
     private String image;
 
     @ManyToOne

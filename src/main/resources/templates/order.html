@@ -1,0 +1,17 @@
+<table>
+  <tr>
+    <th>ID</th>
+    <th>User</th>
+    <th>Date</th>
+    <th>Total</th>
+    <th>Status</th>
+  </tr>
+
+  <tr th:each="o : ${orders}">
+    <td th:text="${o.orderId}"></td>
+    <td th:text="${o.user != null ? o.user.username : 'Guest'}"></td>
+    <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}"></td>
+    <td th:text="${o.totalAmount}"></td>
+    <td th:text="${o.status}"></td>
+  </tr>
+</table>

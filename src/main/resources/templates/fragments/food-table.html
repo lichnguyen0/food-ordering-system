@@ -1,0 +1,26 @@
+<table border="1" th:fragment="foodTable">
+    <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    <tr th:each="food : ${foods}">
+        <td><img th:src="${food.image}" width="80"></td>
+        <td th:text="${food.foodName}"></td>
+        <td th:text="${food.price}"></td>
+        <td th:text="${food.status}"></td>
+
+        <td>
+            <button th:if="${food.status.name() == 'AVAILABLE'}">
+                Add to Cart
+            </button>
+
+            <button th:if="${food.status.name() == 'SOLD_OUT'}" disabled>
+                Sold out
+            </button>
+        </td>
+    </tr>
+</table>

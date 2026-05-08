@@ -30,21 +30,8 @@ public class CartController {
     public String add(@PathVariable Long id,
                       @ModelAttribute("cart") Cart cart) {
 
-        Food food = foodRepository.findById(id).get();
-
-        CartItem item = cart.getItems().get(id);
-
-        if (item == null) {
-            item = new CartItem();
-            item.setFoodId(food.getFoodId());
-            item.setFoodName(food.getFoodName());
-            item.setPrice(food.getPrice());
-            item.setQuantity(1);
-        } else {
-            item.setQuantity(item.getQuantity() + 1);
-        }
-
-        cart.getItems().put(id, item);
+        Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
+        cart.add(food);
 
         return "redirect:/foods";
     }
