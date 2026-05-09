@@ -1,39 +1,105 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Manage Food</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu List | LunoFood Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script th:src="@{/js/admin.js}" defer></script>
 </head>
+
 <body>
-    <h1>Food Management</h1>
-    <nav>
-        <a href="/admin">Home</a> |
-        <a href="/admin/orders">Orders</a> |
-        <a href="/admin/foods">Food Management</a>
-    </nav>
-    <hr>
-    <a href="/admin/foods/add">Add New Food</a>
-    <br><br>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        <tr th:each="f : ${foods}">
-            <td th:text="${f.foodId}"></td>
-            <td th:text="${f.foodName}"></td>
-            <td th:text="${f.price}"></td>
-            <td th:text="${f.category != null ? f.category.categoryName : 'N/A'}"></td>
-            <td th:text="${f.status}"></td>
-            <td>
-                <a th:href="@{/admin/foods/edit/{id}(id=${f.foodId})}">Edit</a> |
-                <a th:href="@{/admin/foods/delete/{id}(id=${f.foodId})}" 
-                   onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-        </tr>
-    </table>
+
+    <aside th:replace="~{fragments/admin-layout :: sidebar('food', 'list')}"></aside>
+
+    <main class="main-dashboard">
+        <header th:replace="~{fragments/admin-layout :: topbar}"></header>
+
+        <div class="breadcrumb">
+            <i class="fa-solid fa-house" style="color: #FF0000; margin-right: 5px;"></i>
+            <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu List
+        </div>
+
+        <div class="product-list-card">
+            <div class="card-header-main">
+                <h2 class="product-list-title">PRODUCT LIST</h2>
+            </div>
+
+            <div class="table-controls">
+                <div class="entries-wrapper">
+                    Show 
+                    <select class="entries-select">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries
+                </div>
+                <div class="table-search-wrapper">
+                    <input type="text" class="table-search-input" placeholder="Search Data...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="food-management-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="f : ${foods}">
+                            <td th:text="${#numbers.formatInteger(f.foodId, 5)}">01475</td>
+                            <td>
+                                <div class="product-cell">
+                                    <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop'}" 
+                                         class="table-product-img" alt="Food">
+                                    <span th:text="${f.foodName}">French Fries</span>
+                                </div>
+                            </td>
+                            <td th:text="${f.foodId * 125}">6741</td>
+                            <td>
+                                <span th:class="${f.status.name() == 'AVAILABLE' ? 'status-text instock' : 'status-text outstock'}"
+                                      th:text="${f.status.name() == 'AVAILABLE' ? 'In Stock' : 'Out Of Stock'}">
+                                    In Stock
+                                </span>
+                            </td>
+                            <td th:text="${'$' + #numbers.formatInteger(f.price, 0)}">$47</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{/admin/foods/edit/{id}(id=${f.foodId})}" class="action-btn edit">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <a th:href="@{/admin/foods/delete/{id}(id=${f.foodId})}" 
+                                       class="action-btn delete"
+                                       onclick="return confirm('Are you sure?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer-pagination">
+                <div class="pagination-info">
+                    Showing <span id="page-info-start">1</span> to <span id="page-info-end" th:text="${#lists.size(foods) > 10 ? 10 : #lists.size(foods)}">10</span> of <span id="page-info-total" th:text="${#lists.size(foods)}">36</span> entries
+                </div>
+                <div class="pagination-btns" id="pagination-controls">
+                    <!-- Pagination buttons will be generated by JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
 </body>
 </html>
