@@ -468,3 +468,210 @@ body {
     pointer-events: none;
     opacity: 0.7;
 }
+
+/* Product List Page Styles */
+.product-list-card {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    border: 1px solid #eee;
+}
+
+.card-header-main {
+    padding: 20px 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.product-list-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: #333;
+    letter-spacing: 0.5px;
+}
+
+.table-controls {
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.entries-wrapper {
+    font-size: 13px;
+    color: #666;
+}
+
+.entries-select {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 0 5px;
+    outline: none;
+    background: #fff;
+}
+
+.table-search-wrapper {
+    font-size: 13px;
+    color: #666;
+}
+
+.table-search-input {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    width: 220px;
+    margin-left: 10px;
+    outline: none;
+    transition: all 0.3s;
+    background: #fff;
+}
+
+.table-search-input:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Table Design */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.food-management-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.food-management-table th {
+    text-align: left;
+    padding: 15px 25px;
+    background: #fff;
+    color: #333;
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: 1px solid #eee;
+}
+
+.food-management-table td {
+    padding: 12px 25px;
+    vertical-align: middle;
+    font-size: 13px;
+    color: #555;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.food-management-table tr:hover {
+    background-color: #fbfbfb;
+}
+
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.table-product-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Status Badges */
+.status-text {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.status-text.instock {
+    color: #28a745;
+}
+
+.status-text.outstock {
+    color: #6c757d;
+}
+
+/* Actions */
+.action-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.3s;
+}
+
+.action-btn.edit {
+    background: #f0f4ff;
+    color: #4318ff;
+}
+
+.action-btn.edit:hover {
+    background: #4318ff;
+    color: #fff;
+}
+
+.action-btn.delete {
+    background: #fff5f8;
+    color: #ee5d50;
+}
+
+.action-btn.delete:hover {
+    background: #ee5d50;
+    color: #fff;
+}
+
+/* Pagination Footer */
+.card-footer-pagination {
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination-info {
+    font-size: 13px;
+    color: #888;
+}
+
+.pagination-btns {
+    display: flex;
+    gap: 4px;
+}
+
+.page-btn, .page-btn-prev, .page-btn-next {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.page-btn.active {
+    background: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
+}
+
+.page-btn:hover:not(.active) {
+    background: #f8f9fa;
+    border-color: #ccc;
+}
+
+.page-btn-prev, .page-btn-next {
+    background: #f8f9fa;
+    color: #444;
+}
