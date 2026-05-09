@@ -1,0 +1,470 @@
+:root {
+    --bg-color: #F4F7FE;
+    --sidebar-width: 260px;
+    --primary-red: #E91E63;
+    --text-dark: #2B3674;
+    --text-muted: #A3AED0;
+    --card-shadow: 0px 18px 40px rgba(112, 144, 176, 0.12);
+}
+
+body {
+    margin: 0;
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #fff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 30px 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #E9EDF7;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    padding: 0 30px;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: var(--text-dark);
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    padding: 12px 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    border-right: 4px solid transparent;
+}
+
+.menu-item i {
+    font-size: 18px;
+    width: 20px;
+}
+
+.menu-item.active {
+    color: var(--text-dark);
+    font-weight: 700;
+    border-right-color: var(--primary-red);
+}
+
+.menu-item:hover {
+    background: #F8F9FF;
+    color: var(--text-dark);
+}
+
+/* Submenu Styles */
+.has-submenu {
+    position: relative;
+}
+
+.submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.submenu.show {
+    max-height: 200px;
+    /* Adjust based on sub-items count */
+}
+
+.submenu-item {
+    padding: 10px 30px 10px 65px;
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.submenu-item:hover {
+    color: var(--primary-red);
+    background: #F8F9FF;
+}
+
+.submenu-arrow {
+    margin-left: auto;
+    font-size: 10px;
+    transition: transform 0.3s;
+}
+
+.has-submenu.open .submenu-arrow {
+    transform: rotate(180deg);
+}
+
+.has-submenu.open .menu-item {
+    color: var(--text-dark);
+    background: #F8F9FF;
+}
+
+
+/* Main Content */
+.main-dashboard {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 30px;
+}
+
+/* Header */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.search-bar {
+    background: #fff;
+    border-radius: 30px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    box-shadow: var(--card-shadow);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.user-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-icon {
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.stat-trend {
+    font-size: 12px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.trend-up {
+    color: #01B574;
+}
+
+.trend-down {
+    color: #EE5D50;
+}
+
+/* Dashboard Sections */
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.content-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.btn-view-all {
+    background: #F4F7FE;
+    color: #4318FF;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Catalogue Styles */
+.breadcrumb {
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.breadcrumb a {
+    color: #FF4D4D;
+    text-decoration: none;
+}
+
+.catalogue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 535px);
+    /* Automatically fit cards of 535px */
+    gap: 30px;
+    justify-content: center;
+    /* Center the grid in the page */
+    margin-bottom: 30px;
+}
+
+.food-card {
+    width: 440px;
+    /* Adjusted to fit 3 columns better in standard view */
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.food-card:hover {
+    transform: translateY(-8px);
+}
+
+.food-img-wrapper {
+    width: 100%;
+    height: 240px;
+    /* Fixed height as requested */
+    position: relative;
+    overflow: hidden;
+}
+
+.food-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Essential for the look in the image */
+    display: block;
+}
+
+.food-info {
+    padding: 25px 20px 20px 20px;
+}
+
+.food-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.food-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+}
+
+.price-badge {
+    background: #FF0000;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 18px;
+    display: inline-block;
+}
+
+
+.food-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.food-stats span {
+    font-weight: 700;
+    color: #FF0000;
+}
+
+.btn-see-more {
+    width: 100%;
+    background: #FF0000;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+
+.btn-see-more:hover {
+    background: #D40000;
+}
+
+.load-more-wrapper {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-dark);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.load-more-wrapper i {
+    margin-right: 5px;
+}
+
+/* Table Styles */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #E9EDF7;
+}
+
+.admin-table td {
+    padding: 15px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #F4F7FE;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-pending {
+    background: #E6F0FF;
+    color: #4318FF;
+}
+
+.status-delivered {
+    background: #E6FFF1;
+    color: #01B574;
+}
+
+.status-cancelled {
+    background: #FFF5F8;
+    color: #EE5D50;
+}
+
+/* Charts placeholder */
+.chart-container {
+    height: 250px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding-top: 20px;
+}
+
+.chart-bar {
+    flex: 1;
+    background: #F4F7FE;
+    border-radius: 4px;
+    position: relative;
+}
+
+.chart-bar-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: var(--primary-red);
+    border-radius: 4px;
+}
+
+/* Utility & Animations */
+.hidden {
+    display: none !important;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.load-more-wrapper.loading i {
+    animation: spin 1s linear infinite;
+}
+
+.load-more-wrapper.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}

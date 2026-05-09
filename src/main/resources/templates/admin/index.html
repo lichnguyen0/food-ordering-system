@@ -1,39 +1,96 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin Dashboard</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | LunoFood Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script th:src="@{/js/admin.js}" defer></script>
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <nav>
-        <a href="/admin">Home</a> |
-        <a href="/admin/orders">Orders</a> |
-        <a href="/admin/foods">Food Management</a>
-    </nav>
-    <hr>
-    <div>
-        <h3>Statistics</h3>
-        <p>Total Orders: <span th:text="${totalOrders}">0</span></p>
-        <p>Total Revenue: <span th:text="${totalRevenue}">0.0</span> USD</p>
-        <p>Food Items: <span th:text="${totalFood}">0</span></p>
+
+<aside th:replace="~{fragments/admin-layout :: sidebar('dashboard', '')}"></aside>
+
+<main class="main-dashboard">
+    <header th:replace="~{fragments/admin-layout :: topbar}"></header>
+
+    <h2 style="margin-bottom: 30px;">Welcome, Admin</h2>
+
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Revenue</span>
+            <span class="stat-value" th:text="'$' + ${totalRevenue}">$8,451</span>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 3.2%</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Orders</span>
+            <span class="stat-value" th:text="${totalOrders}">3,973</span>
+            <div class="stat-trend trend-down"><i class="fa-solid fa-arrow-down"></i> 4.5%</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Food Items</span>
+            <span class="stat-value" th:text="${totalFood}">7,333</span>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 12.5%</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Active Users</span>
+            <span class="stat-value">124</span>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 9.5%</div>
+        </div>
     </div>
-    <hr>
-    <div>
-        <h3>Recent High-Value Orders</h3>
-        <table border="1">
-            <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Total</th>
-                <th>Status</th>
-            </tr>
-            <tr th:each="o : ${recentOrders}">
-                <td th:text="${o.orderId}"></td>
-                <td th:text="${o.user != null ? o.user.username : 'Guest'}"></td>
-                <td th:text="${o.totalAmount}"></td>
-                <td th:text="${o.status}"></td>
-            </tr>
-        </table>
+
+    <div class="dashboard-row">
+        <section class="content-card">
+            <div class="card-header">
+                <span class="card-title">Recent Orders Requested</span>
+                <button class="btn-view-all">View All</button>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="o : ${recentOrders}">
+                        <td th:text="'#' + ${o.orderId}">#1234</td>
+                        <td th:text="${o.user != null ? o.user.username : 'Guest User'}">User</td>
+                        <td th:text="'$' + ${o.totalAmount}">$25.00</td>
+                        <td>
+                            <span class="status-badge" 
+                                  th:classappend="${o.status.name() == 'DELIVERED' ? 'status-delivered' : (o.status.name() == 'CANCELLED' ? 'status-cancelled' : 'status-pending')}"
+                                  th:text="${o.status}">PENDING</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="content-card">
+            <div class="card-header">
+                <span class="card-title">Monthly Revenue</span>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 40%;"></div></div>
+                <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 70%;"></div></div>
+                <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 55%;"></div></div>
+                <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 90%;"></div></div>
+                <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 65%;"></div></div>
+            </div>
+            <div style="margin-top: 20px; color: var(--text-muted); font-size: 14px;">
+                <p>Performance is 15% better than last month.</p>
+            </div>
+        </section>
     </div>
+</main>
+
 </body>
 </html>
+
