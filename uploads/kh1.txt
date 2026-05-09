@@ -1,0 +1,13 @@
+Triển Khai Tính Năng "Load More" Cho Menu Catalogue
+1. Mục Tiêu
+Tải thêm món ăn theo lô (20 item/batch) qua AJAX khi click nút, append vào grid mà không reload. Ẩn nút khi hết dữ liệu. Cải thiện hiệu suất cho danh sách lớn.
+2. Thiết Kế Kỹ Thuật
+Backend: Thêm endpoint /admin/categories/load-more trong AdminController.java với Pageable (Spring Data) trả JSON (list FoodDTO + hasMore flag).
+Frontend: Bind click event trong admin.js, dùng Fetch API để fetch data, build/append HTML vào .catalogue-grid. Thêm loading state và error handling.
+3. Bước Triển Khai
+Phase 1: Cập nhật backend cho pagination và JSON response.
+Phase 2: Implement AJAX trong frontend (bind event, fetch, append).
+Phase 3: Tích hợp với initial load, tối ưu UX (loading, responsive).
+Phase 4: Test (unit/E2E) và deploy.
+4. Best Practices
+Progressive loading cho performance; lazy images; CSRF cho security; responsive UX. Tuân thủ REST API và Material Design.

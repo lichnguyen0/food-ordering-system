@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside th:fragment="sidebar(activeMenu, activeSub)" class="sidebar">
+    <div class="sidebar-logo">LunoFood</div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="/admin" class="menu-item" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+        </li>
+        <li class="has-submenu" th:classappend="${activeMenu == 'food' ? 'open' : ''}">
+            <a href="javascript:void(0)" class="menu-item">
+                <i class="fa-solid fa-utensils"></i> Food Management
+                <i class="fa-solid fa-chevron-down submenu-arrow"></i>
+            </a>
+            <ul class="submenu" th:classappend="${activeMenu == 'food' ? 'show' : ''}">
+                <li>
+                    <a href="/admin/foods" class="submenu-item" 
+                       th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu List</a>
+                </li>
+                <li>
+                    <a href="/admin/categories" class="submenu-item" 
+                       th:style="${activeSub == 'catalogue' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu Catalogue</a>
+                </li>
+                <li>
+                    <a href="/admin/foods/add" class="submenu-item"
+                       th:style="${activeSub == 'add' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Add New Food</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}">
+                <i class="fa-solid fa-cart-shopping"></i> Orders
+            </a>
+        </li>
+        <li>
+            <a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}">
+                <i class="fa-solid fa-users"></i> Customers
+            </a>
+        </li>
+        <li>
+            <a href="/admin/stats" class="menu-item" th:classappend="${activeMenu == 'stats' ? 'active' : ''}">
+                <i class="fa-solid fa-chart-line"></i> Analytics
+            </a>
+        </li>
+        <li>
+            <a href="/admin/settings" class="menu-item" th:classappend="${activeMenu == 'settings' ? 'active' : ''}">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<header th:fragment="topbar" class="top-header">
+    <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search here...">
+    </div>
+    <div class="user-nav">
+        <i class="fa-regular fa-bell nav-icon"></i>
+        <i class="fa-regular fa-message nav-icon"></i>
+        <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="user-avatar" alt="Admin">
+    </div>
+</header>
+
+</body>
+</html>

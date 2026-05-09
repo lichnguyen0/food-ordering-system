@@ -40,7 +40,14 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/", true)
+                .successHandler((request, response, authentication) -> {
+                    var roles = org.springframework.security.core.authority.AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+                    if (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_STAFF")) {
+                        response.sendRedirect("/admin");
+                    } else {
+                        response.sendRedirect("/foods");
+                    }
+                })
                 .permitAll()
             )
             .logout(logout -> logout

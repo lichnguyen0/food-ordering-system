@@ -19,13 +19,16 @@ public class AdminFoodController {
     private final FoodRepository foodRepository;
     private final CategoryRepository categoryRepository;
     private final FoodMapper foodMapper;
+    private final com.foodorderingsystem.service.FileService fileService;
 
     public AdminFoodController(FoodRepository foodRepository, 
                                CategoryRepository categoryRepository,
-                               FoodMapper foodMapper) {
+                               FoodMapper foodMapper,
+                               com.foodorderingsystem.service.FileService fileService) {
         this.foodRepository = foodRepository;
         this.categoryRepository = categoryRepository;
         this.foodMapper = foodMapper;
+        this.fileService = fileService;
     }
 
     @GetMapping
@@ -52,11 +55,20 @@ public class AdminFoodController {
     }
 
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute("foodDTO") FoodDTO foodDTO, BindingResult result, Model model) {
+    public String save(@Valid @ModelAttribute("foodDTO") FoodDTO foodDTO, 
+                       BindingResult result, 
+                       @RequestParam(value = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile,
+                       Model model) throws java.io.IOException {
         if (result.hasErrors()) {
             model.addAttribute("categories", categoryRepository.findAll());
             model.addAttribute("statuses", FoodStatus.values());
             return "admin/food-form";
+        }
+        
+        // Handle file upload
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imagePath = fileService.saveImage(imageFile);
+            foodDTO.setImage(imagePath);
         }
         
         Food food = foodMapper.toEntity(foodDTO);
@@ -64,6 +76,7 @@ public class AdminFoodController {
         
         return "redirect:/admin/foods";
     }
+
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {

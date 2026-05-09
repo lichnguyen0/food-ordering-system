@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Catalogue | LunoFood Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script th:src="@{/js/admin.js}" defer></script>
+</head>
+
+<body>
+
+    <aside th:replace="~{fragments/admin-layout :: sidebar('food', 'catalogue')}"></aside>
+
+    <main class="main-dashboard">
+        <header th:replace="~{fragments/admin-layout :: topbar}"></header>
+
+        <div class="breadcrumb">
+
+            <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu Catalogue
+        </div>
+
+        <div class="catalogue-grid">
+            <!-- Loop through foods -->
+            <div th:each="food : ${foods}" class="food-card">
+                <div class="food-img-wrapper">
+                    <img th:src="${food.image != null ? food.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop'}"
+                        alt="Food">
+                </div>
+                <div class="food-info">
+                    <div class="food-title-row">
+                        <div class="food-title" th:text="${food.foodName}">Pizza</div>
+                        <div class="price-badge" th:text="'$' + ${#numbers.formatInteger(food.price, 0)}">$15</div>
+                    </div>
+                    <div class="food-stats">
+                        <div class="stat-item">Total Order : <span
+                                th:text="${#numbers.formatInteger(food.foodId * 15, 0)}">150</span></div>
+                        <div class="stat-item">Revenue : <span
+                                th:text="'$' + ${#numbers.formatInteger(food.price * 50, 0)}">$1000</span></div>
+                    </div>
+                    <button class="btn-see-more">See More</button>
+                </div>
+
+            </div>
+
+            <!-- Fallback if empty -->
+            <div th:if="${#lists.isEmpty(foods)}" style="grid-column: span 3; text-align: center; padding: 50px;">
+                <p>No food items found in catalogue.</p>
+            </div>
+        </div>
+
+        <div class="load-more-wrapper" id="loadMoreBtn" 
+             th:attr="data-page=${currentPage}, data-has-more=${hasMore}"
+             th:classappend="${!hasMore ? 'hidden' : ''}">
+            <i class="fa-solid fa-rotate-right"></i> Load More
+        </div>
+    </main>
+
+</body>
+
+</html>
