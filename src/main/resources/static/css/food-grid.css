@@ -1,0 +1,281 @@
+/* Red Breadcrumb Styling */
+.breadcrumb {
+    padding: 15px 0;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: #FF0018;
+}
+
+.breadcrumb .fa-house {
+    color: #FF0018;
+}
+
+.breadcrumb .active-crumb {
+    color: #888;
+}
+
+/* Main Container */
+.grid-card {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    margin-top: 0;
+}
+
+.card-header-main {
+    margin-bottom: 20px;
+    display: none; /* Breadcrumb already shows title context */
+}
+
+/* Controls Styling */
+.grid-controls {
+    padding: 0 0 25px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.entries-wrapper {
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.entries-select {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+}
+
+.grid-search-input {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 280px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.grid-search-input:focus {
+    border-color: #FF0018;
+    box-shadow: 0 0 0 3px rgba(255, 0, 24, 0.1);
+}
+
+/* Food Grid Container */
+.food-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 0;
+}
+
+@media (max-width: 1200px) {
+    .food-grid-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .food-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .food-grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Food Card Redesign */
+.food-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.food-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.food-image-wrapper {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.food-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.food-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.food-info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.food-name {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+}
+
+.price-tag {
+    font-size: 16px;
+    font-weight: 700;
+    color: #FF0018;
+}
+
+.food-info-mid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.food-qty {
+    font-size: 13px;
+    color: #999;
+}
+
+.food-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.food-badge.instock {
+    background-color: #198754;
+    color: #fff;
+}
+
+.food-badge.outstock {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.food-desc {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.5;
+    margin: 4px 0 12px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.action-btn-grid {
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.action-btn-grid.delete {
+    background-color: #FF0018;
+    color: #fff;
+}
+
+.action-btn-grid.delete:hover {
+    background-color: #D30014;
+}
+
+.action-btn-grid.edit {
+    background-color: #212121;
+    color: #fff;
+}
+
+.action-btn-grid.edit:hover {
+    background-color: #000;
+}
+
+/* Pagination */
+.grid-footer-pagination {
+    margin-top: 30px;
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #777;
+}
+
+.pagination-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.page-btn {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(.disabled) {
+    border-color: #FF0018;
+    color: #FF0018;
+}
+
+.page-btn.active {
+    background-color: #FF0018;
+    color: #fff;
+    border-color: #FF0018;
+}
+
+.page-btn.disabled {
+    cursor: not-allowed;
+    color: #ccc;
+    background-color: #f9f9f9;
+}

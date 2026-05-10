@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+
 :root {
     --bg-color: #F4F7FE;
     --sidebar-width: 260px;
@@ -9,7 +11,8 @@
 
 body {
     margin: 0;
-    font-family: 'DM Sans', 'Inter', sans-serif;
+    font-family: 'Roboto', 'DM Sans', sans-serif;
+    font-weight: 500;
     background-color: var(--bg-color);
     color: var(--text-dark);
     display: flex;
@@ -581,16 +584,17 @@ body {
 
 /* Status Badges */
 .status-text {
-    font-weight: 600;
-    font-size: 12px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: normal;
 }
 
 .status-text.instock {
-    color: #28a745;
+    color: #555555;
 }
 
 .status-text.outstock {
-    color: #6c757d;
+    color: #555555;
 }
 
 /* Actions */
