@@ -83,4 +83,10 @@ public class AdminFoodController {
         foodRepository.deleteById(id);
         return "redirect:/admin/foods";
     }
+
+    @GetMapping("/grid")
+    public String grid(Model model) {
+        model.addAttribute("foods", foodRepository.findAll());
+        return "admin/food-grid";
+    }
 }
