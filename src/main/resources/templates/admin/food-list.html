@@ -23,6 +23,11 @@
             <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu List
         </div>
 
+        <!-- Alert Message (Conditional) -->
+        <div class="alert-success" th:if="${success}">
+            <strong th:text="${success}">Well done!</strong>
+        </div>
+
         <div class="product-list-card">
             <div class="card-header-main">
                 <h2 class="product-list-title">PRODUCT LIST</h2>

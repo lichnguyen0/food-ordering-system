@@ -26,4 +26,6 @@ public class FoodDTO {
 
     @NotNull(message = "Trạng thái không được để trống")
     private FoodStatus status;
+
+    private java.util.List<String> additionalImages = new java.util.ArrayList<>();
 }

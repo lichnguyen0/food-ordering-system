@@ -679,3 +679,20 @@ body {
     background: #f8f9fa;
     color: #444;
 }
+
+/* Global Alert Styles */
+.alert-success {
+    background-color: #E1F9F0;
+    border: 1px solid #10B981;
+    color: #10B981;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.alert-success strong {
+    margin-right: 5px;
+}
