@@ -33,7 +33,10 @@ public class AdminFoodController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("foods", foodRepository.findAll());
+        java.util.List<FoodDTO> foodDTOs = foodRepository.findAll().stream()
+                .map(foodMapper::toDTO)
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("foods", foodDTOs);
         return "admin/food-list";
     }
 
@@ -55,9 +58,11 @@ public class AdminFoodController {
     }
 
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute("foodDTO") FoodDTO foodDTO, 
-                       BindingResult result, 
-                       @RequestParam(value = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile,
+    public String save(@Valid @ModelAttribute("foodDTO") FoodDTO foodDTO,
+                       BindingResult result,
+                       @RequestParam(value = "imageFiles", required = false) java.util.List<org.springframework.web.multipart.MultipartFile> imageFiles,
+                       @RequestParam(value = "action", required = false) String action,
+                       org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes,
                        Model model) throws java.io.IOException {
         if (result.hasErrors()) {
             model.addAttribute("categories", categoryRepository.findAll());
@@ -65,16 +70,36 @@ public class AdminFoodController {
             return "admin/food-form";
         }
         
-        // Handle file upload
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String imagePath = fileService.saveImage(imageFile);
-            foodDTO.setImage(imagePath);
+        java.util.List<String> uploadedImages = new java.util.ArrayList<>();
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            for (org.springframework.web.multipart.MultipartFile file : imageFiles) {
+                if (!file.isEmpty()) {
+                    uploadedImages.add(fileService.saveImage(file));
+                }
+            }
+        }
+
+        // Set primary image if available
+        if (!uploadedImages.isEmpty()) {
+            foodDTO.setImage(uploadedImages.get(0));
+            
+            // Set additional images if any
+            if (uploadedImages.size() > 1) {
+                foodDTO.setAdditionalImages(uploadedImages.subList(1, uploadedImages.size()));
+            }
         }
         
         Food food = foodMapper.toEntity(foodDTO);
         foodRepository.save(food);
-        
-        return "redirect:/admin/foods";
+
+        redirectAttributes.addFlashAttribute("success", "Food item saved successfully!");
+
+        // Phân biệt hành động dựa trên nút nhấn
+        if ("save_and_add".equals(action)) {
+            return "redirect:/admin/foods/add";  // Về form thêm mới
+        } else {
+            return "redirect:/admin/foods";  // Về danh sách
+        }
     }
 
 
@@ -86,7 +111,10 @@ public class AdminFoodController {
 
     @GetMapping("/grid")
     public String grid(Model model) {
-        model.addAttribute("foods", foodRepository.findAll());
+        java.util.List<FoodDTO> foodDTOs = foodRepository.findAll().stream()
+                .map(foodMapper::toDTO)
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("foods", foodDTOs);
         return "admin/food-grid";
     }
 }

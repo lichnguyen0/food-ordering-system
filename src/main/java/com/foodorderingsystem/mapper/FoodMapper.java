@@ -26,6 +26,13 @@ public class FoodMapper {
         if (food.getCategory() != null) {
             dto.setCategoryId(food.getCategory().getCategoryId());
         }
+        
+        if (food.getImages() != null) {
+            dto.setAdditionalImages(food.getImages().stream()
+                .map(com.foodorderingsystem.model.FoodImage::getImageUrl)
+                .collect(java.util.stream.Collectors.toList()));
+        }
+        
         return dto;
     }
 
@@ -41,6 +48,13 @@ public class FoodMapper {
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
             food.setCategory(category);
+        }
+
+        if (dto.getAdditionalImages() != null) {
+            Food finalFood = food;
+            food.setImages(dto.getAdditionalImages().stream()
+                .map(url -> new com.foodorderingsystem.model.FoodImage(url, finalFood))
+                .collect(java.util.stream.Collectors.toList()));
         }
         
         return food;

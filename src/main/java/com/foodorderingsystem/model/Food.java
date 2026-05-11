@@ -27,6 +27,9 @@ public class Food {
 
     private String image;
 
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<FoodImage> images = new java.util.ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
