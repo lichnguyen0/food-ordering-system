@@ -110,11 +110,21 @@ public class AdminFoodController {
     }
 
     @GetMapping("/grid")
-    public String grid(Model model) {
-        java.util.List<FoodDTO> foodDTOs = foodRepository.findAll().stream()
+    public String grid(@RequestParam(required = false) Long categoryId, Model model) {
+        java.util.List<Food> foods;
+        if (categoryId != null) {
+            foods = foodRepository.findByCategory_CategoryId(categoryId);
+        } else {
+            foods = foodRepository.findAll();
+        }
+        
+        java.util.List<FoodDTO> foodDTOs = foods.stream()
                 .map(foodMapper::toDTO)
                 .collect(java.util.stream.Collectors.toList());
+        
         model.addAttribute("foods", foodDTOs);
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("selectedCategoryId", categoryId);
         return "admin/food-grid";
     }
 }

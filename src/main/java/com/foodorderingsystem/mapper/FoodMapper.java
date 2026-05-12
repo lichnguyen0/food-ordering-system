@@ -25,6 +25,7 @@ public class FoodMapper {
         dto.setStatus(food.getStatus());
         if (food.getCategory() != null) {
             dto.setCategoryId(food.getCategory().getCategoryId());
+            dto.setCategoryName(food.getCategory().getCategoryName());
         }
         
         if (food.getImages() != null) {

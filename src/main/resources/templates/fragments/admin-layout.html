@@ -18,11 +18,6 @@
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'food' ? 'show' : ''}">
                     <li>
-                        <a href="/admin/categories" class="submenu-item"
-                            th:style="${activeSub == 'catalogue' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu
-                            Catalogue</a>
-                    </li>
-                    <li>
                         <a href="/admin/foods" class="submenu-item"
                             th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu
                             List</a>
@@ -31,11 +26,6 @@
                         <a href="/admin/foods/grid" class="submenu-item"
                             th:style="${activeSub == 'grid' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu
                             Grid</a>
-                    </li>
-                    <li>
-                        <a href="/admin/foods/add" class="submenu-item"
-                            th:style="${activeSub == 'add' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Add
-                            New Food</a>
                     </li>
                 </ul>
             </li>

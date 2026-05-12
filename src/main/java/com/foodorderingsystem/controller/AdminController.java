@@ -21,13 +21,15 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final OrderService orderService;
+    private final com.foodorderingsystem.repository.CategoryRepository categoryRepository;
     private final FoodRepository foodRepository;
     private final FoodMapper foodMapper;
 
-    public AdminController(OrderService orderService, FoodRepository foodRepository, FoodMapper foodMapper) {
+    public AdminController(OrderService orderService, FoodRepository foodRepository, FoodMapper foodMapper, com.foodorderingsystem.repository.CategoryRepository categoryRepository) {
         this.orderService = orderService;
         this.foodRepository = foodRepository;
         this.foodMapper = foodMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping
@@ -45,27 +47,7 @@ public class AdminController {
         return "admin/orders";
     }
 
-    @GetMapping("/categories")
-    public String categories(Model model) {
-        Page<Food> foodPage = foodRepository.findAll(PageRequest.of(0, 6));
-        model.addAttribute("foods", foodPage.getContent());
-        model.addAttribute("hasMore", foodPage.hasNext());
-        model.addAttribute("currentPage", 0);
-        return "admin/categories";
-    }
-
-    @GetMapping("/categories/load-more")
-    @ResponseBody
-    public CatalogueResponse loadMore(@RequestParam(defaultValue = "0") int page) {
-        Page<Food> foodPage = foodRepository.findAll(PageRequest.of(page, 6));
-        List<FoodDTO> dtos = foodPage.getContent().stream()
-                .map(foodMapper::toDTO)
-                .collect(Collectors.toList());
-        return new CatalogueResponse(dtos, foodPage.hasNext(), page);
-    }
-
     @PostMapping("/orders/update-status")
-
     public String updateStatus(@RequestParam Long orderId, @RequestParam OrderStatus status) {
         orderService.updateStatus(orderId, status);
         return "redirect:/admin/orders";

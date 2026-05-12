@@ -126,6 +126,43 @@ body {
 }
 
 
+/* Page Header Section */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-title-main {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.btn-add-new {
+    background: var(--primary-red);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.2);
+    transition: all 0.3s;
+}
+
+.btn-add-new:hover {
+    background: #D40000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+    color: #fff;
+}
+
 /* Main Content */
 .main-dashboard {
     margin-left: var(--sidebar-width);
@@ -271,6 +308,51 @@ body {
 .breadcrumb a {
     color: #FF4D4D;
     text-decoration: none;
+}
+
+/* Category Navigation Bar Styles */
+.category-nav-wrapper {
+    margin-bottom: 30px;
+    padding: 10px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.category-nav-wrapper::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+.category-chips {
+    display: flex;
+    gap: 12px;
+}
+
+.category-chip {
+    padding: 10px 24px;
+    background: #fff;
+    color: var(--text-dark);
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+
+.category-chip:hover {
+    background: #fff;
+    color: var(--primary-red);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+}
+
+.category-chip.active {
+    background: var(--primary-red);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
 }
 
 .catalogue-grid {

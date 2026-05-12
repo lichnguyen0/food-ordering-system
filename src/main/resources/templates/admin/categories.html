@@ -19,8 +19,22 @@
         <header th:replace="~{fragments/admin-layout :: topbar}"></header>
 
         <div class="breadcrumb">
-
             <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu Catalogue
+        </div>
+
+        <!-- Category Navigation Bar -->
+        <div class="category-nav-wrapper">
+            <div class="category-chips">
+                <a th:href="@{/admin/categories}" 
+                   class="category-chip" 
+                   th:classappend="${selectedCategoryId == null ? 'active' : ''}">All</a>
+                
+                <a th:each="cat : ${categories}" 
+                   th:href="@{/admin/categories(categoryId=${cat.categoryId})}" 
+                   class="category-chip" 
+                   th:classappend="${selectedCategoryId == cat.categoryId ? 'active' : ''}"
+                   th:text="${cat.categoryName}">Category</a>
+            </div>
         </div>
 
         <div class="catalogue-grid">
@@ -53,7 +67,7 @@
         </div>
 
         <div class="load-more-wrapper" id="loadMoreBtn" 
-             th:attr="data-page=${currentPage}, data-has-more=${hasMore}"
+             th:attr="data-page=${currentPage}, data-has-more=${hasMore}, data-category-id=${selectedCategoryId}"
              th:classappend="${!hasMore ? 'hidden' : ''}">
             <i class="fa-solid fa-rotate-right"></i> Load More
         </div>
