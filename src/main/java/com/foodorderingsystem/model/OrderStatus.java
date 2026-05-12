@@ -3,7 +3,8 @@ package com.foodorderingsystem.model;
 public enum OrderStatus {
     PENDING,
     CONFIRMED,
-    SHIPPED,
+    PREPARING,
+    DELIVERING,
     DELIVERED,
     CANCELLED
 }

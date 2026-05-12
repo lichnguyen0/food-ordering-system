@@ -25,7 +25,11 @@ public class Order {
     private OrderStatus status; // PENDING...
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems;
+    private java.util.List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("updateTime ASC")
+    private java.util.List<OrderHistory> history;
 
     private double totalAmount;
 }

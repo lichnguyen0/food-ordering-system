@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private final com.foodorderingsystem.repository.OrderHistoryRepository orderHistoryRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final UserRepository userRepository;
@@ -25,11 +26,13 @@ public class OrderServiceImpl implements OrderService {
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             UserRepository userRepository,
-                            FoodRepository foodRepository) {
+                            FoodRepository foodRepository,
+                            com.foodorderingsystem.repository.OrderHistoryRepository orderHistoryRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userRepository = userRepository;
         this.foodRepository = foodRepository;
+        this.orderHistoryRepository = orderHistoryRepository;
     }
 
     @Override
@@ -47,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now());
 
         order = orderRepository.save(order);
+
+        // Log initial PENDING status
+        orderHistoryRepository.save(new OrderHistory(order, OrderStatus.PENDING, LocalDateTime.now()));
 
         List<OrderItem> orderItems = new ArrayList<>();
         double total = 0;
@@ -97,6 +103,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow();
         order.setStatus(status);
         orderRepository.save(order);
+        
+        // Log the status change
+        orderHistoryRepository.save(new OrderHistory(order, status, LocalDateTime.now()));
     }
 
     @Override

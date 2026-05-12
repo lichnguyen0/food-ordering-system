@@ -1,0 +1,182 @@
+/* Order Management Specific Styles */
+
+/* Action Cockpit Buttons */
+.order-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-confirm {
+    background: #E6F0FF;
+    color: #4318FF;
+}
+
+.btn-confirm:hover {
+    background: #4318FF;
+    color: #fff;
+}
+
+.btn-prepare {
+    background: #F4EFFF;
+    color: #702DFF;
+}
+
+.btn-prepare:hover {
+    background: #702DFF;
+    color: #fff;
+}
+
+.btn-ship {
+    background: #FFF0F6;
+    color: #FF007A;
+}
+
+.btn-ship:hover {
+    background: #FF007A;
+    color: #fff;
+}
+
+.btn-complete {
+    background: #E1F9F0;
+    color: #01B574;
+}
+
+.btn-complete:hover {
+    background: #01B574;
+    color: #fff;
+}
+
+.btn-cancel {
+    background: #FFF5F5;
+    color: #FF3D57;
+}
+
+.btn-cancel:hover {
+    background: #FF3D57;
+    color: #fff;
+}
+
+/* Status Badges */
+.badge-order {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-pending { background: #FFF9E6; color: #FFA500; }
+.badge-confirmed { background: #E6F0FF; color: #4318FF; }
+.badge-preparing { background: #F4EFFF; color: #702DFF; }
+.badge-delivering { background: #FFF0F6; color: #FF007A; }
+.badge-delivered { background: #E1F9F0; color: #01B574; }
+.badge-cancelled { background: #FFF5F5; color: #FF3D57; }
+
+/* Timeline UI */
+.timeline-trigger {
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.timeline-trigger:hover {
+    color: var(--primary-red);
+}
+
+.order-detail-row {
+    background: #F8F9FD !important;
+}
+
+.timeline-container {
+    padding: 20px 40px;
+}
+
+.timeline-list {
+    position: relative;
+    padding-left: 30px;
+    list-style: none;
+}
+
+.timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: #E9EDF7;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -29px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--primary-red);
+    z-index: 1;
+}
+
+.timeline-content {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+}
+
+.timeline-time {
+    color: var(--text-muted);
+    min-width: 60px;
+}
+
+.timeline-status {
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* Customer Info in Table */
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.customer-name {
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.customer-address {
+    font-size: 11px;
+    color: var(--text-muted);
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
