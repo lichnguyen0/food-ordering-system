@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return {
                 foodId: card.querySelector(".action-buttons a.edit").href.split('/').pop(),
                 foodName: card.querySelector(".food-name").textContent,
-                categoryName: card.querySelector(".food-category").textContent,
+                categoryName: card.querySelector(".food-category") ? card.querySelector(".food-category").textContent : '',
                 price: parseFloat(card.querySelector(".price-tag").textContent.replace('$', '')),
                 status: card.querySelector(".food-badge").textContent.includes('In Stock') ? 'AVAILABLE' : 'OUT_OF_STOCK',
                 image: card.querySelector(".food-image-wrapper img").src
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const searchTerm = searchInput.value.toLowerCase();
         return foods.filter(food =>
             food.foodName.toLowerCase().includes(searchTerm) ||
-            food.category.categoryName.toLowerCase().includes(searchTerm) // Assuming category is an object with a name
+            (food.categoryName && food.categoryName.toLowerCase().includes(searchTerm))
         );
     }
 
@@ -156,18 +156,18 @@ document.addEventListener("DOMContentLoaded", () => {
         // Fallback for local testing if Thymeleaf doesn't provide initialFoods
         // This mock data should match the structure expected by renderGrid
         allFoods = [
-            { foodId: 1, foodName: 'French Fries', category: { categoryName: 'Sides' }, price: 47, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 2, foodName: 'Pizza Margherita', category: { categoryName: 'Main Course' }, price: 120, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 3, foodName: 'Hamburger', category: { categoryName: 'Main Course' }, price: 95, status: 'OUT_OF_STOCK', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 4, foodName: 'Ceasar Salad', category: { categoryName: 'Salads' }, price: 60, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 5, foodName: 'Sushi Combo', category: { categoryName: 'Japanese' }, price: 180, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 6, foodName: 'Taco Platter', category: { categoryName: 'Mexican' }, price: 110, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 7, foodName: 'Pasta Carbonara', category: { categoryName: 'Italian' }, price: 130, status: 'OUT_OF_STOCK', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 8, foodName: 'Chicken Wings', category: { categoryName: 'Appetizers' }, price: 75, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 9, foodName: 'Vegan Bowl', category: { categoryName: 'Healthy' }, price: 90, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 10, foodName: 'Chocolate Lava Cake', category: { categoryName: 'Desserts' }, price: 65, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 11, foodName: 'Cappuccino', category: { categoryName: 'Drinks' }, price: 35, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
-            { foodId: 12, foodName: 'Steak Frites', category: { categoryName: 'Main Course' }, price: 250, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 1, foodName: 'French Fries', categoryName: 'Sides', price: 47, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 2, foodName: 'Pizza Margherita', categoryName: 'Main Course', price: 120, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 3, foodName: 'Hamburger', categoryName: 'Main Course', price: 95, status: 'OUT_OF_STOCK', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 4, foodName: 'Ceasar Salad', categoryName: 'Salads', price: 60, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 5, foodName: 'Sushi Combo', categoryName: 'Japanese', price: 180, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 6, foodName: 'Taco Platter', categoryName: 'Mexican', price: 110, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 7, foodName: 'Pasta Carbonara', categoryName: 'Italian', price: 130, status: 'OUT_OF_STOCK', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 8, foodName: 'Chicken Wings', categoryName: 'Appetizers', price: 75, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 9, foodName: 'Vegan Bowl', categoryName: 'Healthy', price: 90, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 10, foodName: 'Chocolate Lava Cake', categoryName: 'Desserts', price: 65, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 11, foodName: 'Cappuccino', categoryName: 'Drinks', price: 35, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
+            { foodId: 12, foodName: 'Steak Frites', categoryName: 'Main Course', price: 250, status: 'AVAILABLE', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop' },
         ];
     }
 

@@ -27,6 +27,28 @@
             <span class="active-crumb">Menu Grid</span>
         </div>
 
+        <div class="page-header">
+            <h1 class="page-title-main">Menu Grid</h1>
+            <a href="/admin/foods/add" class="btn-add-new">
+                <i class="fa-solid fa-plus"></i> Add New Food
+            </a>
+        </div>
+
+        <!-- Category Navigation (Merged from Catalogue) -->
+        <div class="category-nav-wrapper" style="margin-bottom: 20px;">
+            <div class="category-chips">
+                <a th:href="@{/admin/foods/grid}" 
+                   class="category-chip" 
+                   th:classappend="${selectedCategoryId == null ? 'active' : ''}">All</a>
+                
+                <a th:each="cat : ${categories}" 
+                   th:href="@{/admin/foods/grid(categoryId=${cat.categoryId})}" 
+                   class="category-chip" 
+                   th:classappend="${selectedCategoryId == cat.categoryId ? 'active' : ''}"
+                   th:text="${cat.categoryName}">Category</a>
+            </div>
+        </div>
+
         <div class="grid-card">
             <div class="grid-controls">
                 <div class="entries-wrapper">

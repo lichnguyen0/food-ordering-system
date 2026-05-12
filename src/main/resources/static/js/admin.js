@@ -34,10 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
         loadMoreBtn.addEventListener('click', function() {
             const currentPage = parseInt(this.getAttribute('data-page'));
             const nextPage = currentPage + 1;
+            const categoryId = this.getAttribute('data-category-id');
             
             this.classList.add('loading');
             
-            fetch(`/admin/categories/load-more?page=${nextPage}`)
+            let url = `/admin/categories/load-more?page=${nextPage}`;
+            if (categoryId && categoryId !== 'null' && categoryId !== '') {
+                url += `&categoryId=${categoryId}`;
+            }
+            
+            fetch(url)
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();

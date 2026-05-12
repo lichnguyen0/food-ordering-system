@@ -24,6 +24,8 @@ public class FoodDTO {
     @NotNull(message = "Vui lòng chọn danh mục")
     private Long categoryId;
 
+    private String categoryName;
+
     @NotNull(message = "Trạng thái không được để trống")
     private FoodStatus status;
 

@@ -23,6 +23,13 @@
             <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu List
         </div>
 
+        <div class="page-header">
+            <h1 class="page-title-main">Menu List</h1>
+            <a href="/admin/foods/add" class="btn-add-new">
+                <i class="fa-solid fa-plus"></i> Add New Food
+            </a>
+        </div>
+
         <!-- Alert Message (Conditional) -->
         <div class="alert-success" th:if="${success}">
             <strong th:text="${success}">Well done!</strong>
