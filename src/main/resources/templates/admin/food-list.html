@@ -1,117 +1,208 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu List | LunoFood Admin</title>
-    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <script th:src="@{/js/admin.js}" defer></script>
-</head>
-
-<body>
-
-    <aside th:replace="~{fragments/admin-layout :: sidebar('food', 'list')}"></aside>
-
-    <main class="main-dashboard">
-        <header th:replace="~{fragments/admin-layout :: topbar}"></header>
-
-        <div class="breadcrumb">
-            <i class="fa-solid fa-house" style="color: #FF0000; margin-right: 5px;"></i>
-            <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu List
-        </div>
-
-        <div class="page-header">
-            <h1 class="page-title-main">Menu List</h1>
-            <a href="/admin/foods/add" class="btn-add-new">
-                <i class="fa-solid fa-plus"></i> Add New Food
-            </a>
-        </div>
-
-        <!-- Alert Message (Conditional) -->
-        <div class="alert-success" th:if="${success}">
-            <strong th:text="${success}">Well done!</strong>
-        </div>
-
-        <div class="product-list-card">
-            <div class="card-header-main">
-                <h2 class="product-list-title">PRODUCT LIST</h2>
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', 'list')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main">Menu Management</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin">Home</a> / <a href="/admin/foods">Foods</a> / List
+                    </div>
+                </div>
+                <a href="/admin/foods/add" class="btn-add-new">
+                    <i class="fa-solid fa-plus"></i> Thêm món ăn mới
+                </a>
             </div>
 
-            <div class="table-controls">
-                <div class="entries-wrapper">
-                    Show 
-                    <select class="entries-select">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                    </select>
-                    entries
+            <div class="product-list-card">
+                <div class="card-header-main">
+                    <h5 class="product-list-title">Danh sách sản phẩm</h5>
                 </div>
-                <div class="table-search-wrapper">
-                    <input type="text" class="table-search-input" placeholder="Search Data...">
+                
+                <div class="table-controls">
+                    <div class="entries-wrapper">
+                        Show 
+                        <select class="entries-select">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        entries
+                    </div>
+                    <div class="table-search-wrapper" style="position: relative; display: flex; align-items: center;">
+                        Search: 
+                        <div style="position: relative; margin-left: 10px;">
+                            <input type="text" class="table-search-input" placeholder="Search products..." style="padding-right: 35px;">
+                            <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="table-responsive">
-                <table class="food-management-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Status</th>
-                            <th>Price</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="f : ${foods}">
-                            <td th:text="${#numbers.formatInteger(f.foodId, 5)}">01475</td>
-                            <td>
-                                <div class="product-cell">
-                                    <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop'}" 
-                                         class="table-product-img" alt="Food">
-                                    <span th:text="${f.foodName}">French Fries</span>
-                                </div>
-                            </td>
-                            <td th:text="${f.foodId * 125}">6741</td>
-                            <td>
-                                <span th:class="${f.status.name() == 'AVAILABLE' ? 'status-text instock' : 'status-text outstock'}"
-                                      th:text="${f.status.name() == 'AVAILABLE' ? 'In Stock' : 'Out Of Stock'}">
-                                    In Stock
-                                </span>
-                            </td>
-                            <td th:text="${'$' + #numbers.formatInteger(f.price, 0)}">$47</td>
-                            <td>
-                                <div class="action-btns">
-                                    <a th:href="@{/admin/foods/edit/{id}(id=${f.foodId})}" class="action-btn edit">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-                                    <a th:href="@{/admin/foods/delete/{id}(id=${f.foodId})}" 
-                                       class="action-btn delete"
-                                       onclick="return confirm('Are you sure?')">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="table-responsive" id="foodTableContainer" th:fragment="foodTableFragment">
+                    <table class="food-management-table" id="foodTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">MSP</th>
+                                <th>SẢN PHẨM</th>
+                                <th>DANH MỤC</th>
+                                <th>NHÀ HÀNG</th>
+                                <th>GIÁ</th>
+                                <th>TÌNH TRẠNG</th>
+                                <th>HÀNH ĐỘNG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="food : ${foods}">
+                                <td th:text="${#numbers.formatInteger(food.foodId, 5)}">00001</td>
+                                <td>
+                                    <div class="product-cell">
+                                        <img th:src="${food.image != null ? food.image : 'https://via.placeholder.com/28'}" class="table-product-img">
+                                        <span th:text="${food.foodName}">Food Name</span>
+                                    </div>
+                                </td>
+                                <td th:text="${food.categoryName != null ? food.categoryName : 'N/A'}">Category</td>
+                                <td th:text="${food.restaurantName != null ? food.restaurantName : 'N/A'}">Restaurant</td>
+                                <td th:text="'$' + ${food.price}">$0.00</td>
+                                <td>
+                                    <span class="status-text" 
+                                          th:classappend="${food.status.name() == 'AVAILABLE' ? 'instock' : 'outstock'}"
+                                          th:text="${food.status}">AVAILABLE</span>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <a th:href="@{/admin/foods/edit/{id}(id=${food.foodId})}" class="action-btn edit" title="Edit">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <a th:href="@{/admin/foods/delete/{id}(id=${food.foodId})}" class="action-btn delete" title="Delete" onclick="return confirm('Are you sure?')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="card-footer-pagination">
-                <div class="pagination-info">
-                    Showing <span id="page-info-start">1</span> to <span id="page-info-end" th:text="${#lists.size(foods) > 10 ? 10 : #lists.size(foods)}">10</span> of <span id="page-info-total" th:text="${#lists.size(foods)}">36</span> entries
-                </div>
-                <div class="pagination-btns" id="pagination-controls">
-                    <!-- Pagination buttons will be generated by JS -->
+                <div class="card-footer-pagination">
+                    <div class="pagination-info">
+                        Hiển thị <span>0</span> sản phẩm
+                    </div>
+                    <div class="pagination-btns" id="paginationControls">
+                        <!-- Nút phân trang sẽ được tạo bằng JS -->
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
+
+    <!-- Page Specific Script -->
+    <script>
+        (function() {
+            let currentPage = 1;
+            let entriesPerPage = 10;
+            let filteredRows = [];
+
+            function initTable() {
+                const searchInput = document.querySelector('.table-search-input');
+                const entriesSelect = document.querySelector('.entries-select');
+                const tableBody = document.querySelector('#foodTable tbody');
+                const allRows = Array.from(tableBody.querySelectorAll('tr'));
+                
+                function updateDisplay() {
+                    const filter = searchInput.value.toLowerCase().trim();
+                    
+                    // 1. Lọc hàng dựa trên tìm kiếm
+                    filteredRows = allRows.filter(row => {
+                        return row.textContent.toLowerCase().includes(filter);
+                    });
+
+                    // 2. Tính toán phân trang
+                    const totalEntries = filteredRows.length;
+                    const totalPages = Math.ceil(totalEntries / entriesPerPage) || 1;
+                    
+                    if (currentPage > totalPages) currentPage = totalPages;
+                    if (currentPage < 1) currentPage = 1;
+
+                    const start = (currentPage - 1) * entriesPerPage;
+                    const end = start + entriesPerPage;
+
+                    // 3. Ẩn/Hiện hàng
+                    allRows.forEach(row => row.style.display = 'none');
+                    filteredRows.slice(start, end).forEach(row => row.style.display = '');
+
+                    // 4. Cập nhật thông tin hiển thị
+                    const infoSpan = document.querySelector('.pagination-info span');
+                    if (infoSpan) infoSpan.textContent = totalEntries;
+
+                    renderPagination(totalPages);
+                }
+
+                function renderPagination(totalPages) {
+                    const container = document.getElementById('paginationControls');
+                    if (!container) return;
+                    container.innerHTML = '';
+
+                    if (totalPages <= 1) return;
+
+                    // Nút Previous
+                    const prevBtn = createPageBtn('Trước', () => {
+                        if (currentPage > 1) { currentPage--; updateDisplay(); }
+                    }, currentPage === 1);
+                    container.appendChild(prevBtn);
+
+                    // Các nút số
+                    for (let i = 1; i <= totalPages; i++) {
+                        const btn = createPageBtn(i, () => {
+                            currentPage = i;
+                            updateDisplay();
+                        }, false, i === currentPage);
+                        container.appendChild(btn);
+                    }
+
+                    // Nút Next
+                    const nextBtn = createPageBtn('Tiếp', () => {
+                        if (currentPage < totalPages) { currentPage++; updateDisplay(); }
+                    }, currentPage === totalPages);
+                    container.appendChild(nextBtn);
+                }
+
+                function createPageBtn(text, onClick, disabled, active) {
+                    const btn = document.createElement('button');
+                    btn.textContent = text;
+                    btn.className = 'page-btn' + (active ? ' active' : '');
+                    if (disabled) btn.style.opacity = '0.5';
+                    else btn.onclick = onClick;
+                    return btn;
+                }
+
+                // Sự kiện thay đổi ô tìm kiếm
+                searchInput.addEventListener('input', () => {
+                    currentPage = 1;
+                    updateDisplay();
+                });
+
+                // Sự kiện thay đổi số lượng hiển thị
+                entriesSelect.addEventListener('change', function() {
+                    entriesPerPage = parseInt(this.value);
+                    currentPage = 1;
+                    updateDisplay();
+                });
+
+                updateDisplay();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTable);
+            } else {
+                initTable();
+            }
+        })();
+    </script>
 
 </body>
 </html>

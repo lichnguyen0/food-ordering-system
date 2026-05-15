@@ -1,8 +1,107 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<body>
+<head th:fragment="admin-head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - LunoFood</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin-style.css">
+</head>
 
+<body>
+    <!-- MASTER LAYOUT FRAGMENT -->
+    <div th:fragment="layout (content, activeMenu, activeSub)" class="admin-container">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/admin-layout :: sidebar(${activeMenu}, ${activeSub})}"></aside>
+
+        <div class="main-dashboard">
+            <!-- Topbar -->
+            <header th:replace="~{fragments/admin-layout :: topbar}"></header>
+
+            <!-- Main Content Area -->
+            <div class="content-body">
+                <div th:replace="${content}"></div>
+            </div>
+        </div>
+        
+        <!-- Sidebar Toggle Script & Style -->
+        <style>
+            .header-left { display: flex; align-items: center; gap: 20px; }
+            .sidebar-toggle {
+                background: none; border: none; font-size: 20px;
+                color: var(--text-dark); cursor: pointer; padding: 5px;
+                display: flex; align-items: center; justify-content: center;
+                transition: all 0.3s;
+            }
+            .sidebar-toggle:hover { color: var(--primary-red); }
+            
+            body.sidebar-collapsed .sidebar { left: -260px; }
+            body.sidebar-collapsed .main-dashboard { margin-left: 0; }
+            
+            @media (max-width: 992px) {
+                .sidebar { left: -260px; }
+                .main-dashboard { margin-left: 0; }
+                body.sidebar-open .sidebar { left: 0; }
+                body.sidebar-open .admin-container::after {
+                    content: "";
+                    position: fixed;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 99;
+                }
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 1. Sidebar Toggle
+                const sidebarBtn = document.getElementById('sidebarToggle');
+                if (sidebarBtn) {
+                    sidebarBtn.addEventListener('click', function() {
+                        if (window.innerWidth > 992) {
+                            document.body.classList.toggle('sidebar-collapsed');
+                        } else {
+                            document.body.classList.toggle('sidebar-open');
+                        }
+                    });
+                }
+
+                // 2. Profile Dropdown Toggle
+                const profileTrigger = document.getElementById('profileDropdownTrigger');
+                const profileDropdown = document.getElementById('profileDropdown');
+
+                if (profileTrigger && profileDropdown) {
+                    profileTrigger.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        profileDropdown.classList.toggle('show');
+                    });
+
+                    document.addEventListener('click', function(e) {
+                        if (!profileDropdown.contains(e.target) && !profileTrigger.contains(e.target)) {
+                            profileDropdown.classList.remove('show');
+                        }
+                    });
+                }
+
+                // 3. Logic Toggle Submenu (Dropdown Sidebar)
+                const submenuItems = document.querySelectorAll('.has-submenu > .menu-item');
+                submenuItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const parent = this.parentElement;
+                        const submenu = parent.querySelector('.submenu');
+                        parent.classList.toggle('open');
+                        if (submenu) {
+                            submenu.classList.toggle('show');
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+
+    <!-- SIDEBAR FRAGMENT -->
     <aside th:fragment="sidebar(activeMenu, activeSub)" class="sidebar">
         <div class="sidebar-logo">LunoFood</div>
         <ul class="sidebar-menu">
@@ -14,57 +113,65 @@
             <li class="has-submenu" th:classappend="${activeMenu == 'food' ? 'open' : ''}">
                 <a href="javascript:void(0)" class="menu-item">
                     <i class="fa-solid fa-utensils"></i> Food Management
-                    <i class="fa-solid fa-chevron-down submenu-arrow"></i>
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'food' ? 'show' : ''}">
-                    <li>
-                        <a href="/admin/foods" class="submenu-item"
-                            th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu
-                            List</a>
-                    </li>
-                    <li>
-                        <a href="/admin/foods/grid" class="submenu-item"
-                            th:style="${activeSub == 'grid' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu
-                            Grid</a>
-                    </li>
+                    <li><a href="/admin/foods" class="submenu-item" th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu List</a></li>
+                    <li><a href="/admin/foods/grid" class="submenu-item" th:style="${activeSub == 'grid' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu Grid</a></li>
                 </ul>
             </li>
-            <li>
-                <a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}">
-                    <i class="fa-solid fa-cart-shopping"></i> Orders
+            <li class="has-submenu" th:classappend="${activeMenu == 'restaurant' ? 'open' : ''}">
+                <a href="javascript:void(0)" class="menu-item">
+                    <i class="fa-solid fa-store"></i> Restaurant Management
                 </a>
+                <ul class="submenu" th:classappend="${activeMenu == 'restaurant' ? 'show' : ''}">
+                    <li><a href="/admin/restaurants" class="submenu-item" th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Restaurant List</a></li>
+                    <li><a href="/admin/restaurants/add" class="submenu-item" th:style="${activeSub == 'add' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Add Restaurant</a></li>
+                </ul>
             </li>
-            <li>
-                <a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}">
-                    <i class="fa-solid fa-users"></i> Customers
+            <li class="has-submenu" th:classappend="${activeMenu == 'marketing' ? 'open' : ''}">
+                <a href="javascript:void(0)" class="menu-item">
+                    <i class="fa-solid fa-bullhorn"></i> Marketing & Hiển thị
                 </a>
+                <ul class="submenu" th:classappend="${activeMenu == 'marketing' ? 'show' : ''}">
+                    <li><a href="/admin/collections" class="submenu-item" th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Bộ sưu tập</a></li>
+                    <li><a href="/admin/banners" class="submenu-item" th:style="${activeSub == 'banners' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Banners</a></li>
+                </ul>
             </li>
-            <li>
-                <a href="/admin/stats" class="menu-item" th:classappend="${activeMenu == 'stats' ? 'active' : ''}">
-                    <i class="fa-solid fa-chart-line"></i> Analytics
-                </a>
-            </li>
-            <li>
-                <a href="/admin/settings" class="menu-item"
-                    th:classappend="${activeMenu == 'settings' ? 'active' : ''}">
-                    <i class="fa-solid fa-gear"></i> Settings
-                </a>
-            </li>
+            <li><a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+            <li><a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Customers</a></li>
+            <li><a href="/admin/stats" class="menu-item" th:classappend="${activeMenu == 'stats' ? 'active' : ''}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+            <li><a href="/admin/settings" class="menu-item" th:classappend="${activeMenu == 'settings' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Settings</a></li>
         </ul>
     </aside>
 
+    <!-- TOPBAR FRAGMENT -->
     <header th:fragment="topbar" class="top-header">
-        <div class="search-bar">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search here...">
+        <div class="header-left">
+            <button id="sidebarToggle" class="sidebar-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
         <div class="user-nav">
-            <i class="fa-regular fa-bell nav-icon"></i>
-            <i class="fa-regular fa-message nav-icon"></i>
-            <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="user-avatar" alt="Admin">
+            <div class="search-bar">
+                <input type="text" placeholder="Search here...">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="nav-icons-group">
+                <div class="nav-icon-wrapper"><i class="fa-regular fa-envelope nav-icon"></i><span class="nav-dot"></span></div>
+                <div class="nav-icon-wrapper"><i class="fa-regular fa-bell nav-icon"></i><span class="nav-dot"></span></div>
+            </div>
+            <div class="user-profile-wrapper" id="profileDropdownTrigger">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="user-avatar" alt="Admin">
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-header">Chào mừng, <span th:text="${#authentication != null ? #authentication.name : 'Admin'}">Admin</span></div>
+                    <ul class="dropdown-menu-list">
+                        <li><a href="/admin/profile"><i class="fa-regular fa-user"></i> Hồ sơ</a></li>
+                        <li><a href="/logout"><i class="fa-solid fa-power-off"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </header>
 
 </body>
-
 </html>

@@ -4,24 +4,23 @@
 </head>
 <body>
 
-<header th:fragment="header" class="main-header">
+<header th:fragment="header(isHome)" class="main-header" th:classappend="${isHome} ? 'is-home-top' : ''" id="mainHeader">
     <div class="container">
         <div class="header-left">
             <a href="/" class="logo">
                 <span class="logo-luno">Luno</span><span class="logo-food">Food</span>
             </a>
             
-            <form action="/foods" method="get" class="search-container">
+            <form action="/foods" method="get" class="search-container" id="headerSearch">
                 <i class="fa-solid fa-location-dot"></i>
                 <input type="text" name="keyword" th:value="${keyword}" placeholder="Giao đến: Mỹ Đình Từ Liêm Hà Nội...">
-                <button type="submit" style="display: none;"></button>
             </form>
         </div>
 
         <div class="header-right">
             <!-- Cart Icon -->
             <a href="/cart" class="icon-btn">
-                <i class="fa-solid fa-bag-shopping"></i>
+                <i class="fa-solid fa-bag-shopping nav-icon"></i>
             </a>
 
             <!-- State: Not Logged In -->

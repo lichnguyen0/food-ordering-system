@@ -1,150 +1,139 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Food | LunoFood Admin</title>
-    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
     <link rel="stylesheet" th:href="@{/css/food-form.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <script th:src="@{/js/admin.js}" defer></script>
     <script th:src="@{/js/food-form.js}" defer></script>
 </head>
-<body>
+<body class="admin-body">
 
-<aside th:replace="~{fragments/admin-layout :: sidebar('food', 'add')}"></aside>
-
-<main class="main-dashboard">
-    <header th:replace="~{fragments/admin-layout :: topbar}"></header>
-
-    <div class="breadcrumb">
-        <a href="/admin"><i class="fa-solid fa-house"></i> Home</a> 
-        <i class="fa-solid fa-chevron-right"></i> 
-        <a href="/admin/foods">Menu</a> 
-        <i class="fa-solid fa-chevron-right"></i> 
-        <span th:text="${foodDTO.foodId == null ? 'Add New' : 'Edit Item'}">Add Product</span>
-    </div>
-
-    <!-- Alert Message (Conditional) -->
-    <div class="alert-success" th:if="${success}">
-        <strong th:text="${success}">Well done!</strong>
-    </div>
-
-    <form th:action="@{/admin/foods/save}" th:object="${foodDTO}" method="post" enctype="multipart/form-data">
-        <input type="hidden" th:field="*{foodId}">
-        <input type="hidden" th:field="*{image}">
-
-        <div class="add-product-container">
-            <!-- Left Side: Form Details -->
-            <div class="form-card">
-                <div class="form-card-title">Add Product Form</div>
-
-                <div class="form-group">
-                    <label>Product Name</label>
-                    <input type="text" th:field="*{foodName}" class="form-control" placeholder="Pizza">
-                    <span th:if="${#fields.hasErrors('foodName')}" th:errors="*{foodName}" style="color:var(--primary-red); font-size: 12px;"></span>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Select Category</label>
-                        <select th:field="*{categoryId}" class="form-control">
-                            <option value="">-- Select Category --</option>
-                            <option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" style="color:var(--primary-red); font-size: 12px;"></span>
-                    </div>
-                    <div class="form-group">
-                        <label>Currency</label>
-                        <select class="form-control">
-                            <option value="USD">USD</option>
-                            <option value="VND">VND</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="text" class="form-control" value="01">
-                    </div>
-                    <div class="form-group">
-                        <label>Price</label>
-                        <input type="number" step="0.01" th:field="*{price}" class="form-control" placeholder="$10">
-                        <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color:var(--primary-red); font-size: 12px;"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea th:field="*{description}" class="form-control" placeholder="Message"></textarea>
-                    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:var(--primary-red); font-size: 12px;"></span>
-                </div>
-
-                <div class="form-group">
-                    <label>Product Image</label>
-                    <div class="image-upload-wrapper">
-                        <span class="custom-file-btn">Chọn tệp</span>
-                        <span class="file-name-display">Không có tệp nào được chọn</span>
-                        <input type="file" name="imageFiles" accept="image/*" multiple>
-                    </div>
-                    <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Upload Images...</p>
-                </div>
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', ${foodDTO.foodId == null ? 'add' : 'list'})}">
+        <main>
+            <div class="breadcrumb">
+                <a href="/admin"><i class="fa-solid fa-house"></i> Home</a> 
+                <i class="fa-solid fa-chevron-right"></i> 
+                <a href="/admin/foods">Menu</a> 
+                <i class="fa-solid fa-chevron-right"></i> 
+                <span th:text="${foodDTO.foodId == null ? 'Add New' : 'Edit Item'}">Add Product</span>
             </div>
 
-            <!-- Bên phải: Xem trước sản phẩm & Tùy chọn -->
-            <div class="form-card">
-                <div class="form-card-title">Product</div>
-                
-                <div class="preview-container">
-                    <img th:src="*{image != null ? image : 'https://via.placeholder.com/800x450?text=Product+Preview'}" class="main-preview-img" alt="Preview">
-                    
-                    <div class="thumbnail-row">
-                        <!-- Hình thu nhỏ hình ảnh chính -->
-                        <div class="thumb-wrapper" th:if="*{image != null}">
-                            <img th:src="*{image}" class="thumb-img active">
+            <!-- Alert Message (Conditional) -->
+            <div class="alert-success" th:if="${success}">
+                <i class="fa-solid fa-circle-check" style="margin-right: 10px;"></i>
+                <strong th:text="${success}">Well done!</strong>
+            </div>
+
+            <form th:action="@{/admin/foods/save}" th:object="${foodDTO}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{foodId}">
+                <input type="hidden" th:field="*{image}">
+
+                <div class="add-product-container">
+                    <!-- Left Side: Form Details -->
+                    <div class="form-card">
+                        <div class="form-card-title">Add Product Form</div>
+
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input type="text" th:field="*{foodName}" class="form-control" placeholder="Pizza">
+                            <span th:if="${#fields.hasErrors('foodName')}" th:errors="*{foodName}" style="color:var(--primary-red); font-size: 12px;"></span>
                         </div>
-                        
-                       <!-- Hình thu nhỏ hình ảnh bổ sung -->
-                        <th:block th:if="*{additionalImages != null}">
-                            <div class="thumb-wrapper" th:each="img : *{additionalImages}">
-                                <img th:src="${img}" class="thumb-img">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Select Category</label>
+                                <select th:field="*{categoryId}" class="form-control">
+                                    <option value="">-- Select Category --</option>
+                                    <option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" style="color:var(--primary-red); font-size: 12px;"></span>
                             </div>
-                        </th:block>
+                            <div class="form-group">
+                                <label>Select Restaurant</label>
+                                <select th:field="*{restaurantId}" class="form-control">
+                                    <option value="">-- Select Restaurant --</option>
+                                    <option th:each="r : ${restaurants}" th:value="${r.restaurantId}" th:text="${r.name}"></option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('restaurantId')}" th:errors="*{restaurantId}" style="color:var(--primary-red); font-size: 12px;"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="text" class="form-control" value="01">
+                            </div>
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input type="number" step="0.01" th:field="*{price}" class="form-control" placeholder="$10">
+                                <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color:var(--primary-red); font-size: 12px;"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea th:field="*{description}" class="form-control" placeholder="Message"></textarea>
+                            <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:var(--primary-red); font-size: 12px;"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Product Image</label>
+                            <div class="image-upload-wrapper">
+                                <span class="custom-file-btn">Chọn tệp</span>
+                                <span class="file-name-display">Không có tệp nào được chọn</span>
+                                <input type="file" name="imageFiles" accept="image/*" multiple>
+                            </div>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Upload Images...</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Preview -->
+                    <div class="form-card">
+                        <div class="form-card-title">Product</div>
                         
-                        <!-- Trình giữ chỗ nếu trống -->
-                        <div class="thumb-wrapper" th:if="*{image == null}">
-                            <img src="https://via.placeholder.com/100x75?text=Img1" class="thumb-img active">
+                        <div class="preview-container">
+                            <img th:src="*{image != null ? image : 'https://via.placeholder.com/800x450?text=Product+Preview'}" class="main-preview-img" alt="Preview">
+                            
+                            <div class="thumbnail-row">
+                                <div class="thumb-wrapper" th:if="*{image != null}">
+                                    <img th:src="*{image}" class="thumb-img active">
+                                </div>
+                                <th:block th:if="*{additionalImages != null}">
+                                    <div class="thumb-wrapper" th:each="img : *{additionalImages}">
+                                        <img th:src="${img}" class="thumb-img">
+                                    </div>
+                                </th:block>
+                                <div class="thumb-wrapper" th:if="*{image == null}">
+                                    <img src="https://via.placeholder.com/100x75?text=Img1" class="thumb-img active">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="toggle-group">
+                            <span class="toggle-label">Status Available</span>
+                            <label class="switch">
+                                <input type="checkbox" id="statusToggle" th:checked="${foodDTO.status?.name() == 'AVAILABLE' || foodDTO.status == null}">
+                                <span class="slider"></span>
+                            </label>
+                            <input type="hidden" id="statusHidden" th:field="*{status}">
+                        </div>
+
+                        <div class="toggle-group">
+                            <span class="toggle-label">Discount Active</span>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="submit" name="action" value="save" class="btn-save">Save</button>
+                            <button type="submit" name="action" value="save_and_add" class="btn-save-add">Save and Add</button>
                         </div>
                     </div>
                 </div>
-
-                <div class="toggle-group">
-                    <span class="toggle-label">Status Available</span>
-                    <label class="switch">
-                        <input type="checkbox" id="statusToggle" th:checked="${foodDTO.status?.name() == 'AVAILABLE' || foodDTO.status == null}">
-                        <span class="slider"></span>
-                    </label>
-                    <input type="hidden" id="statusHidden" th:field="*{status}">
-                </div>
-
-                <div class="toggle-group">
-                    <span class="toggle-label">Discount Active</span>
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="action-buttons">
-                    <button type="submit" name="action" value="save" class="btn-save">Save</button>
-                    <button type="submit" name="action" value="save_and_add" class="btn-save-add">Save and Add</button>
-                </div>
-            </div>
-        </div>
-    </form>
-</main>
+            </form>
+        </main>
+    </div>
 
 </body>
 </html>

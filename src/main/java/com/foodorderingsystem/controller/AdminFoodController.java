@@ -20,30 +20,55 @@ public class AdminFoodController {
     private final CategoryRepository categoryRepository;
     private final FoodMapper foodMapper;
     private final com.foodorderingsystem.service.FileService fileService;
+    private final com.foodorderingsystem.repository.RestaurantRepository restaurantRepository;
 
     public AdminFoodController(FoodRepository foodRepository, 
                                CategoryRepository categoryRepository,
                                FoodMapper foodMapper,
-                               com.foodorderingsystem.service.FileService fileService) {
+                               com.foodorderingsystem.service.FileService fileService,
+                               com.foodorderingsystem.repository.RestaurantRepository restaurantRepository) {
         this.foodRepository = foodRepository;
         this.categoryRepository = categoryRepository;
         this.foodMapper = foodMapper;
         this.fileService = fileService;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @GetMapping
-    public String list(Model model) {
-        java.util.List<FoodDTO> foodDTOs = foodRepository.findAll().stream()
+    public String list(@RequestParam(required = false) String keyword, Model model) {
+        java.util.List<Food> foods;
+        if (keyword != null && !keyword.isEmpty()) {
+            foods = foodRepository.search(keyword);
+        } else {
+            foods = foodRepository.findAll();
+        }
+
+        java.util.List<FoodDTO> foodDTOs = foods.stream()
                 .map(foodMapper::toDTO)
                 .collect(java.util.stream.Collectors.toList());
         model.addAttribute("foods", foodDTOs);
+        model.addAttribute("keyword", keyword);
         return "admin/food-list";
+    }
+
+    @GetMapping("/search-ajax")
+    public String searchAjax(@RequestParam(required = false) String keyword, Model model) {
+        java.util.List<Food> foods = (keyword != null && !keyword.isEmpty()) 
+                ? foodRepository.search(keyword) 
+                : foodRepository.findAll();
+
+        java.util.List<FoodDTO> foodDTOs = foods.stream()
+                .map(foodMapper::toDTO)
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("foods", foodDTOs);
+        return "admin/food-list :: foodTableFragment";
     }
 
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("foodDTO", new FoodDTO());
         model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("restaurants", restaurantRepository.findAll());
         model.addAttribute("statuses", FoodStatus.values());
         return "admin/food-form";
     }
@@ -53,6 +78,7 @@ public class AdminFoodController {
         Food food = foodRepository.findById(id).orElseThrow();
         model.addAttribute("foodDTO", foodMapper.toDTO(food));
         model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("restaurants", restaurantRepository.findAll());
         model.addAttribute("statuses", FoodStatus.values());
         return "admin/food-form";
     }
@@ -66,6 +92,7 @@ public class AdminFoodController {
                        Model model) throws java.io.IOException {
         if (result.hasErrors()) {
             model.addAttribute("categories", categoryRepository.findAll());
+            model.addAttribute("restaurants", restaurantRepository.findAll());
             model.addAttribute("statuses", FoodStatus.values());
             return "admin/food-form";
         }

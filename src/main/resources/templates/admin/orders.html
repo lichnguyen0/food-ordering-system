@@ -1,151 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management | LunoFood Admin</title>
-    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
-    <link rel="stylesheet" th:href="@{/css/order-management.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <script th:src="@{/js/admin.js}" defer></script>
-    <script th:src="@{/js/order-management.js}" defer></script>
-</head>
-
-<body>
-
-    <aside th:replace="~{fragments/admin-layout :: sidebar('orders', '')}"></aside>
-
-    <main class="main-dashboard">
-        <header th:replace="~{fragments/admin-layout :: topbar}"></header>
-
-        <div class="breadcrumb">
-            <i class="fa-solid fa-house" style="color: #FF0000; margin-right: 5px;"></i>
-            <a href="/admin">Home</a> / Order Management
-        </div>
-
-        <div class="page-header">
-            <h1 class="page-title-main">Order Management</h1>
-        </div>
-
-        <div class="product-list-card">
-            <div class="card-header-main">
-                <h2 class="product-list-title">ACTIVE ORDERS</h2>
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'orders', '')}">
+        <main>
+            <div class="page-header">
+                <h1 class="page-title-main">Order Management</h1>
             </div>
 
-            <div class="table-responsive">
+            <div th:if="${success}" class="alert-success">
+                <i class="fa-solid fa-circle-check" style="margin-right: 10px;"></i>
+                <strong th:text="${success}">Success!</strong>
+            </div>
+
+            <div class="product-list-card">
                 <table class="food-management-table">
                     <thead>
                         <tr>
-                            <th>Order ID</th>
-                            <th>Customer / Delivery</th>
-                            <th>Date / Time</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                            <th>Timeline</th>
+                            <th>ORDER ID</th>
+                            <th>USER</th>
+                            <th>RESTAURANT</th>
+                            <th>ITEMS</th>
+                            <th>TOTAL</th>
+                            <th>STATUS</th>
+                            <th>DATE</th>
+                            <th>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <th:block th:each="o : ${orders}">
-                            <tr>
-                                <td>
-                                    <span style="font-weight: 700; color: var(--text-dark);" th:text="'#ORD-' + ${#numbers.formatInteger(o.orderId, 5)}">#ORD-01475</span>
-                                </td>
-                                <td>
-                                    <div class="customer-info">
-                                        <span class="customer-name" th:text="${o.user != null ? o.user.fullName : 'Guest Customer'}">John Doe</span>
-                                        <span class="customer-address">
-                                            <i class="fa-solid fa-location-dot" style="font-size: 10px;"></i> 
-                                            <span th:text="${o.user != null ? o.user.address : 'N/A'}">123 Street, City</span>
-                                        </span>
-                                        <span style="font-size: 11px; color: #4318FF;">
-                                            <i class="fa-solid fa-phone" style="font-size: 10px;"></i>
-                                            <span th:text="${o.user != null ? o.user.phone : 'N/A'}">0123456789</span>
-                                        </span>
-                                    </div>
-                                </td>
-                                <td th:text="${#temporals.format(o.orderDate, 'dd MMM, yyyy HH:mm')}">12 May, 2026 10:00</td>
-                                <td>
-                                    <span style="font-weight: 700; color: var(--primary-red);" th:text="${#numbers.formatCurrency(o.totalAmount)}">$45.50</span>
-                                </td>
-                                <td>
-                                    <span class="badge-order" 
-                                          th:classappend="'badge-' + ${o.status.name().toLowerCase()}"
-                                          th:text="${o.status.name()}">PENDING</span>
-                                </td>
-                                <td>
-                                    <div class="order-actions">
-                                        <!-- PENDING Actions -->
-                                        <th:block th:if="${o.status.name() == 'PENDING'}">
-                                            <button class="btn-action btn-confirm" th:data-order-id="${o.orderId}" data-status="CONFIRMED">
-                                                <i class="fa-solid fa-check"></i> Confirm
-                                            </button>
-                                            <button class="btn-action btn-cancel" th:data-order-id="${o.orderId}" data-status="CANCELLED">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </th:block>
-
-                                        <!-- CONFIRMED Actions -->
-                                        <th:block th:if="${o.status.name() == 'CONFIRMED'}">
-                                            <button class="btn-action btn-prepare" th:data-order-id="${o.orderId}" data-status="PREPARING">
-                                                <i class="fa-solid fa-fire-burner"></i> Cook
-                                            </button>
-                                            <button class="btn-action btn-cancel" th:data-order-id="${o.orderId}" data-status="CANCELLED">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </th:block>
-
-                                        <!-- PREPARING Actions -->
-                                        <th:block th:if="${o.status.name() == 'PREPARING'}">
-                                            <button class="btn-action btn-ship" th:data-order-id="${o.orderId}" data-status="DELIVERING">
-                                                <i class="fa-solid fa-truck-fast"></i> Ship
-                                            </button>
-                                        </th:block>
-
-                                        <!-- DELIVERING Actions -->
-                                        <th:block th:if="${o.status.name() == 'DELIVERING'}">
-                                            <button class="btn-action btn-complete" th:data-order-id="${o.orderId}" data-status="DELIVERED">
-                                                <i class="fa-solid fa-house-chimney-check"></i> Finish
-                                            </button>
-                                        </th:block>
-
-                                        <!-- Final States -->
-                                        <th:block th:if="${o.status.name() == 'DELIVERED' or o.status.name() == 'CANCELLED'}">
-                                            <span style="font-size: 12px; color: var(--text-muted);">Archived</span>
-                                        </th:block>
-                                    </div>
-                                </td>
-                                <td>
-                                    <i class="fa-solid fa-clock-rotate-left timeline-trigger" th:data-order-id="${o.orderId}" title="View Timeline"></i>
-                                </td>
-                            </tr>
-                            <!-- Timeline Row (Hidden by default) -->
-                            <tr th:id="'detail-' + ${o.orderId}" class="order-detail-row" style="display: none;">
-                                <td colspan="7">
-                                    <div class="timeline-container">
-                                        <h4 style="margin-bottom: 15px; font-size: 14px; color: var(--text-dark);">Order Timeline</h4>
-                                        <ul class="timeline-list">
-                                            <li class="timeline-item" th:each="h : ${o.history}">
-                                                <div class="timeline-dot"></div>
-                                                <div class="timeline-content">
-                                                    <span class="timeline-time" th:text="${#temporals.format(h.updateTime, 'HH:mm')}">10:00</span>
-                                                    <span class="timeline-status" th:text="${h.status.name()}">PENDING</span>
-                                                    <span style="color: var(--text-muted);" th:text="${h.status.name() == 'PENDING' ? 'Order received' : (h.status.name() == 'CONFIRMED' ? 'Order confirmed by Admin' : (h.status.name() == 'PREPARING' ? 'Kitchen is preparing food' : (h.status.name() == 'DELIVERING' ? 'Shipper is on the way' : (h.status.name() == 'DELIVERED' ? 'Successfully delivered' : 'Order cancelled'))))}">Description</span>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        </th:block>
+                        <tr th:each="order : ${orders}">
+                            <td th:text="'#' + ${order.orderId}">#1001</td>
+                            <td th:text="${order.user != null ? order.user.username : 'Guest'}">User</td>
+                            <td th:text="${order.restaurant != null ? order.restaurant.name : 'N/A'}">Restaurant</td>
+                            <td th:text="${order.items.size()} + ' items'">3 items</td>
+                            <td th:text="'$' + ${order.totalAmount}" class="fw-bold">$45.00</td>
+                            <td>
+                                <span class="status-badge" 
+                                      th:classappend="${order.status.name() == 'DELIVERED' ? 'status-delivered' : (order.status.name() == 'CANCELLED' ? 'status-cancelled' : 'status-pending')}"
+                                      th:text="${order.status}">PENDING</span>
+                            </td>
+                            <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2026</td>
+                            <td>
+                                <div class="action-btns">
+                                    <form th:if="${order.status.name() == 'PENDING'}" th:action="@{/admin/orders/update-status}" method="post">
+                                        <input type="hidden" name="orderId" th:value="${order.orderId}">
+                                        <input type="hidden" name="status" value="DELIVERED">
+                                        <button type="submit" class="action-btn edit" title="Mark Delivered"><i class="fa-solid fa-check"></i></button>
+                                    </form>
+                                    <a th:href="@{/admin/orders/detail/{id}(id=${order.orderId})}" class="action-btn edit" title="View Detail"><i class="fa-solid fa-eye"></i></a>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
 </body>
-
 </html>
