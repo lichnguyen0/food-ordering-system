@@ -928,3 +928,110 @@ body {
 .alert-success strong {
     margin-right: 5px;
 }
+
+/* Admin Forms Redesign */
+.form-container-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.form-group-full {
+    grid-column: span 2;
+}
+
+.admin-form-group {
+    margin-bottom: 25px;
+}
+
+.admin-form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 18px;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+.admin-input {
+    width: 100%;
+    background: #F4F7FE;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 14px 20px 14px 48px;
+    font-size: 14px;
+    color: var(--text-dark);
+    transition: all 0.3s;
+}
+
+.admin-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
+}
+
+.form-actions-modern {
+    display: flex;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn-save-modern {
+    background: var(--primary-red);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 35px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-save-modern:hover {
+    background: #d81b60;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
+}
+
+.btn-cancel-modern {
+    background: #F4F7FE;
+    color: #718096;
+    text-decoration: none;
+    border-radius: 12px;
+    padding: 12px 35px;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-cancel-modern:hover {
+    background: #E2E8F0;
+    color: var(--text-dark);
+}

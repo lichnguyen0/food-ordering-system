@@ -27,7 +27,7 @@ public class Collection {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "collection_food",
         joinColumns = @JoinColumn(name = "collection_id"),

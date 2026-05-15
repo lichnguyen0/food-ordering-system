@@ -37,6 +37,7 @@ public class CollectionController {
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("collection", new Collection());
+        model.addAttribute("selectedFoodIds", new java.util.ArrayList<Long>());
         model.addAttribute("allFoods", foodRepository.findAll());
         model.addAttribute("restaurants", restaurantRepository.findAll());
         model.addAttribute("activeMenu", "marketing");
@@ -47,7 +48,14 @@ public class CollectionController {
     public String editForm(@PathVariable Long id, Model model) {
         Collection collection = collectionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Collection not found"));
+        
+        // Trích xuất danh sách ID món ăn đã chọn để so sánh ở View dễ dàng hơn
+        List<Long> selectedFoodIds = collection.getFoods().stream()
+                .map(food -> food.getFoodId())
+                .collect(java.util.stream.Collectors.toList());
+        
         model.addAttribute("collection", collection);
+        model.addAttribute("selectedFoodIds", selectedFoodIds);
         model.addAttribute("allFoods", foodRepository.findAll());
         model.addAttribute("restaurants", restaurantRepository.findAll());
         model.addAttribute("activeMenu", "marketing");
