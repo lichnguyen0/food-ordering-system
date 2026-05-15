@@ -1,78 +1,56 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Catalogue | LunoFood Admin</title>
-    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <script th:src="@{/js/admin.js}" defer></script>
-</head>
-
-<body>
-
-    <aside th:replace="~{fragments/admin-layout :: sidebar('food', 'catalogue')}"></aside>
-
-    <main class="main-dashboard">
-        <header th:replace="~{fragments/admin-layout :: topbar}"></header>
-
-        <div class="breadcrumb">
-            <a href="/admin">Home</a> / <a href="/admin/foods">Menu</a> / Menu Catalogue
-        </div>
-
-        <!-- Category Navigation Bar -->
-        <div class="category-nav-wrapper">
-            <div class="category-chips">
-                <a th:href="@{/admin/categories}" 
-                   class="category-chip" 
-                   th:classappend="${selectedCategoryId == null ? 'active' : ''}">All</a>
-                
-                <a th:each="cat : ${categories}" 
-                   th:href="@{/admin/categories(categoryId=${cat.categoryId})}" 
-                   class="category-chip" 
-                   th:classappend="${selectedCategoryId == cat.categoryId ? 'active' : ''}"
-                   th:text="${cat.categoryName}">Category</a>
-            </div>
-        </div>
-
-        <div class="catalogue-grid">
-            <!-- Loop through foods -->
-            <div th:each="food : ${foods}" class="food-card">
-                <div class="food-img-wrapper">
-                    <img th:src="${food.image != null ? food.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop'}"
-                        alt="Food">
-                </div>
-                <div class="food-info">
-                    <div class="food-title-row">
-                        <div class="food-title" th:text="${food.foodName}">Pizza</div>
-                        <div class="price-badge" th:text="'$' + ${#numbers.formatInteger(food.price, 0)}">$15</div>
-                    </div>
-                    <div class="food-stats">
-                        <div class="stat-item">Total Order : <span
-                                th:text="${#numbers.formatInteger(food.foodId * 15, 0)}">150</span></div>
-                        <div class="stat-item">Revenue : <span
-                                th:text="'$' + ${#numbers.formatInteger(food.price * 50, 0)}">$1000</span></div>
-                    </div>
-                    <button class="btn-see-more">See More</button>
-                </div>
-
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', 'categories')}">
+        <main>
+            <div class="page-header">
+                <h1 class="page-title-main">Category Management</h1>
             </div>
 
-            <!-- Fallback if empty -->
-            <div th:if="${#lists.isEmpty(foods)}" style="grid-column: span 3; text-align: center; padding: 50px;">
-                <p>No food items found in catalogue.</p>
-            </div>
-        </div>
+            <div class="dashboard-row" style="grid-template-columns: 1fr 2fr;">
+                <!-- Add Category Form -->
+                <section class="content-card">
+                    <h3 class="card-title">Add New Category</h3>
+                    <form th:action="@{/admin/categories/add}" method="post" style="margin-top: 20px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 8px;">Category Name</label>
+                            <input type="text" name="categoryName" class="table-search-input" style="width: 100%; margin-left: 0; border-radius: 8px;" required>
+                        </div>
+                        <button type="submit" class="btn-add-new" style="width: 100%; justify-content: center;">Add Category</button>
+                    </form>
+                </section>
 
-        <div class="load-more-wrapper" id="loadMoreBtn" 
-             th:attr="data-page=${currentPage}, data-has-more=${hasMore}, data-category-id=${selectedCategoryId}"
-             th:classappend="${!hasMore ? 'hidden' : ''}">
-            <i class="fa-solid fa-rotate-right"></i> Load More
-        </div>
-    </main>
+                <!-- Category List -->
+                <section class="content-card">
+                    <h3 class="card-title">Existing Categories</h3>
+                    <table class="admin-table" style="margin-top: 20px;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>NAME</th>
+                                <th>FOOD COUNT</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="cat : ${categories}">
+                                <td th:text="'#' + ${cat.categoryId}">#1</td>
+                                <td th:text="${cat.categoryName}" class="fw-bold">Category Name</td>
+                                <td th:text="${cat.foods != null ? cat.foods.size() : 0} + ' items'">0 items</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <a th:href="@{/admin/categories/delete/{id}(id=${cat.categoryId})}" class="action-btn delete" onclick="return confirm('Delete this category?')"><i class="fa-solid fa-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </main>
+    </div>
 
 </body>
-
 </html>

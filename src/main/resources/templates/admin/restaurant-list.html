@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'restaurant', 'list')}">
+        <main>
+            <div class="page-header">
+                <h1 class="page-title-main">Restaurant List</h1>
+                <a href="/admin/restaurants/add" class="btn-add-new">
+                    <i class="fa-solid fa-plus"></i> Add Restaurant
+                </a>
+            </div>
+
+            <div class="product-list-card">
+                <table class="food-management-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NAME</th>
+                            <th>ADDRESS</th>
+                            <th>PHONE</th>
+                            <th>OPERATING HOURS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${restaurants}">
+                            <td th:text="'#' + ${r.restaurantId}">#1</td>
+                            <td th:text="${r.name}" class="fw-bold">Restaurant Name</td>
+                            <td th:text="${r.address}">Address</td>
+                            <td th:text="${r.phone}">Phone</td>
+                            <td th:text="${r.operatingHours}">09:00 - 21:00</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{/admin/restaurants/edit/{id}(id=${r.restaurantId})}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
+                                    <a th:href="@{/admin/restaurants/delete/{id}(id=${r.restaurantId})}" class="action-btn delete" onclick="return confirm('Delete this restaurant?')"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

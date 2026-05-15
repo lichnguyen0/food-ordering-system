@@ -33,4 +33,8 @@ public class Food {
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurantId")
+    private Restaurant restaurant;
 }

@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component;
 public class FoodMapper {
 
     private final CategoryRepository categoryRepository;
+    private final com.foodorderingsystem.repository.RestaurantRepository restaurantRepository;
 
-    public FoodMapper(CategoryRepository categoryRepository) {
+    public FoodMapper(CategoryRepository categoryRepository, com.foodorderingsystem.repository.RestaurantRepository restaurantRepository) {
         this.categoryRepository = categoryRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     public FoodDTO toDTO(Food food) {
@@ -26,6 +28,11 @@ public class FoodMapper {
         if (food.getCategory() != null) {
             dto.setCategoryId(food.getCategory().getCategoryId());
             dto.setCategoryName(food.getCategory().getCategoryName());
+        }
+
+        if (food.getRestaurant() != null) {
+            dto.setRestaurantId(food.getRestaurant().getRestaurantId());
+            dto.setRestaurantName(food.getRestaurant().getName());
         }
         
         if (food.getImages() != null) {
@@ -49,6 +56,11 @@ public class FoodMapper {
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
             food.setCategory(category);
+        }
+
+        if (dto.getRestaurantId() != null) {
+            com.foodorderingsystem.model.Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElse(null);
+            food.setRestaurant(restaurant);
         }
 
         if (dto.getAdditionalImages() != null) {

@@ -32,4 +32,8 @@ public class Order {
     private java.util.List<OrderHistory> history;
 
     private double totalAmount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurantId")
+    private Restaurant restaurant;
 }

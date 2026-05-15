@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunoFood | Food Delivery in Vietnam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script th:src="@{/js/home.js}" defer></script>
+</head>
+<body>
+
+    <!-- Header (Home State: isHome=true) -->
+    <div th:replace="~{fragments/header :: header(true)}"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <form action="/foods" method="GET" class="hero-card">
+                <span style="color: var(--text-muted); font-weight: 500; font-size: 15px;">Good Afternoon</span>
+                <h1 style="margin-top: 8px;">Where should we deliver your food today?</h1>
+                
+                <div class="location-input-group">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" name="address" placeholder="Mỹ Đình Từ Liêm Hà Nội - 133 Xuân Thủy..." required>
+                </div>
+                
+                <button type="submit" class="btn-hero-search">Tìm kiếm</button>
+            </form>
+        </div>
+    </section>
+
+    <main class="container main-content">
+        <!-- Promotions Section -->
+        <h2 class="section-title">Ưu đãi LunoFood tại <span style="color: var(--grab-green);">Hà Nội</span></h2>
+        <div class="promo-grid">
+            <!-- Dynamic restaurant cards from Database -->
+            <a th:each="r : ${restaurants}" th:href="@{/restaurant/{id}(id=${r.restaurantId})}" class="promo-card-link">
+                <div class="promo-card">
+                    <div class="promo-img-wrapper">
+                        <img th:src="${r.image != null ? r.image : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=500'}"
+                             th:alt="${r.name}">
+                        <span class="promo-badge">Promo</span>
+                    </div>
+                    <div class="promo-info">
+                        <div class="promo-name" th:text="${r.name}">Tên quán</div>
+                        <div class="promo-desc">
+                            <span th:text="${r.address}">Địa chỉ</span>
+                            <span th:if="${r.rating != null}"> • <span th:text="${r.rating}">4.5</span> ⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <!-- Fallback khi chưa có nhà hàng nào -->
+            <div th:if="${#lists.isEmpty(restaurants)}" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                <p>Chưa có nhà hàng nào. Hãy thêm nhà hàng từ trang Admin.</p>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <h2 class="section-title">There's something for everyone!</h2>
+        <div class="category-grid">
+            <a th:each="c : ${categories}" th:href="@{/foods(categoryId=${c.categoryId})}" class="category-card">
+                <img th:src="${c.categoryName == 'Hủ tiếu' ? 'https://images.unsplash.com/photo-1552611052-d59a0d9741bc?q=80&w=500' : 
+                          (c.categoryName == 'Cơm' ? 'https://images.unsplash.com/photo-1512058560550-42749359a777?q=80&w=500' :
+                          (c.categoryName == 'Đồ ăn nhẹ' ? 'https://images.unsplash.com/photo-1541529086526-db283c563270?q=80&w=500' :
+                          (c.categoryName == 'Thịt' ? 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=500' :
+                          (c.categoryName == 'Trà sữa' ? 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=500' :
+                          'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500'))))}" 
+                     class="category-img" th:alt="${c.categoryName}">
+                <div class="category-name" th:text="${c.categoryName}">Category</div>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-logo">LunoFood</div>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Về LunoFood</h4>
+                    <ul>
+                        <li><a href="#">Về LunoFood</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Mở quán trên LunoFood</h4>
+                    <ul>
+                        <li><a href="#">Trở thành tài xế Luno</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Trung tâm hỗ trợ</h4>
+                    <ul>
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <div style="display: flex; gap: 20px; font-size: 24px;">
+                        <i class="fa-brands fa-facebook"></i>
+                        <i class="fa-brands fa-instagram"></i>
+                        <i class="fa-brands fa-twitter"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="app-badges">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
+                </div>
+                <div style="font-size: 13px; opacity: 0.8;">
+                    © 2026 LunoFood. Bảo lưu mọi quyền.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'marketing', 'list')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Quản lý Bộ sưu tập</h2>
+                    <p class="page-subtitle">Quản lý các mục Ưu đãi và Gợi ý riêng biệt cho từng nhà hàng.</p>
+                </div>
+                <a href="/admin/collections/add" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i> Thêm Bộ sưu tập mới
+                </a>
+            </div>
+
+            <div class="admin-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên hiển thị</th>
+                            <th>Loại</th>
+                            <th>Nhà hàng</th>
+                            <th>Số lượng món</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${collections}">
+                            <td th:text="${c.collectionId}">1</td>
+                            <td class="fw-bold" th:text="${c.name}">Tên...</td>
+                            <td>
+                                <span class="badge" th:classappend="${c.type == 'OFFER' ? 'status-delivered' : 'status-pending'}"
+                                      th:text="${c.type == 'OFFER' ? 'Ưu đãi' : 'Gợi ý'}">Loại</span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bold" th:text="${c.restaurant != null ? c.restaurant.name : 'Tất cả (Global)'}">Nhà hàng</span>
+                            </td>
+                            <td>
+                                <span class="badge-count" th:text="${c.foods.size()} + ' món'">0 món</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{/admin/collections/edit/{id}(id=${c.collectionId})}" class="action-btn edit" title="Sửa">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a th:href="@{/admin/collections/delete/{id}(id=${c.collectionId})}" 
+                                       class="action-btn delete" 
+                                       onclick="return confirm('Bạn có chắc chắn muốn xóa bộ sưu tập này?')" title="Xóa">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(collections)}">
+                            <td colspan="6" class="text-center py-5 text-muted">Chưa có bộ sưu tập nào được tạo.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <style>
+                .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+                .badge-count { background: #f0f4ff; color: #4318ff; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+            </style>
+        </main>
+    </div>
+</body>
+</html>
