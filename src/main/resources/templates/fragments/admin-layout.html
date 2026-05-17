@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - LunoFood</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin-style.css?v=1.2">
 </head>
 
 <body>
@@ -36,11 +37,11 @@
             }
             .sidebar-toggle:hover { color: var(--primary-red); }
             
-            body.sidebar-collapsed .sidebar { left: -260px; }
+            body.sidebar-collapsed .sidebar { left: -280px; }
             body.sidebar-collapsed .main-dashboard { margin-left: 0; }
             
             @media (max-width: 992px) {
-                .sidebar { left: -260px; }
+                .sidebar { left: -280px; }
                 .main-dashboard { margin-left: 0; }
                 body.sidebar-open .sidebar { left: 0; }
                 body.sidebar-open .admin-container::after {
@@ -103,7 +104,9 @@
 
     <!-- SIDEBAR FRAGMENT -->
     <aside th:fragment="sidebar(activeMenu, activeSub)" class="sidebar">
-        <div class="sidebar-logo">LunoFood</div>
+        <div class="sidebar-logo">
+            <span class="logo-luno">Luno</span><span class="logo-food">Food</span>
+        </div>
         <ul class="sidebar-menu">
             <li>
                 <a href="/admin" class="menu-item" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}">
@@ -112,29 +115,35 @@
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'food' ? 'open' : ''}">
                 <a href="javascript:void(0)" class="menu-item">
-                    <i class="fa-solid fa-utensils"></i> Food Management
+                    <i class="fa-solid fa-utensils"></i> 
+                    <span>Food Management</span>
+                    <i class="fa-solid fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'food' ? 'show' : ''}">
-                    <li><a href="/admin/foods" class="submenu-item" th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu List</a></li>
-                    <li><a href="/admin/foods/grid" class="submenu-item" th:style="${activeSub == 'grid' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Menu Grid</a></li>
+                    <li><a href="/admin/foods" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Menu List</a></li>
+                    <li><a href="/admin/foods/grid" class="submenu-item" th:style="${activeSub == 'grid' ? 'color: #ff0018;' : ''}">Menu Grid</a></li>
                 </ul>
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'restaurant' ? 'open' : ''}">
                 <a href="javascript:void(0)" class="menu-item">
-                    <i class="fa-solid fa-store"></i> Restaurant Management
+                    <i class="fa-solid fa-store"></i> 
+                    <span>Restaurant Management</span>
+                    <i class="fa-solid fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'restaurant' ? 'show' : ''}">
-                    <li><a href="/admin/restaurants" class="submenu-item" th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Restaurant List</a></li>
-                    <li><a href="/admin/restaurants/add" class="submenu-item" th:style="${activeSub == 'add' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Add Restaurant</a></li>
+                    <li><a href="/admin/restaurants" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Restaurant List</a></li>
+                    <li><a href="/admin/restaurants/add" class="submenu-item" th:style="${activeSub == 'add' ? 'color: #ff0018;' : ''}">Add Restaurant</a></li>
                 </ul>
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'marketing' ? 'open' : ''}">
                 <a href="javascript:void(0)" class="menu-item">
-                    <i class="fa-solid fa-bullhorn"></i> Marketing & Hiển thị
+                    <i class="fa-solid fa-bullhorn"></i> 
+                    <span>Marketing & Hiển thị</span>
+                    <i class="fa-solid fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'marketing' ? 'show' : ''}">
-                    <li><a href="/admin/collections" class="submenu-item" th:style="${activeSub == 'list' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Bộ sưu tập</a></li>
-                    <li><a href="/admin/banners" class="submenu-item" th:style="${activeSub == 'banners' ? 'color: var(--primary-red); font-weight: 700;' : ''}">Banners</a></li>
+                    <li><a href="/admin/collections" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Bộ sưu tập</a></li>
+                    <li><a href="/admin/banners" class="submenu-item" th:style="${activeSub == 'banners' ? 'color: #ff0018;' : ''}">Banners</a></li>
                 </ul>
             </li>
             <li><a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>

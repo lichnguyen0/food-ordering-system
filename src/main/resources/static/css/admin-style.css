@@ -2,9 +2,9 @@
 
 :root {
     --bg-color: #F4F7FE;
-    --sidebar-width: 260px;
+    --sidebar-width: 280px;
     --primary-red: #E91E63;
-    --text-dark: #2B3674;
+    --text-dark: #212121;
     --text-muted: #A3AED0;
     --card-shadow: 0px 18px 40px rgba(112, 144, 176, 0.12);
 }
@@ -31,7 +31,6 @@ body {
     position: fixed;
     left: 0;
     top: 0;
-    padding: 30px 0;
     display: flex;
     flex-direction: column;
     border-right: 1px solid #E9EDF7;
@@ -39,11 +38,35 @@ body {
 }
 
 .sidebar-logo {
-    padding: 0 30px;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 40px;
-    color: var(--text-dark);
+    padding: 25px 30px;
+    margin-bottom: 20px;
+    background: #ebebeb; /* Xám trung tính rõ rệt hơn */
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #E9EDF7;
+}
+
+.sidebar-logo .logo-luno {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #00B14F; /* Màu xanh của trang user */
+    letter-spacing: -2px;
+    margin-right: 2px;
+    text-shadow: 
+        -1px -1px 0 #fff, 
+         1px -1px 0 #fff, 
+        -1px  1px 0 #fff, 
+         1px  1px 0 #fff,
+         0px  0px 2px rgba(0, 177, 79, 0.3);
+}
+
+.sidebar-logo .logo-food {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #00B14F;
+    letter-spacing: -1px;
 }
 
 .sidebar-menu {
@@ -57,7 +80,7 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
-    color: var(--text-muted);
+    color: var(--text-dark);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s;
@@ -69,15 +92,28 @@ body {
     width: 20px;
 }
 
-.menu-item.active {
-    color: var(--text-dark);
-    font-weight: 700;
-    border-right-color: var(--primary-red);
+.menu-item.active,
+.has-submenu.open > .menu-item,
+.menu-item.active span,
+.has-submenu.open > .menu-item span {
+    color: #ff0018;
+    border-right-color: #ff0018;
 }
 
-.menu-item:hover {
-    background: #F8F9FF;
-    color: var(--text-dark);
+.menu-item.active i,
+.has-submenu.open > .menu-item i {
+    color: #ff0018;
+}
+
+.menu-item:hover,
+.has-submenu.open > .menu-item {
+    background: #ffffff;
+    color: #ff0018;
+}
+
+.menu-item:hover i,
+.has-submenu.open > .menu-item i {
+    color: #ff0018;
 }
 
 /* Submenu Styles */
@@ -89,7 +125,7 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
-    background: #fff;
+    background: #ebebeb; /* Màu xám nhẹ để phân biệt với menu cha */
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
@@ -103,7 +139,7 @@ body {
 .submenu-item {
     padding: 10px 30px 10px 65px;
     display: block;
-    color: var(--text-muted);
+    color: var(--text-dark);
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -111,24 +147,25 @@ body {
 }
 
 .submenu-item:hover {
-    color: var(--primary-red);
-    background: #F8F9FF;
+    color: #ff0018;
+    background: #dcdcdc;
 }
 
-.submenu-arrow {
+.menu-item .arrow-icon,
+.has-submenu.open .arrow-icon {
     margin-left: auto;
-    font-size: 10px;
-    transition: transform 0.3s;
+    font-size: 10px !important;
+    width: auto !important;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
 }
 
-.has-submenu.open .submenu-arrow {
+.has-submenu.open .arrow-icon {
+    color: #ff0018;
     transform: rotate(180deg);
 }
 
-.has-submenu.open .menu-item {
-    color: var(--text-dark);
-    background: #F8F9FF;
-}
+
 
 
 /* Page Header Section */
