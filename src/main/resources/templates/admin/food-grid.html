@@ -26,7 +26,7 @@
                     <div class="food-info">
                         <div class="food-title-row">
                             <h3 class="food-title" th:text="${food.foodName}">Food Name</h3>
-                            <div class="food-price" th:text="'$' + ${#numbers.formatDecimal(food.price, 0, 'COMMA', 2, 'POINT')}">$45.50</div>
+                            <div class="food-price" th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50,000 ₫</div>
                         </div>
                         
                         <div class="food-status-row">

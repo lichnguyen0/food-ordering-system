@@ -17,26 +17,29 @@
     <header th:replace="~{fragments/header :: header(false)}"></header>
 
     <main class="detail-page">
-        <!-- Top Breadcrumb Strip -->
+
+        <!-- Breadcrumb Strip -->
         <div class="breadcrumb-wrapper">
             <div class="container">
                 <nav class="breadcrumb-nav-white">
-                    <a th:href="@{/}">Trang chủ</a> 
-                    <i class="fa-solid fa-chevron-right"></i> 
+                    <a th:href="@{/}">Trang chủ</a>
+                    <i class="fa-solid fa-chevron-right"></i>
                     <a href="/restaurants">Nhà hàng</a>
-                    <i class="fa-solid fa-chevron-right"></i> 
+                    <i class="fa-solid fa-chevron-right"></i>
                     <span th:text="${restaurant.name}">Restaurant</span>
                 </nav>
             </div>
         </div>
 
-        <!-- Clean White Header Section -->
+        <!-- Restaurant Header -->
         <section class="restaurant-header-white">
             <div class="container">
-                <!-- Restaurant Info Section (Minimalist) -->
                 <div class="restaurant-info-clean">
                     <div class="info-left">
+
                         <h1 class="res-name-big" th:text="${restaurant.name}">Restaurant Name</h1>
+
+                        <!-- Meta: Rating / Time / Distance -->
                         <div class="res-meta-row">
                             <div class="meta-pill-small">
                                 <i class="fa-solid fa-star"></i>
@@ -55,7 +58,7 @@
                             </div>
                         </div>
 
-                        <!-- Opening Hours Section -->
+                        <!-- Opening Hours -->
                         <div class="res-opening-hours">
                             <span class="status-dot"></span>
                             <span class="status-text">Đang mở cửa</span>
@@ -63,19 +66,19 @@
                             <span class="opening-time-value" th:text="'Hôm nay ' + ${restaurant.operatingHours}">Hôm nay 07:00 - 22:00</span>
                         </div>
 
-                        <!-- Delivery Info Section (Custom Dropdowns) -->
+                        <!-- Delivery Dropdowns -->
                         <div class="res-delivery-info">
-                            <!-- Custom Date Dropdown -->
                             <div class="custom-dropdown" id="dateDropdown">
                                 <div class="dropdown-trigger">
                                     <i class="fa-regular fa-calendar-check icon-left"></i>
-                                    <span class="trigger-text">Ngày giao: <strong id="selectedDateText">Hôm nay</strong></span>
+                                    <span class="trigger-text">Ngày giao hàng: <strong id="selectedDateText">Hôm nay</strong></span>
                                     <i class="fa-solid fa-chevron-down icon-right"></i>
                                 </div>
                                 <div class="dropdown-options" id="dateOptions"></div>
                             </div>
 
-                            <!-- Custom Time Dropdown -->
+                            <span class="delivery-separator">–</span>
+
                             <div class="custom-dropdown" id="timeDropdown" th:data-opening-hours="${restaurant.operatingHours}">
                                 <div class="dropdown-trigger">
                                     <i class="fa-regular fa-clock icon-left"></i>
@@ -86,7 +89,7 @@
                             </div>
                         </div>
 
-                        <!-- Restaurant Offers Section -->
+                        <!-- Offers -->
                         <div class="res-offers">
                             <div class="offer-item">
                                 <i class="fa-solid fa-tag"></i>
@@ -97,87 +100,107 @@
                                 <span>Freeship 2km</span>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Category Tabs Navigation (Premium Style) -->
+        <!-- Category Tabs (sticky) -->
         <nav class="category-tabs-container">
             <div class="container">
                 <div class="category-tabs" id="categoryTabs">
                     <a href="#offers" class="tab-item active">Ưu đãi hôm nay</a>
                     <a href="#foryou" class="tab-item">Dành cho bạn</a>
-                    <a th:each="entry : ${foodsByCategory}" 
-                       th:href="'#cat-' + ${entry.key.categoryId}" 
-                       class="tab-item" 
+                    <a th:each="entry : ${foodsByCategory}"
+                       th:href="'#cat-' + ${entry.key.categoryId}"
+                       class="tab-item"
                        th:text="${entry.key.categoryName}">Category</a>
                 </div>
             </div>
         </nav>
 
         <!-- Menu Content -->
-        <main class="menu-content container">
-            <!-- Section: Offers -->
+        <div class="menu-content container">
+
+            <!-- Section: Ưu đãi hôm nay -->
             <div id="offers" class="category-section" th:if="${!#lists.isEmpty(offers)}">
                 <h2 class="section-title">Ưu đãi hôm nay</h2>
                 <div class="food-grid">
                     <div th:each="f : ${offers}" class="food-card">
-                        <div class="food-img-container">
-                            <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" class="food-img">
-                            <div class="promo-badge">Tiết kiệm 6.000 ₫</div>
-                            <button class="btn-quick-add"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                        <div class="food-details">
-                            <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
-                            <p class="food-desc" th:text="${f.description}">Mô tả món ăn...</p>
-                            <div class="food-footer">
-                                <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">49,000 ₫</span>
-                                <span class="old-price" th:text="${#numbers.formatDecimal(f.price + 10000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59,000 ₫</span>
+                        <!-- TOP: image + info -->
+                        <div class="food-card-top">
+                            <div class="food-img-container">
+                                <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop'}"
+                                     class="food-img" th:alt="${f.foodName}">
+                            </div>
+                            <div class="food-info">
+                                <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
+                                <p class="food-desc" th:text="${f.description}">Mô tả món ăn...</p>
+                                <div class="promo-row">
+                                    <span class="promo-save-tag">Tiết kiệm 6.000 ₫</span>
+                                    <span class="old-price" th:text="${#numbers.formatDecimal(f.price + 6000, 0, 'COMMA', 0, 'POINT')}">55.000</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section: For You -->
-            <div id="foryou" class="category-section" th:if="${!#lists.isEmpty(recommendations)}">
-                <h2 class="section-title">Dành cho bạn</h2>
-                <div class="food-grid">
-                    <div th:each="f : ${recommendations}" class="food-card">
-                        <div class="food-img-container">
-                            <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591'}" class="food-img">
-                            <button class="btn-quick-add"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                        <div class="food-details">
-                            <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
-                            <p class="food-desc" th:text="${f.description}">Description</p>
-                            <div class="food-footer">
-                                <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50,000 ₫</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Regular Category Groups -->
-            <div th:each="entry : ${foodsByCategory}" th:id="'cat-' + ${entry.key.categoryId}" class="category-section">
-                <h2 class="section-title" th:text="${entry.key.categoryName}">Category Name</h2>
-                <div class="food-grid">
-                    <div th:each="f : ${entry.value}" class="food-card">
-                        <div class="food-img-container">
-                            <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591'}" 
-                                 class="food-img" th:alt="${f.foodName}">
+                        <!-- BOTTOM: price + button -->
+                        <div class="food-card-bottom">
+                            <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">49.000</span>
                             <button class="btn-quick-add" th:data-food-id="${f.foodId}">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </div>
-                        <div class="food-details">
-                            <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
-                            <p class="food-desc" th:text="${f.description}">Description</p>
-                            <div class="food-footer">
-                                <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50,000 ₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Dành cho bạn -->
+            <div id="foryou" class="category-section" th:if="${!#lists.isEmpty(recommendations)}">
+                <h2 class="section-title">Dành cho bạn</h2>
+                <div class="food-grid">
+                    <div th:each="f : ${recommendations}" class="food-card">
+                        <div class="food-card-top">
+                            <div class="food-img-container">
+                                <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=300&fit=crop'}"
+                                     class="food-img" th:alt="${f.foodName}">
                             </div>
+                            <div class="food-info">
+                                <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
+                                <p class="food-desc" th:text="${f.description}">Description</p>
+                            </div>
+                        </div>
+                        <div class="food-card-bottom">
+                            <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
+                            <button class="btn-quick-add" th:data-food-id="${f.foodId}">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regular Category Sections -->
+            <div th:each="entry : ${foodsByCategory}"
+                 th:id="'cat-' + ${entry.key.categoryId}"
+                 class="category-section">
+                <h2 class="section-title" th:text="${entry.key.categoryName}">Category Name</h2>
+                <div class="food-grid">
+                    <div th:each="f : ${entry.value}" class="food-card">
+                        <div class="food-card-top">
+                            <div class="food-img-container">
+                                <img th:src="${f.image != null ? f.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=300&fit=crop'}"
+                                     class="food-img" th:alt="${f.foodName}">
+                            </div>
+                            <div class="food-info">
+                                <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
+                                <p class="food-desc" th:text="${f.description}">Description</p>
+                            </div>
+                        </div>
+                        <div class="food-card-bottom">
+                            <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
+                            <button class="btn-quick-add" th:data-food-id="${f.foodId}">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -188,7 +211,8 @@
                 <i class="fa-solid fa-utensils"></i>
                 <p>Chưa có món ăn nào trong thực đơn.</p>
             </div>
-        </div>
+
+        </div><!-- end menu-content -->
     </main>
 
     <!-- Footer Fragment -->
@@ -197,3 +221,4 @@
     <!-- Scripts -->
     <script th:src="@{/js/restaurant-detail.js}"></script>
 </body>
+</html>
