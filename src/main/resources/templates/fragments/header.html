@@ -19,8 +19,12 @@
 
         <div class="header-right">
             <!-- Cart Icon -->
-            <a href="/cart" class="icon-btn">
-                <i class="fa-solid fa-bag-shopping nav-icon"></i>
+            <a href="/cart" class="header-cart-btn" id="headerCartBtn" onclick="event.preventDefault(); toggleCartSidebar();">
+                <div class="header-cart-icon">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="header-cart-badge" id="headerCartBadge" style="display: none;">0</span>
+                </div>
+                <span class="header-cart-price" id="headerCartPrice" style="display: none;">0 ₫</span>
             </a>
 
             <!-- State: Not Logged In -->
@@ -49,6 +53,39 @@
             </div>
             <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
+            <!-- Cart Sidebar (Off-canvas) -->
+            <div id="cartSidebar" class="cart-sidebar">
+                <div class="sidebar-header">
+                    <h3>Giỏ hàng</h3>
+                    <button class="close-btn" onclick="toggleCartSidebar()">&times;</button>
+                </div>
+                <div class="sidebar-content">
+                    <!-- Empty State -->
+                    <div class="empty-cart-state" id="emptyCartState">
+                        <div class="empty-cart-icon">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <h4>Giỏ hàng của bạn đang trống</h4>
+                        <p>Hãy thêm những món ăn ngon lành vào giỏ hàng của bạn nhé!</p>
+                        <a href="javascript:void(0)" class="continue-shopping-btn" onclick="toggleCartSidebar()">Duyệt nhà hàng</a>
+                    </div>
+                    
+                    <!-- Cart Items State (Hidden by default for now) -->
+                    <div class="cart-items-state" id="cartItemsState" style="display: none;">
+                        <!-- Items will be injected here via JS if needed, or link to cart page -->
+                        <div class="cart-items-list"></div>
+                        <div class="cart-sidebar-footer">
+                            <div class="total-row">
+                                <span>Tổng cộng:</span>
+                                <span id="cartSidebarTotal">0 ₫</span>
+                            </div>
+                            <a href="/checkout" class="view-cart-btn">Thanh toán</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="cartSidebarOverlay" class="cart-sidebar-overlay" onclick="toggleCartSidebar()"></div>
+
 
             <!-- Language Selector -->
             <div class="lang-selector">
@@ -71,6 +108,105 @@
                     document.body.style.overflow = 'auto';
                 }
             }
+        }
+
+        function toggleCartSidebar() {
+            const sidebar = document.getElementById('cartSidebar');
+            const overlay = document.getElementById('cartSidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+                
+                if (sidebar.classList.contains('show')) {
+                    document.body.style.overflow = 'hidden';
+                    // Check cart status to update empty state
+                    fetch('/api/cart/status')
+                        .then(response => response.json())
+                        .then(data => {
+                            const emptyState = document.getElementById('emptyCartState');
+                            const itemsState = document.getElementById('cartItemsState');
+                            if (data.totalQuantity > 0) {
+                                emptyState.style.display = 'none';
+                                itemsState.style.display = 'block';
+                                document.getElementById('cartSidebarTotal').textContent = new Intl.NumberFormat('vi-VN').format(data.totalPrice) + ' ₫';
+                                renderCartItems(data.items);
+                            } else {
+                                emptyState.style.display = 'flex';
+                                itemsState.style.display = 'none';
+                            }
+                        })
+                        .catch(err => console.error("Error fetching cart status:", err));
+                } else {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+
+        function renderCartItems(items) {
+            const listContainer = document.querySelector('.cart-items-list');
+            if (!listContainer) return;
+            
+            listContainer.innerHTML = '';
+            if (!items || items.length === 0) {
+                document.getElementById('emptyCartState').style.display = 'flex';
+                document.getElementById('cartItemsState').style.display = 'none';
+                return;
+            }
+            
+            items.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'cart-sidebar-item';
+                itemEl.innerHTML = `
+                    <div class="item-img">
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="${item.foodName}">
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">${item.foodName}</div>
+                        <div class="item-price">${new Intl.NumberFormat('vi-VN').format(item.price)} ₫</div>
+                        <div class="item-qty-controls">
+                            <button onclick="updateCartItem(${item.foodId}, 'decrease')">
+                                <i class="fa-solid ${item.quantity === 1 ? 'fa-trash' : 'fa-minus'}"></i>
+                            </button>
+                            <span class="qty-display">${item.quantity}</span>
+                            <button onclick="updateCartItem(${item.foodId}, 'add')">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(itemEl);
+            });
+        }
+
+        window.updateCartItem = function(foodId, action) {
+            const url = action === 'add' ? `/api/cart/add/${foodId}` : `/api/cart/decrease/${foodId}`;
+            fetch(url, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    // Update header
+                    const badge = document.getElementById('headerCartBadge');
+                    const price = document.getElementById('headerCartPrice');
+                    if (badge && price) {
+                        if (data.totalQuantity > 0) {
+                            badge.style.display = 'inline-block';
+                            price.style.display = 'inline-block';
+                            badge.textContent = data.totalQuantity;
+                            price.textContent = new Intl.NumberFormat('vi-VN').format(data.totalPrice) + ' ₫';
+                        } else {
+                            badge.style.display = 'none';
+                            price.style.display = 'none';
+                        }
+                    }
+                    
+                    // Update sidebar
+                    document.getElementById('cartSidebarTotal').textContent = new Intl.NumberFormat('vi-VN').format(data.totalPrice) + ' ₫';
+                    renderCartItems(data.items);
+                    
+                    // Update food cards if on restaurant detail page
+                    if (typeof updateItemCardUI === 'function') {
+                        updateItemCardUI(foodId, data.itemQuantities[foodId] || 0);
+                    }
+                })
         }
     </script>
 </header>

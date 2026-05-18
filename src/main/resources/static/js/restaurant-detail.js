@@ -67,17 +67,130 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 3. Quick Add Feedback
+    // 3. Header Cart Logic & Quick Add
+    const headerCartBadge = document.getElementById('headerCartBadge');
+    const headerCartPrice = document.getElementById('headerCartPrice');
     const addButtons = document.querySelectorAll('.btn-quick-add');
-    addButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.innerHTML = '<i class="fa-solid fa-check"></i>';
-            this.style.background = '#28a745';
+
+    // Function to update cart UI
+    function updateCartUI(totalQty, totalPrice) {
+        if (headerCartBadge && headerCartPrice) {
+            if (totalQty > 0) {
+                headerCartBadge.style.display = 'inline-block';
+                headerCartPrice.style.display = 'inline-block';
+                
+                headerCartBadge.textContent = totalQty;
+                headerCartPrice.textContent = new Intl.NumberFormat('vi-VN').format(totalPrice) + ' ₫';
+                
+                // Add a small pop animation
+                const cartBtn = document.getElementById('headerCartBtn');
+                if (cartBtn) {
+                    cartBtn.style.transform = 'scale(1.1)';
+                    setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
+                }
+            } else {
+                headerCartBadge.style.display = 'none';
+                headerCartPrice.style.display = 'none';
+            }
+        }
+    }
+
+    // Function to update individual food card UI
+    function updateItemCardUI(foodId, quantity) {
+        const controlContainer = document.querySelector(`.cart-quantity-controls[data-food-id="${foodId}"]`);
+        if (!controlContainer) return;
+
+        const btnAdd = controlContainer.querySelector('.btn-quick-add');
+        const btnDecrease = controlContainer.querySelector('.btn-decrease');
+        const qtyText = controlContainer.querySelector('.qty-text');
+
+        if (quantity > 0) {
+            controlContainer.classList.add('active');
+            btnDecrease.style.display = 'flex';
+            qtyText.style.display = 'inline-block';
+            qtyText.textContent = quantity;
+
+            // Update decrease button icon based on quantity
+            if (quantity === 1) {
+                btnDecrease.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                btnDecrease.classList.remove('minus-icon');
+            } else {
+                btnDecrease.innerHTML = '<i class="fa-solid fa-minus"></i>';
+                btnDecrease.classList.add('minus-icon');
+            }
+        } else {
+            controlContainer.classList.remove('active');
+            btnDecrease.style.display = 'none';
+            qtyText.style.display = 'none';
+        }
+    }
+
+    // Fetch initial cart state on load
+    fetch('/api/cart/status')
+        .then(response => response.json())
+        .then(data => {
+            updateCartUI(data.totalQuantity, data.totalPrice);
+            // Restore UI for items already in cart
+            if (data.itemQuantities) {
+                Object.keys(data.itemQuantities).forEach(foodId => {
+                    updateItemCardUI(foodId, data.itemQuantities[foodId]);
+                });
+            }
+        })
+        .catch(err => console.error("Error fetching cart status:", err));
+
+    // Handle Add and Decrease clicks
+    const quantityControls = document.querySelectorAll('.cart-quantity-controls');
+    quantityControls.forEach(control => {
+        const foodId = control.getAttribute('data-food-id');
+        const btnAdd = control.querySelector('.btn-quick-add');
+        const btnDecrease = control.querySelector('.btn-decrease');
+
+        btnAdd.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Visual feedback on button
+            const icon = this.querySelector('i');
+            const originalClass = icon.className;
+            icon.className = 'fa-solid fa-check';
+            this.style.background = '#008a3d';
             
             setTimeout(() => {
-                this.innerHTML = '<i class="fa-solid fa-plus"></i>';
-                this.style.background = ''; // Revert to CSS default
-            }, 1000);
+                icon.className = originalClass;
+                this.style.background = '';
+            }, 300);
+
+            // AJAX request to backend
+            fetch(`/api/cart/add/${foodId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateCartUI(data.totalQuantity, data.totalPrice);
+                updateItemCardUI(foodId, data.itemQuantities[foodId] || 0);
+            })
+            .catch(err => console.error("Error adding to cart:", err));
+        });
+
+        btnDecrease.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Visual feedback on button
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => this.style.transform = '', 150);
+
+            // AJAX request to backend
+            fetch(`/api/cart/decrease/${foodId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateCartUI(data.totalQuantity, data.totalPrice);
+                updateItemCardUI(foodId, data.itemQuantities[foodId] || 0);
+            })
+            .catch(err => console.error("Error decreasing cart item:", err));
         });
     });
 
@@ -222,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 5. ScrollSpy & Smooth Scroll for Tabs
     const tabItems = document.querySelectorAll('.tab-item');
-    const sections = document.querySelectorAll('.category-section');
+    // sections already declared at the top
 
     function updateActiveTab() {
         let currentSectionId = '';

@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/uploads/**", "/restaurant/**").permitAll()
+                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/uploads/**", "/restaurant/**", "/api/cart/**").permitAll()
                 .requestMatchers("/admin/category/**", "/admin/users/**").hasRole("ADMIN")
                 .requestMatchers("/admin/**").hasRole("STAFF") // ADMIN implies STAFF
                 .requestMatchers("/cart/**", "/order/checkout").hasRole("USER")

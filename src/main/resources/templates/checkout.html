@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán | LunoFood</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="checkout-body">
+    <!-- Header Fragment -->
+    <header th:replace="~{fragments/header :: header(false)}"></header>
+
+    <main class="checkout-container">
+        <div class="checkout-header-section">
+            <h1>Bước cuối cùng - Thanh toán</h1>
+            <p class="restaurant-name">Tùng Huế Bún Bò - Cầu Diễn</p>
+        </div>
+
+        <!-- Section: Giao đến -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Giao đến</h2>
+            </div>
+            <div class="card-content delivery-content">
+                <div class="delivery-time">
+                    <span class="time-label">Delivery arrival time</span>
+                    <span class="time-value">22 min (2.8 km away)</span>
+                </div>
+                
+                <div class="address-inputs">
+                        <div class="input-group">
+                            <label>Địa chỉ</label>
+                            <input type="text" value="Lô TT-02 Kdt Mon City, P.Mỹ Đình, Hà Nội">
+                        </div>
+                        <div class="input-group">
+                            <label>Chi tiết địa chỉ</label>
+                            <input type="text" placeholder="Vd: tầng / tên toà nhà">
+                        </div>
+                        <div class="input-group">
+                            <label>Ghi chú cho tài xế</label>
+                            <input type="text" placeholder="Hãy gặp tôi tại sảnh">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Tóm tắt đơn hàng -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Tóm tắt đơn hàng</h2>
+            </div>
+            <div class="card-content">
+                <div class="order-items-list">
+                    <!-- Dynamic Items from Cart -->
+                    <div th:each="itemEntry : ${cart.items}" class="order-item-row">
+                        <div class="item-qty-controls">
+                            <button class="qty-btn">-</button>
+                            <span class="qty-val" th:text="${itemEntry.value.quantity}">1</span>
+                            <button class="qty-btn">+</button>
+                        </div>
+                        <div class="item-img">
+                            <img th:src="${itemEntry.value.food.image != null ? itemEntry.value.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="Food">
+                        </div>
+                        <div class="item-name" th:text="${itemEntry.value.food.foodName}">Bún bò Huế Thường</div>
+                        <div class="item-price" th:text="${#numbers.formatDecimal(itemEntry.value.food.price * itemEntry.value.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
+                    </div>
+                </div>
+
+                <div class="summary-totals">
+                    <div class="total-row">
+                        <span>Tổng tạm tính</span>
+                        <span th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Phí giao hàng và phí áp dụng <i class="fa-solid fa-circle-info"></i></span>
+                        <span>16.000 ₫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Chi tiết thanh toán -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Chi tiết thanh toán</h2>
+            </div>
+            <div class="card-content">
+                <div class="input-group">
+                    <label>Phương thức thanh toán</label>
+                    <div class="custom-dropdown" id="paymentDropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown()">
+                            <span class="dropdown-icon">$</span>
+                            <span class="dropdown-text">Tiền mặt</span>
+                            <i class="fa-solid fa-chevron-down ms-auto dropdown-chevron"></i>
+                        </div>
+                        <div class="dropdown-list">
+                            <div class="dropdown-item disabled">
+                                <span class="dropdown-icon m-icon">m</span>
+                                <span class="dropdown-text">Phương thức chưa hỗ trợ</span>
+                            </div>
+                            <div class="dropdown-item selected">
+                                <span class="dropdown-icon">$</span>
+                                <span class="dropdown-text">Tiền mặt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mt-3">
+                    <label>Hồ sơ</label>
+                    <div class="dropdown-header">
+                        <span class="dropdown-icon"><i class="fa-solid fa-user"></i></span>
+                        <span class="dropdown-text">Personal</span>
+                        <i class="fa-solid fa-chevron-down ms-auto dropdown-chevron"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Khuyến mãi -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Khuyến mãi</h2>
+            </div>
+            <div class="card-content promo-content">
+                <div class="promo-input-row">
+                    <input type="text" placeholder="Nhập mã khuyến mãi">
+                    <button class="btn-apply-promo" disabled>Áp dụng</button>
+                </div>
+                
+                <div class="promo-list">
+                    <div class="promo-item">
+                        <div class="promo-details">
+                            <h4>Giảm 30K, thêm ưu đãi bên dưới</h4>
+                            <p class="promo-code">Promo Code: HANOUTERNEWUSER</p>
+                            <p class="promo-expiry">Valid 2025-10-06 to 2027-01-03</p>
+                        </div>
+                        <button class="btn-use-promo">APPLY</button>
+                    </div>
+                    <!-- More promo items can be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- App promo banner -->
+        <div class="app-promo-banner">
+            <div class="promo-banner-text">
+                Dùng phương thức thanh toán khác để nhận ưu đãi hấp dẫn. Chỉ có trên ứng dụng Grab.
+            </div>
+            <div class="app-stores">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
+            </div>
+        </div>
+    </main>
+
+    <!-- Sticky Bottom Bar -->
+    <div class="fixed-bottom-bar">
+        <div class="bottom-bar-content">
+            <div class="total-display">
+                <span class="total-label">Tổng cộng</span>
+                <span class="total-value" th:text="${#numbers.formatDecimal(cart.totalPrice + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">75.000 ₫</span>
+            </div>
+            <form th:action="@{/order/checkout}" method="post">
+                <button type="submit" class="btn-place-order">Đặt đơn</button>
+            </form>
+        </div>
+    </div>
+
+    <script th:src="@{/js/checkout.js}"></script>
+</body>
+</html>

@@ -20,7 +20,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Create default admin if not exists
+        // Tạo quản trị viên mặc định nếu không tồn tại
         if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setUsername("admin");
@@ -32,7 +32,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Default admin account created: admin / admin123");
         }
 
-        // Create default user if not exists
+        // Tạo người dùng mặc định nếu không tồn tại
         if (userRepository.findByUsername("user").isEmpty()) {
             User user = new User();
             user.setUsername("user");

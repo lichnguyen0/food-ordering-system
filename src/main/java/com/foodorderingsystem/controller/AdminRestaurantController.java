@@ -31,7 +31,7 @@ public class AdminRestaurantController {
         return "admin/restaurant-list";
     }
 
-    // Show add form
+    // Hiển thị biểu mẫu thêm
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("restaurant", new Restaurant());
