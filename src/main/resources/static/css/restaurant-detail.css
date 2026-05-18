@@ -479,6 +479,62 @@
     box-shadow: 0 4px 12px rgba(0,177,79,0.45) !important;
 }
 
+/* QUANTITY CONTROLS (ShopeeFood/GrabFood Style) */
+.cart-quantity-controls {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 20px;
+    height: 36px;
+    transition: all 0.2s ease;
+}
+
+.cart-quantity-controls.active {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-decrease {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    color: #EE5D50;
+    border: 1px solid #ffe0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(238, 93, 80, 0.1);
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.btn-decrease:hover {
+    background: #fff5f5;
+    transform: scale(1.05);
+}
+
+.btn-decrease.minus-icon {
+    color: #333;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.btn-decrease.minus-icon:hover {
+    background: #f9f9f9;
+}
+
+.qty-text {
+    min-width: 28px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+    font-family: 'Inter', sans-serif;
+    padding: 0 4px;
+}
+
 /* ══════════════════════════════════
    EMPTY STATE
 ══════════════════════════════════ */
@@ -496,6 +552,103 @@
 }
 
 .empty-state p { font-size: 15px; color: #aaa; }
+
+/* ══════════════════════════════════
+   FLOATING CART BAR
+══════════════════════════════════ */
+
+.floating-cart-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    z-index: 999;
+    padding: 16px 0;
+    border-top: 1px solid #eee;
+    animation: slideUpCart 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideUpCart {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.cart-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.cart-icon-wrapper {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background: #E6F7EF;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--grab-green);
+    font-size: 20px;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #E53E3E;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+}
+
+.cart-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-total-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+    line-height: 1.2;
+}
+
+.cart-subtext {
+    font-size: 12px;
+    color: #888;
+}
+
+.btn-checkout {
+    background: var(--grab-green);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-checkout:hover {
+    background: #009944;
+}
 
 /* ══════════════════════════════════
    RESPONSIVE

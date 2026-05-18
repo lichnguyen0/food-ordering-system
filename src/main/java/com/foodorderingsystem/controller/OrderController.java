@@ -21,6 +21,15 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    @GetMapping("/checkout")
+    public String checkoutPage(Model model, @ModelAttribute("cart") Cart cart) {
+        if (cart == null || cart.getItems().isEmpty()) {
+            return "redirect:/"; // Redirect to home if cart is empty
+        }
+        model.addAttribute("cart", cart);
+        return "checkout";
+    }
+
     @PostMapping("/order/checkout")
     public String checkout(@ModelAttribute("cart") Cart cart, SessionStatus status) {
 

@@ -146,9 +146,15 @@
                         <!-- BOTTOM: price + button -->
                         <div class="food-card-bottom">
                             <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">49.000</span>
-                            <button class="btn-quick-add" th:data-food-id="${f.foodId}">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
+                            <div class="cart-quantity-controls" th:data-food-id="${f.foodId}">
+                                <button class="btn-decrease" style="display: none;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                                <span class="qty-text" style="display: none;">1</span>
+                                <button class="btn-quick-add">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -171,9 +177,15 @@
                         </div>
                         <div class="food-card-bottom">
                             <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
-                            <button class="btn-quick-add" th:data-food-id="${f.foodId}">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
+                            <div class="cart-quantity-controls" th:data-food-id="${f.foodId}">
+                                <button class="btn-decrease" style="display: none;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                                <span class="qty-text" style="display: none;">1</span>
+                                <button class="btn-quick-add">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -198,9 +210,15 @@
                         </div>
                         <div class="food-card-bottom">
                             <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
-                            <button class="btn-quick-add" th:data-food-id="${f.foodId}">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
+                            <div class="cart-quantity-controls" th:data-food-id="${f.foodId}">
+                                <button class="btn-decrease" style="display: none;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                                <span class="qty-text" style="display: none;">1</span>
+                                <button class="btn-quick-add">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -213,6 +231,7 @@
             </div>
 
         </div><!-- end menu-content -->
+
     </main>
 
     <!-- Footer Fragment -->
