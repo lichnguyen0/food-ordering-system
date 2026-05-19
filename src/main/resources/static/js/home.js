@@ -21,4 +21,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (searchContainer) searchContainer.style.opacity = "0";
         if (searchContainer) searchContainer.style.visibility = "hidden";
     }
+
+    // Carousel Logic
+    const carousel = document.getElementById("promoCarousel");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    if (carousel && prevBtn && nextBtn) {
+        const scrollAmount = 300; // Khoảng cách cuộn mỗi lần click
+
+        prevBtn.addEventListener("click", () => {
+            carousel.scrollBy({
+                left: -scrollAmount,
+                behavior: "smooth"
+            });
+        });
+
+        nextBtn.addEventListener("click", () => {
+            carousel.scrollBy({
+                left: scrollAmount,
+                behavior: "smooth"
+            });
+        });
+    }
 });

@@ -1,0 +1,87 @@
+/* ==========================================
+   ORDER PAGE - LAYOUT FIX
+   File: order.css - Tách riêng cho trang đơn hàng
+   ========================================== */
+
+/* Profile Layout - Đảm bảo giãn toàn bộ chiều rộng */
+.profile-page-container .profile-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* Sidebar cố định chiều rộng */
+.profile-page-container .profile-sidebar-wrapper {
+    width: 180px;
+    flex-shrink: 0;
+}
+
+/* Phần nội dung chính chiếm toàn bộ không gian còn lại */
+.profile-page-container .profile-main-content {
+    flex: 1;
+    min-width: 0;
+    background: #fff;
+}
+
+/* Tab container trải rộng 100% */
+.profile-page-container .orders-tabs {
+    display: flex;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 12px;
+}
+
+/* Mỗi tab button giãn đều nhau */
+.profile-page-container .order-tab-btn {
+    flex: 1;
+    padding: 16px 0;
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    color: rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+    text-align: center;
+    transition: color 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.profile-page-container .order-tab-btn:hover {
+    color: #ee4d2d;
+}
+
+.profile-page-container .order-tab-btn.active {
+    color: #ee4d2d;
+}
+
+.profile-page-container .order-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #ee4d2d;
+}
+
+/* Badge số lượng đơn hàng */
+.profile-page-container .tab-count {
+    background: #e9ecef;
+    color: #495057;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    display: inline-block;
+    line-height: 1.5;
+}
+
+.profile-page-container .order-tab-btn.active .tab-count {
+    background: #343a40;
+    color: #fff;
+}

@@ -43,7 +43,29 @@ public class AdminController {
 
     @GetMapping("/orders")
     public String orders(Model model) {
-        model.addAttribute("orders", orderService.getAll());
+        List<com.foodorderingsystem.model.Order> allOrders = orderService.getAll();
+        
+        List<com.foodorderingsystem.model.Order> pendingOrders = allOrders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.PENDING)
+                .collect(Collectors.toList());
+                
+        List<com.foodorderingsystem.model.Order> processingOrders = allOrders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.PREPARING || o.getStatus() == OrderStatus.CONFIRMED)
+                .collect(Collectors.toList());
+                
+        List<com.foodorderingsystem.model.Order> shippingOrders = allOrders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.DELIVERING)
+                .collect(Collectors.toList());
+                
+        List<com.foodorderingsystem.model.Order> completedOrders = allOrders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.DELIVERED || o.getStatus() == OrderStatus.CANCELLED)
+                .collect(Collectors.toList());
+                
+        model.addAttribute("pendingOrders", pendingOrders);
+        model.addAttribute("processingOrders", processingOrders);
+        model.addAttribute("shippingOrders", shippingOrders);
+        model.addAttribute("completedOrders", completedOrders);
+        
         return "admin/orders";
     }
 
@@ -51,5 +73,16 @@ public class AdminController {
     public String updateStatus(@RequestParam Long orderId, @RequestParam OrderStatus status) {
         orderService.updateStatus(orderId, status);
         return "redirect:/admin/orders";
+    }
+
+    @PostMapping("/orders/api/update-status")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> updateStatusAjax(@RequestParam Long orderId, @RequestParam OrderStatus status) {
+        try {
+            orderService.updateStatus(orderId, status);
+            return org.springframework.http.ResponseEntity.ok().body("{\"success\":true}");
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.badRequest().body("{\"success\":false}");
+        }
     }
 }

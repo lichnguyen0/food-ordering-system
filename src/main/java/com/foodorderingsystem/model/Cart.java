@@ -33,10 +33,10 @@ public class Cart {
     }
 
     public double getTotalPrice() {
-        return items.values().stream()
-                .mapToDouble(item -> item.getFood().getPrice() * item.getQuantity())
-                .sum();
-    }
+         return items.values().stream()
+                 .mapToDouble(item -> item.getFood().getActivePrice() * item.getQuantity())
+                 .sum();
+     }
 
     public int getTotalQuantity() {
         return items.values().stream()

@@ -1072,3 +1072,121 @@ body {
     background: #E2E8F0;
     color: var(--text-dark);
 }
+
+/* Category Management Upgrades */
+.category-thumbnail-mini {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #f7f7f7;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-badge.active {
+    background: #E6FFF1;
+    color: #01B574;
+}
+
+.status-badge.inactive {
+    background: #FFF5F8;
+    color: #EE5D50;
+}
+
+/* Premium Toggle Switch */
+.admin-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.admin-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.admin-switch-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.admin-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.admin-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.admin-switch-input:checked + .admin-switch-slider {
+    background-color: var(--primary-red);
+}
+
+.admin-switch-input:checked + .admin-switch-slider:before {
+    transform: translateX(24px);
+}
+
+.admin-switch-label-text {
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Category Image Preview Styling */
+.category-preview-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.category-preview-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid #E2E8F0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.category-preview-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.category-preview-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+}

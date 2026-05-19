@@ -22,6 +22,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private OrderStatus status; // PENDING...
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -32,6 +33,15 @@ public class Order {
     private java.util.List<OrderHistory> history;
 
     private double totalAmount;
+
+    @Column(length = 255)
+    private String deliveryAddress;
+
+    @Column(length = 500)
+    private String deliveryNote;
+
+    @Column(length = 50)
+    private String paymentMethod;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurantId")

@@ -9,7 +9,9 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface OrderService {
-    void createOrderFromCart(Long userId, Cart cart);
+    Order createOrderFromCart(Long userId, Cart cart, com.foodorderingsystem.dto.CheckoutRequest request);
+    Order getOrderById(Long orderId);
+    List<Order> getOrdersByUsername(String username);
     List<Order> getAll();
     List<Order> getTopRevenue(int n);
     void updateStatus(Long orderId, OrderStatus status);

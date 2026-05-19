@@ -1,17 +1,165 @@
-<table>
-  <tr>
-    <th>ID</th>
-    <th>User</th>
-    <th>Date</th>
-    <th>Total</th>
-    <th>Status</th>
-  </tr>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đơn hàng của tôi - LunoFood</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/user-profile.css">
+    <link rel="stylesheet" href="/css/order.css">
+</head>
+<body>
 
-  <tr th:each="o : ${orders}">
-    <td th:text="${o.orderId}"></td>
-    <td th:text="${o.user != null ? o.user.username : 'Guest'}"></td>
-    <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}"></td>
-    <td th:text="${o.totalAmount}"></td>
-    <td th:text="${o.status}"></td>
-  </tr>
-</table>
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header(false)}"></header>
+
+    <main class="profile-page-container">
+        <div class="container">
+            <div class="profile-layout">
+                
+                <!-- Profile Sidebar (Shopee Style) -->
+                <aside class="profile-sidebar-wrapper">
+                    <div class="profile-user-info">
+                        <div class="profile-avatar-large" th:text="${#authentication.name.substring(0, 1).toUpperCase()}">U</div>
+                        <div class="user-meta">
+                            <h3 th:text="${#authentication.name}">Username</h3>
+                            <a href="javascript:void(0)" class="edit-profile-link"><i class="fa-solid fa-pen"></i> Sửa Hồ Sơ</a>
+                        </div>
+                    </div>
+                    <ul class="profile-menu">
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="fa-regular fa-bell"></i> Thông Báo
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="fa-regular fa-user"></i> Tài Khoản Của Tôi
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" class="active">
+                                <i class="fa-solid fa-clipboard-list"></i> Đơn Mua
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="fa-solid fa-ticket"></i> Kho Voucher
+                            </a>
+                        </li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" id="logoutFormProfile">
+                                <a href="javascript:void(0)" onclick="document.getElementById('logoutFormProfile').submit()">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                                </a>
+                            </form>
+                        </li>
+                    </ul>
+                </aside>
+
+                <!-- Profile Main Content (Shopee Style Tabs) -->
+                <div class="profile-main-content">
+                    
+                    <!-- Tabs Navigation -->
+                    <div class="orders-tabs">
+                        <button class="order-tab-btn active" data-status="ALL">Tất cả <span class="tab-count">0</span></button>
+                        <button class="order-tab-btn" data-status="PENDING">Chờ xác nhận <span class="tab-count">0</span></button>
+                        <button class="order-tab-btn" data-status="PREPARING">Đang chuẩn bị <span class="tab-count">0</span></button>
+                        <button class="order-tab-btn" data-status="DELIVERING">Đang giao <span class="tab-count">0</span></button>
+                        <button class="order-tab-btn" data-status="DELIVERED">Hoàn thành <span class="tab-count">0</span></button>
+                        <button class="order-tab-btn" data-status="CANCELLED">Đã hủy <span class="tab-count">0</span></button>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="shopee-search-bar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Bạn có thể tìm kiếm theo tên Nhà hàng, ID đơn hàng hoặc Tên Sản phẩm">
+                    </div>
+
+                    <!-- Orders List -->
+                    <div class="customer-order-list">
+                        <div th:if="${allOrders == null || allOrders.empty}" class="empty-orders-msg">
+                            <i class="fa-solid fa-box-open"></i>
+                            <p>Bạn chưa có đơn hàng nào.</p>
+                        </div>
+
+                        <!-- Order Card (Shopee Style) -->
+                        <div th:each="order : ${allOrders}" class="customer-order-card" th:data-order-status="${order.status.name()}">
+                            
+                            <!-- Card Header: Restaurant & Status -->
+                            <div class="customer-order-header">
+                                <div class="shop-info">
+                                    <span class="shop-label">Yêu thích</span>
+                                    <span class="shop-name" th:text="${order.restaurant != null ? order.restaurant.name : 'Nhà hàng'}">Tên Nhà Hàng</span>
+                                    <button class="btn-chat"><i class="fa-regular fa-comment-dots"></i> Chat</button>
+                                    <button class="btn-view-shop"><i class="fa-solid fa-store"></i> Xem Shop</button>
+                                </div>
+                                <div class="order-status-text">
+                                    <span class="shipping-status">
+                                        <i class="fa-solid fa-truck-fast"></i> 
+                                        <span th:text="${order.status.name() == 'PENDING' ? 'Đang chờ hệ thống xử lý' : 
+                                                        (order.status.name() == 'CONFIRMED' || order.status.name() == 'PREPARING' ? 'Nhà hàng đang chuẩn bị món' : 
+                                                        (order.status.name() == 'DELIVERING' ? 'Tài xế đang giao hàng' : 
+                                                        (order.status.name() == 'DELIVERED' ? 'Giao hàng thành công' : 'Đơn hàng đã hủy')))}">
+                                            Trạng thái
+                                        </span>
+                                    </span>
+                                    <span class="status-main" th:text="${order.status.name()}">HOÀN THÀNH</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Body: Items -->
+                            <div class="customer-order-body">
+                                <div th:each="item : ${order.orderItems}" class="co-item">
+                                    <div class="item-img">
+                                        <!-- Fallback image if food has no image -->
+                                        <img th:src="${item.food.image != null ? item.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=80&h=80&fit=crop'}" alt="Món ăn">
+                                    </div>
+                                    <div class="item-details">
+                                        <div class="item-name" th:text="${item.food.foodName}">Tên món ăn</div>
+                                        <div class="item-variant">Phân loại hàng: Mặc định</div>
+                                        <div class="item-qty" th:text="'x' + ${item.quantity}">x1</div>
+                                    </div>
+                                    <div class="item-price" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">715.000₫</div>
+                                </div>
+                            </div>
+
+                            <!-- Card Footer: Total & Actions -->
+                            <div class="customer-order-footer">
+                                <div class="total-row">
+                                    <span class="total-label">Thành tiền:</span>
+                                    <span class="total-amount" th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">503.360₫</span>
+                                </div>
+                                <div class="action-row">
+                                    <!-- Add Tracking button for active orders -->
+                                    <a th:if="${order.status.name() == 'PENDING' || order.status.name() == 'CONFIRMED' || order.status.name() == 'PREPARING' || order.status.name() == 'DELIVERING'}" 
+                                       th:href="@{'/order/tracking/' + ${order.orderId}}" class="btn-shopee btn-primary">
+                                        Theo dõi đơn hàng
+                                    </a>
+                                    
+                                    <!-- Nút Hủy đơn chỉ dành cho đơn PENDING -->
+                                    <form th:if="${order.status.name() == 'PENDING'}" th:action="@{'/order/cancel/' + ${order.orderId}}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-shopee btn-secondary" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">Hủy đơn</button>
+                                    </form>
+
+                                    <!-- Nút Mua lại cho đơn hoàn thành hoặc đã hủy -->
+                                    <form th:if="${order.status.name() == 'DELIVERED' || order.status.name() == 'CANCELLED'}" th:action="@{'/order/reorder/' + ${order.orderId}}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-shopee btn-secondary">Mua lại</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script src="/js/order.js"></script>
+</body>
+</html>

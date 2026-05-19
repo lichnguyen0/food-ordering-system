@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (headerText) headerText.textContent = text;
             if (headerIcon) headerIcon.textContent = icon;
             
+            // Update hidden input
+            const paymentInput = document.getElementById('paymentMethodInput');
+            if (paymentInput) {
+                if (text.includes('Tiền mặt')) paymentInput.value = 'CASH';
+                else paymentInput.value = 'OTHER';
+            }
+            
             // Update selected class
             document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
             this.classList.add('selected');
@@ -37,4 +44,17 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('paymentDropdown').classList.remove('open');
         });
     });
+
+    // Handle form submit loading effect
+    const form = document.getElementById('checkoutForm');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const btn = document.querySelector('.btn-place-order');
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+                btn.style.opacity = '0.7';
+                btn.style.pointerEvents = 'none';
+            }
+        });
+    }
 });

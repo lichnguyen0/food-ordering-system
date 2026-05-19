@@ -59,8 +59,11 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Quantity</label>
-                                <input type="text" class="form-control" value="01">
+                                <label>Số tiền giảm giá (để trống nếu không giảm)</label>
+                                <div class="price-input-wrapper">
+                                    <input type="number" step="1000" min="0" th:field="*{discountPrice}" class="form-control" placeholder="Ví dụ: 10000">
+                                    <span class="price-suffix">₫</span>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Giá (₫ VND)</label>
@@ -123,7 +126,7 @@
                         <div class="toggle-group">
                             <span class="toggle-label">Discount Active</span>
                             <label class="switch">
-                                <input type="checkbox">
+                                <input type="checkbox" id="discountToggle" th:checked="${foodDTO.discountPrice != null}" disabled>
                                 <span class="slider"></span>
                             </label>
                         </div>

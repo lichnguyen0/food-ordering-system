@@ -64,7 +64,7 @@ public class CartApiController {
             items.add(new CartItemDTO(
                 item.getFood().getFoodId(),
                 item.getFood().getFoodName(),
-                item.getFood().getPrice(),
+                item.getFood().getActivePrice(),
                 item.getFood().getImage(),
                 item.getQuantity()
             ));

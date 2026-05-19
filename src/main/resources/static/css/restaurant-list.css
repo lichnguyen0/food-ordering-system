@@ -1,0 +1,237 @@
+/* ==========================================
+   USER RESTAURANT LISTING PAGE STYLES
+   File: restaurant-list.css
+   ========================================== */
+
+.restaurant-list-page {
+    padding: 30px 0 60px;
+    background: #f5f5f5;
+    min-height: 80vh;
+}
+
+/* Container */
+.restaurant-list-header .container,
+.restaurant-list-page .container {
+    display: block;
+    width: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.restaurant-list-header *,
+.restaurant-list-page * {
+    box-sizing: border-box;
+}
+
+/* Header Banner */
+.restaurant-list-header {
+    background: linear-gradient(135deg, #00b14f 0%, #007a38 100%);
+    color: #fff;
+    padding: 24px 0;
+    margin-bottom: 24px;
+    border-radius: 0 0 12px 12px; /* Smooth rounded bottom edge */
+}
+
+.restaurant-list-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.restaurant-list-header p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Category Filter Chips */
+.category-chips-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 5px 16px;
+    margin-bottom: 24px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.category-chips-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.chip-link {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.category-chip {
+    padding: 8px 18px;
+    background: #fff;
+    color: #4a4a4a;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.category-chip:hover {
+    color: #00b14f;
+    border-color: #00b14f;
+    transform: translateY(-1px);
+}
+
+.category-chip.active {
+    background: #00b14f;
+    color: #fff;
+    border-color: #00b14f;
+    box-shadow: 0 4px 10px rgba(0, 177, 79, 0.2);
+}
+
+/* Restaurant Grid */
+.restaurant-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .restaurant-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 992px) {
+    .restaurant-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+    .restaurant-grid { grid-template-columns: 1fr; }
+}
+
+/* Restaurant Card */
+.res-card-link {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+    display: block;
+    min-width: 0;
+}
+
+.res-card-link:hover {
+    transform: translateY(-4px);
+}
+
+.res-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.res-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 170px;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.res-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.res-img-wrapper .no-img-icon {
+    font-size: 48px;
+    color: #b0bec5;
+}
+
+.res-promo-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #00b14f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.res-info {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.res-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1c1c1c;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.res-tags {
+    font-size: 13px;
+    color: #707070;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.res-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: #707070;
+    margin-top: auto;
+}
+
+.res-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.res-meta i.fa-star {
+    color: #ffb400;
+}
+
+/* Empty State */
+.empty-res {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    color: #9e9e9e;
+}
+
+.empty-res i {
+    font-size: 60px;
+    margin-bottom: 16px;
+    display: block;
+    color: #c8e6c9;
+}
+
+.empty-res h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 8px;
+}

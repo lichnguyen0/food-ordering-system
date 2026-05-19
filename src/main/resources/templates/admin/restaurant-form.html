@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" href="/css/restaurant-form.css">
 </head>
 <body class="admin-body">
 
@@ -24,7 +25,7 @@
                     <p style="color: var(--text-muted); font-size: 13px; margin-top: 5px;">Nhập các chi tiết cơ bản của nhà hàng</p>
                 </div>
 
-                <form th:action="@{/admin/restaurants/save}" th:object="${restaurant}" method="post">
+                <form th:action="@{/admin/restaurants/save}" th:object="${restaurant}" method="post" enctype="multipart/form-data">
                     <input type="hidden" th:field="*{restaurantId}">
                     
                     <div class="form-grid">
@@ -59,6 +60,57 @@
                                 <input type="text" th:field="*{operatingHours}" class="admin-input" placeholder="ví dụ. 07:00 - 21:00">
                             </div>
                         </div>
+
+                        <div class="admin-form-group form-group-full">
+                            <label class="admin-form-label">Ảnh nhà hàng</label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-image"></i>
+                                <input type="file" name="imageFile" class="admin-input" accept="image/*" id="imageFileInput">
+                            </div>
+                            <div class="image-preview-container">
+                                <img id="imagePreview" th:src="${restaurant.image != null ? restaurant.image : '#'}" th:classappend="${restaurant.image != null ? 'has-image' : ''}" alt="Preview">
+                            </div>
+                        </div>
+
+                        <div class="admin-form-group form-group-full">
+                            <label class="admin-form-label">Kích hoạt ưu đãi</label>
+                            <div class="promo-toggle-wrapper">
+                                <label class="promo-toggle-label">
+                                    <input type="checkbox" th:field="*{hasPromo}" id="hasPromoToggle" class="promo-toggle-input">
+                                    <span class="promo-toggle-slider"></span>
+                                    <span class="promo-toggle-text">Nhà hàng này đang có chương trình ưu đãi</span>
+                                </label>
+                                <p class="promo-toggle-hint">Bật để hiển thị nhà hàng này trên trang "Ưu đãi LunoFood"</p>
+                            </div>
+                        </div>
+
+                        <!-- Chi tiết ưu đãi (hiện khi bật toggle) -->
+                        <div class="promo-detail-section" id="promoDetailSection">
+                            <div class="admin-form-group">
+                                <label class="admin-form-label"><i class="fa-solid fa-percent"></i> Mức giảm giá (%)</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-percent"></i>
+                                    <input type="number" th:field="*{promoDiscount}" class="admin-input"
+                                           placeholder="ví dụ: 20 (tức giảm 20%)" min="1" max="100" step="1">
+                                </div>
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label class="admin-form-label"><i class="fa-solid fa-calendar-days"></i> Ngày bắt đầu</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <input type="date" th:field="*{promoStartDate}" class="admin-input">
+                                </div>
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label class="admin-form-label"><i class="fa-solid fa-calendar-xmark"></i> Ngày kết thúc</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-calendar-xmark"></i>
+                                    <input type="date" th:field="*{promoEndDate}" class="admin-input">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-actions-modern">
@@ -73,5 +125,6 @@
         </main>
     </div>
 
+    <script src="/js/restaurant-form.js"></script>
 </body>
 </html>

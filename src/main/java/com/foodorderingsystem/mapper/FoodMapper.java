@@ -22,6 +22,7 @@ public class FoodMapper {
         dto.setFoodId(food.getFoodId());
         dto.setFoodName(food.getFoodName());
         dto.setPrice(food.getPrice());
+        dto.setDiscountPrice(food.getDiscountPrice());
         dto.setDescription(food.getDescription());
         dto.setImage(food.getImage());
         dto.setStatus(food.getStatus());
@@ -49,6 +50,7 @@ public class FoodMapper {
         food.setFoodId(dto.getFoodId());
         food.setFoodName(dto.getFoodName());
         food.setPrice(dto.getPrice());
+        food.setDiscountPrice(dto.getDiscountPrice());
         food.setDescription(dto.getDescription());
         food.setImage(dto.getImage());
         food.setStatus(dto.getStatus());

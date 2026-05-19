@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theo dõi đơn hàng | LunoFood</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+    <link rel="stylesheet" th:href="@{/css/tracking.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="checkout-body">
+    <!-- Header Fragment -->
+    <header th:replace="~{fragments/header :: header(false)}"></header>
+
+    <main class="checkout-container">
+        <div class="checkout-header-section tracking-header">
+            <div class="tracking-success-icon-container">
+                <i class="fa-solid fa-circle-check tracking-success-icon"></i>
+            </div>
+            <h2>Đặt hàng thành công!</h2>
+            <p class="tracking-order-id">Mã đơn hàng: <strong th:text="'#' + ${order.orderId}">#1234</strong></p>
+            <p class="restaurant-name" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">15/05/2026 12:00</p>
+        </div>
+
+        <!-- Section: Trạng thái đơn hàng -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Trạng thái đơn hàng</h2>
+            </div>
+            <div class="card-content">
+                <div class="tracking-timeline">
+                    <!-- Progress Bar Line -->
+                    <div class="timeline-line"></div>
+                    
+                    <div class="timeline-step" th:classappend="${order.status.name() == 'PENDING' || order.status.name() == 'PREPARING' || order.status.name() == 'DELIVERING' || order.status.name() == 'DELIVERED' ? 'active' : ''}">
+                        <div class="step-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div class="step-text">Chờ xác nhận</div>
+                    </div>
+                    <div class="timeline-step" th:classappend="${order.status.name() == 'PREPARING' || order.status.name() == 'DELIVERING' || order.status.name() == 'DELIVERED' ? 'active' : ''}">
+                        <div class="step-icon"><i class="fa-solid fa-fire"></i></div>
+                        <div class="step-text">Đang làm món</div>
+                    </div>
+                    <div class="timeline-step" th:classappend="${order.status.name() == 'DELIVERING' || order.status.name() == 'DELIVERED' ? 'active' : ''}">
+                        <div class="step-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                        <div class="step-text">Đang giao</div>
+                    </div>
+                    <div class="timeline-step" th:classappend="${order.status.name() == 'DELIVERED' ? 'active' : ''}">
+                        <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+                        <div class="step-text">Đã giao</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Thông tin giao hàng -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Thông tin giao hàng</h2>
+            </div>
+            <div class="card-content">
+                <div class="delivery-info-list">
+                    <div class="delivery-info-item">
+                        <i class="fa-solid fa-location-dot delivery-icon-location"></i>
+                        <div>
+                            <strong>Địa chỉ nhận hàng</strong>
+                            <p class="delivery-text-primary" th:text="${order.deliveryAddress}"></p>
+                            <p class="delivery-text-secondary" th:if="${order.deliveryNote != null && !order.deliveryNote.isEmpty()}" th:text="'Ghi chú: ' + ${order.deliveryNote}"></p>
+                        </div>
+                    </div>
+                    <div class="delivery-info-item mt-10">
+                        <i class="fa-solid fa-wallet delivery-icon-wallet"></i>
+                        <div>
+                            <strong>Phương thức thanh toán</strong>
+                            <p class="delivery-text-primary" th:text="${order.paymentMethod}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Tóm tắt đơn hàng -->
+        <div class="checkout-card">
+            <div class="card-header">
+                <h2>Tóm tắt đơn hàng</h2>
+            </div>
+            <div class="card-content">
+                <div class="order-items-list">
+                    <div th:each="item : ${order.orderItems}" class="order-item-row">
+                        <div class="item-qty-controls tracking-qty-controls">
+                            <span class="qty-val" th:text="${item.quantity} + 'x'">1x</span>
+                        </div>
+                        <div class="item-img">
+                            <img th:src="${item.food.image != null ? item.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="Food">
+                        </div>
+                        <div class="item-name" th:text="${item.food.foodName}">Bún bò Huế Thường</div>
+                        <div class="item-price" th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
+                    </div>
+                </div>
+
+                <div class="summary-totals tracking-summary-totals">
+                    <div class="total-row">
+                        <span>Tổng tạm tính</span>
+                        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Phí giao hàng</span>
+                        <span>16.000 ₫</span>
+                    </div>
+                    <div class="total-row tracking-grand-total">
+                        <span>Tổng cộng</span>
+                        <span th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tracking-action-container">
+            <a href="/" class="btn-place-order btn-tracking-home">Quay về trang chủ</a>
+        </div>
+
+    </main>
+</body>
+</html>

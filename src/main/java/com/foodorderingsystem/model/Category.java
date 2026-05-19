@@ -19,6 +19,14 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String categoryName;
 
+    private String image;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(nullable = false)
+    private Integer displayOrder = 0;
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Food> foods;

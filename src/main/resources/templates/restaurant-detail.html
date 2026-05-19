@@ -137,15 +137,15 @@
                             <div class="food-info">
                                 <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
                                 <p class="food-desc" th:text="${f.description}">Mô tả món ăn...</p>
-                                <div class="promo-row">
-                                    <span class="promo-save-tag">Tiết kiệm 6.000 ₫</span>
-                                    <span class="old-price" th:text="${#numbers.formatDecimal(f.price + 6000, 0, 'COMMA', 0, 'POINT')}">55.000</span>
+                                <div class="promo-row" th:if="${f.discountPrice != null && f.discountPrice > 0}">
+                                    <span class="promo-save-tag" th:text="${'Tiết kiệm ' + #numbers.formatDecimal(f.discountPrice, 0, 'COMMA', 0, 'POINT') + ' ₫'}">Tiết kiệm 6.000 ₫</span>
+                                    <span class="old-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">55.000</span>
                                 </div>
                             </div>
                         </div>
                         <!-- BOTTOM: price + button -->
                         <div class="food-card-bottom">
-                            <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">49.000</span>
+                            <span class="food-price" th:text="${#numbers.formatDecimal((f.discountPrice != null && f.discountPrice > 0) ? (f.price - f.discountPrice) : f.price, 0, 'COMMA', 0, 'POINT')}">49.000</span>
                             <div class="cart-quantity-controls" th:data-food-id="${f.foodId}">
                                 <button class="btn-decrease" style="display: none;">
                                     <i class="fa-solid fa-trash"></i>
@@ -173,10 +173,14 @@
                             <div class="food-info">
                                 <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
                                 <p class="food-desc" th:text="${f.description}">Description</p>
+                                <div class="promo-row" th:if="${f.discountPrice != null && f.discountPrice > 0}">
+                                    <span class="promo-save-tag" th:text="${'Tiết kiệm ' + #numbers.formatDecimal(f.discountPrice, 0, 'COMMA', 0, 'POINT') + ' ₫'}">Tiết kiệm 6.000 ₫</span>
+                                    <span class="old-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">55.000</span>
+                                </div>
                             </div>
                         </div>
                         <div class="food-card-bottom">
-                            <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
+                            <span class="food-price" th:text="${#numbers.formatDecimal((f.discountPrice != null && f.discountPrice > 0) ? (f.price - f.discountPrice) : f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
                             <div class="cart-quantity-controls" th:data-food-id="${f.foodId}">
                                 <button class="btn-decrease" style="display: none;">
                                     <i class="fa-solid fa-trash"></i>
@@ -206,10 +210,14 @@
                             <div class="food-info">
                                 <h4 class="food-name" th:text="${f.foodName}">Food Name</h4>
                                 <p class="food-desc" th:text="${f.description}">Description</p>
+                                <div class="promo-row" th:if="${f.discountPrice != null && f.discountPrice > 0}">
+                                    <span class="promo-save-tag" th:text="${'Tiết kiệm ' + #numbers.formatDecimal(f.discountPrice, 0, 'COMMA', 0, 'POINT') + ' ₫'}">Tiết kiệm 6.000 ₫</span>
+                                    <span class="old-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">55.000</span>
+                                </div>
                             </div>
                         </div>
                         <div class="food-card-bottom">
-                            <span class="food-price" th:text="${#numbers.formatDecimal(f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
+                            <span class="food-price" th:text="${#numbers.formatDecimal((f.discountPrice != null && f.discountPrice > 0) ? (f.price - f.discountPrice) : f.price, 0, 'COMMA', 0, 'POINT')}">50.000</span>
                             <div class="cart-quantity-controls" th:data-food-id="${f.foodId}">
                                 <button class="btn-decrease" style="display: none;">
                                     <i class="fa-solid fa-trash"></i>

@@ -19,6 +19,7 @@
             <p class="restaurant-name">Tùng Huế Bún Bò - Cầu Diễn</p>
         </div>
 
+        <form action="/order/checkout" method="POST" id="checkoutForm">
         <!-- Section: Giao đến -->
         <div class="checkout-card">
             <div class="card-header">
@@ -33,15 +34,15 @@
                 <div class="address-inputs">
                         <div class="input-group">
                             <label>Địa chỉ</label>
-                            <input type="text" value="Lô TT-02 Kdt Mon City, P.Mỹ Đình, Hà Nội">
+                            <input type="text" name="address" value="Lô TT-02 Kdt Mon City, P.Mỹ Đình, Hà Nội" required>
                         </div>
                         <div class="input-group">
                             <label>Chi tiết địa chỉ</label>
-                            <input type="text" placeholder="Vd: tầng / tên toà nhà">
+                            <input type="text" name="detailAddress" placeholder="Vd: tầng / tên toà nhà">
                         </div>
                         <div class="input-group">
                             <label>Ghi chú cho tài xế</label>
-                            <input type="text" placeholder="Hãy gặp tôi tại sảnh">
+                            <input type="text" name="note" placeholder="Hãy gặp tôi tại sảnh">
                         </div>
                     </div>
                 </div>
@@ -66,7 +67,7 @@
                             <img th:src="${itemEntry.value.food.image != null ? itemEntry.value.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="Food">
                         </div>
                         <div class="item-name" th:text="${itemEntry.value.food.foodName}">Bún bò Huế Thường</div>
-                        <div class="item-price" th:text="${#numbers.formatDecimal(itemEntry.value.food.price * itemEntry.value.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
+                        <div class="item-price" th:text="${#numbers.formatDecimal(((itemEntry.value.food.discountPrice != null && itemEntry.value.food.discountPrice > 0) ? (itemEntry.value.food.price - itemEntry.value.food.discountPrice) : itemEntry.value.food.price) * itemEntry.value.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
                     </div>
                 </div>
 
@@ -92,6 +93,7 @@
                 <div class="input-group">
                     <label>Phương thức thanh toán</label>
                     <div class="custom-dropdown" id="paymentDropdown">
+                        <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="CASH">
                         <div class="dropdown-header" onclick="toggleDropdown()">
                             <span class="dropdown-icon">$</span>
                             <span class="dropdown-text">Tiền mặt</span>
@@ -155,6 +157,8 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
             </div>
         </div>
+        </div>
+        </form>
     </main>
 
     <!-- Sticky Bottom Bar -->
@@ -164,9 +168,7 @@
                 <span class="total-label">Tổng cộng</span>
                 <span class="total-value" th:text="${#numbers.formatDecimal(cart.totalPrice + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">75.000 ₫</span>
             </div>
-            <form th:action="@{/order/checkout}" method="post">
-                <button type="submit" class="btn-place-order">Đặt đơn</button>
-            </form>
+            <button type="submit" form="checkoutForm" class="btn-place-order">Đặt đơn</button>
         </div>
     </div>
 

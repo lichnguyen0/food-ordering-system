@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+</head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', 'categories')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main" th:text="${category.categoryId == null ? 'Add New Category' : 'Edit Category'}">Add Category</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" style="color: var(--primary-red); text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <a href="/admin/categories" style="color: var(--primary-red); text-decoration: none;">Categories</a> / 
+                        <span th:text="${category.categoryId == null ? 'Add New' : 'Edit'}">Add New</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flash messages -->
+            <div th:if="${error}" class="alert-danger" style="padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${error}"></span>
+            </div>
+
+            <div class="form-container-card" style="max-width: 600px; margin: 0 auto;">
+                <div class="card-header-main" style="margin-bottom: 30px;">
+                    <h5 class="product-list-title" style="margin: 0; font-size: 18px;">Thông tin danh mục</h5>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 5px;">Nhập tên danh mục món ăn (ví dụ: Bánh mì, Xôi bún, Trà sữa)</p>
+                </div>
+
+                <form th:action="@{/admin/categories/save}" th:object="${category}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{categoryId}">
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Tên danh mục</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-tag"></i>
+                            <input type="text" th:field="*{categoryName}" class="admin-input" placeholder="Nhập tên danh mục" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Hình ảnh danh mục (Local)</label>
+                        
+                        <!-- Hiện ảnh cũ nếu có -->
+                        <div th:if="*{image != null && !image.empty}" class="category-preview-container">
+                            <img th:src="*{image}" class="category-preview-img" id="currentImagePreview">
+                            <div>
+                                <p class="category-preview-title">Ảnh hiện tại</p>
+                                <span class="category-preview-subtitle">Tải lên ảnh mới nếu muốn thay thế</span>
+                            </div>
+                        </div>
+
+                        <!-- Bộ chọn tệp file -->
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <input type="file" name="imageFile" class="admin-input" accept="image/*" th:required="*{categoryId == null}">
+                        </div>
+                        <p class="category-preview-subtitle" style="margin-top: 5px; margin-left: 5px;">Hỗ trợ định dạng JPG, PNG, WEBP (Khuyên dùng tỷ lệ vuông hoặc chữ nhật nhỏ)</p>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Thứ tự hiển thị</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-sort"></i>
+                            <input type="number" th:field="*{displayOrder}" class="admin-input" placeholder="Nhập thứ tự sắp xếp (số nhỏ hơn hiện trước)" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Trạng thái hiển thị</label>
+                        <div class="admin-switch-container">
+                            <label class="admin-switch">
+                                <input type="checkbox" th:field="*{active}" class="admin-switch-input">
+                                <span class="admin-switch-slider"></span>
+                            </label>
+                            <span class="admin-switch-label-text" id="activeLabelText">Hiển thị trên Trang chủ</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-modern">
+                        <a href="/admin/categories" class="btn-cancel-modern">Hủy</a>
+                        <button type="submit" class="btn-save-modern">
+                            <i class="fa-solid fa-check"></i>
+                            <span th:text="${category.categoryId == null ? 'Lưu danh mục' : 'Cập nhật danh mục'}">Save</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Script xử lý xem trước ảnh và logic switch động tách biệt chuẩn chỉ -->
+                <script th:src="@{/js/category-form.js}"></script>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
