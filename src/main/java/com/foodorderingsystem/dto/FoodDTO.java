@@ -18,6 +18,8 @@ public class FoodDTO {
     @Positive(message = "Giá phải lớn hơn 0")
     private double price;
 
+    private Double discountPrice; // Thêm trường này để nhận dữ liệu từ form
+
     private String description;
     private String image;
 

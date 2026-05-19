@@ -1,0 +1,432 @@
+/* ==========================================
+   USER PROFILE & ORDERS - SHOPEE STYLE
+   ========================================== */
+
+:root {
+    --shopee-orange: #ee4d2d;
+    --shopee-bg: #f5f5f5;
+    --text-color: #333;
+    --text-light: #888;
+    --border-color: #e8e8e8;
+}
+
+.profile-page-container {
+    padding: 30px 0 60px;
+    background-color: var(--shopee-bg);
+    min-height: 85vh;
+    font-family: 'Helvetica Neue', Helvetica, Arial, 文泉驛正黑, 'WenQuanYi Zen Hei', 'Hiragino Sans GB', '儷黑 Pro', 'LiHei Pro', 'Heiti TC', 微軟正黑體, 'Microsoft JhengHei UI', 'Microsoft JhengHei', sans-serif;
+}
+
+.profile-page-container .container {
+    max-width: 1200px !important; /* Đảm bảo độ rộng chuẩn Shopee */
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.profile-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* ==========================================
+   SIDEBAR (LEFT) - Shopee Style
+   ========================================== */
+.profile-sidebar-wrapper {
+    width: 180px;
+    flex-shrink: 0;
+}
+
+.profile-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-avatar-large {
+    width: 50px;
+    height: 50px;
+    background: #e0e0e0;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0,0,0,0.09);
+}
+
+.user-meta h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 110px;
+}
+
+.edit-profile-link {
+    font-size: 12px;
+    color: #888;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+}
+
+.profile-menu {
+    list-style: none;
+    padding: 15px 0;
+    margin: 0;
+}
+
+.profile-menu li {
+    margin-bottom: 15px;
+}
+
+.profile-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(0,0,0,0.8);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.profile-menu a i {
+    width: 16px;
+    font-size: 16px;
+    color: #1a73e8; /* Shopee uses blue for some icons, or orange. Let's use blue as in image */
+}
+
+.profile-menu a:hover, .profile-menu a.active {
+    color: var(--shopee-orange);
+}
+
+.profile-menu a.active i, .profile-menu a:hover i {
+    color: var(--shopee-orange);
+}
+
+/* ==========================================
+   MAIN CONTENT (RIGHT) - Shopee Style
+   ========================================== */
+.profile-main-content {
+    flex: 1 !important;
+    background: #fff !important;
+    min-width: 0;
+}
+
+/* Tabs */
+.orders-tabs {
+    display: flex !important;
+    width: 100% !important;
+    background: #fff !important;
+    border-bottom: 1px solid #e8e8e8 !important;
+    margin-bottom: 12px;
+}
+
+.order-tab-btn {
+    flex: 1 !important;
+    padding: 16px 0;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: rgba(0,0,0,0.8);
+    cursor: pointer;
+    text-align: center;
+    transition: color 0.2s;
+    position: relative;
+}
+
+.tab-count {
+    background: #e9ecef !important;
+    color: #495057 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    display: inline-block !important;
+}
+
+.order-tab-btn.active .tab-count {
+    background: #343a40 !important;
+    color: #fff !important;
+}
+
+.order-tab-btn:hover {
+    color: var(--shopee-orange);
+}
+
+.order-tab-btn.active {
+    color: var(--shopee-orange);
+}
+
+.order-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--shopee-orange);
+}
+
+/* Search Bar */
+.shopee-search-bar {
+    background: #eaeaea;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+}
+
+.shopee-search-bar i {
+    color: #bbb;
+    font-size: 16px;
+}
+
+.shopee-search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Order Cards */
+.customer-order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.customer-order-card {
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,0.05);
+}
+
+/* Card Header */
+.customer-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.shop-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.shop-label {
+    background: var(--shopee-orange);
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.shop-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.btn-chat, .btn-view-shop {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #555;
+    cursor: pointer;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-chat i, .btn-view-shop i {
+    color: var(--shopee-orange);
+}
+
+.order-status-text {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.shipping-status {
+    color: #26a541; /* Shopee green for shipping */
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-main {
+    color: var(--shopee-orange);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+/* Card Body */
+.customer-order-body {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.co-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.co-item:not(:last-child) {
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.item-img img {
+    width: 80px;
+    height: 80px;
+    object-fit: crop;
+    border: 1px solid var(--border-color);
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    font-size: 16px;
+    color: rgba(0,0,0,0.87);
+    margin-bottom: 5px;
+}
+
+.item-variant {
+    font-size: 14px;
+    color: rgba(0,0,0,0.54);
+    margin-bottom: 5px;
+}
+
+.item-qty {
+    font-size: 14px;
+    color: rgba(0,0,0,0.87);
+}
+
+.item-price {
+    font-size: 14px;
+    color: rgba(0,0,0,0.87);
+}
+
+/* Card Footer */
+.customer-order-footer {
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.total-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.total-label {
+    font-size: 14px;
+    color: rgba(0,0,0,0.54);
+}
+
+.total-amount {
+    font-size: 24px;
+    color: var(--shopee-orange);
+    font-weight: 600;
+}
+
+.action-row {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-shopee {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background: var(--shopee-orange);
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #d73211;
+}
+
+.btn-secondary {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    color: #555;
+}
+
+.btn-secondary:hover {
+    background: #f8f8f8;
+}
+
+.empty-orders-msg {
+    text-align: center;
+    padding: 100px 20px;
+    background: #fff;
+    color: rgba(0,0,0,0.54);
+}
+
+.empty-orders-msg i {
+    font-size: 60px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .profile-layout {
+        flex-direction: column;
+    }
+    .profile-sidebar-wrapper {
+        width: 100%;
+    }
+    .order-tab-btn {
+        font-size: 12px;
+        padding: 10px 0;
+    }
+    .customer-order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .order-status-text {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', 'categories')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main">Category List</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" style="color: var(--primary-red); text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <span style="color: var(--text-dark);">Categories</span>
+                    </div>
+                </div>
+                <a href="/admin/categories/add" class="btn-add-new">
+                    <i class="fa-solid fa-plus"></i> Add Category
+                </a>
+            </div>
+
+            <!-- Flash messages using global alert stylesheet classes -->
+            <div th:if="${success}" class="alert-success">
+                <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i> <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert-danger" style="padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${error}"></span>
+            </div>
+
+            <div class="product-list-card">
+                <table class="food-management-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>IMAGE</th>
+                            <th>CATEGORY NAME</th>
+                            <th>ORDER</th>
+                            <th>STATUS</th>
+                            <th style="width: 150px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${categories}">
+                            <td th:text="'#' + ${c.categoryId}">#1</td>
+                            <td>
+                                <img th:src="${c.image != null && !c.image.empty ? c.image : 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=100'}" class="category-thumbnail-mini" th:alt="${c.categoryName}">
+                            </td>
+                            <td th:text="${c.categoryName}" class="fw-bold">Category Name</td>
+                            <td th:text="${c.displayOrder}">0</td>
+                            <td>
+                                <span th:class="${c.active ? 'status-badge active' : 'status-badge inactive'}" 
+                                      th:text="${c.active ? 'Hiển thị' : 'Đã ẩn'}">Hiển thị</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{/admin/categories/edit/{id}(id=${c.categoryId})}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
+                                    <a th:href="@{/admin/categories/delete/{id}(id=${c.categoryId})}" class="action-btn delete" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này? Việc này sẽ xóa cả các món ăn thuộc danh mục này!')"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${categories.empty}">
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                Chưa có danh mục nào. Hãy tạo mới danh mục.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

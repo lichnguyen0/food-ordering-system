@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -19,13 +20,31 @@ public class RestaurantController {
     private final RestaurantRepository restaurantRepository;
     private final FoodRepository foodRepository;
     private final com.foodorderingsystem.repository.CollectionRepository collectionRepository;
+    private final com.foodorderingsystem.repository.CategoryRepository categoryRepository;
 
     public RestaurantController(RestaurantRepository restaurantRepository,
                                 FoodRepository foodRepository,
-                                com.foodorderingsystem.repository.CollectionRepository collectionRepository) {
+                                com.foodorderingsystem.repository.CollectionRepository collectionRepository,
+                                com.foodorderingsystem.repository.CategoryRepository categoryRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodRepository = foodRepository;
         this.collectionRepository = collectionRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
+    @GetMapping
+    public String list(@RequestParam(required = false) Long categoryId, Model model) {
+        List<Restaurant> restaurants;
+        if (categoryId != null) {
+            restaurants = restaurantRepository.findByCategoryId(categoryId);
+            model.addAttribute("selectedCategory", categoryRepository.findById(categoryId).orElse(null));
+        } else {
+            restaurants = restaurantRepository.findAll();
+        }
+        model.addAttribute("restaurants", restaurants);
+        model.addAttribute("categories", categoryRepository.findByActiveTrueOrderByDisplayOrderAsc());
+        model.addAttribute("selectedCategoryId", categoryId);
+        return "restaurant-list-user";
     }
 
     @GetMapping("/{id}")

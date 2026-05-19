@@ -1,0 +1,202 @@
+/* ==========================================
+   HOME PAGE - PROMOTIONS CAROUSEL
+   ========================================== */
+
+/* Wrapper cho phần ưu đãi (để định vị tuyệt đối các mũi tên) */
+.promo-section-wrapper {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+/* Container chứa các card, hỗ trợ scroll */
+.promo-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding: 10px 5px;
+}
+
+/* Ẩn thanh cuộn trên các trình duyệt */
+.promo-carousel::-webkit-scrollbar {
+    display: none;
+}
+.promo-carousel {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Card thiết kế theo ảnh cảm hứng */
+.promo-carousel .promo-card-link {
+    flex: 0 0 calc(25% - 12px); /* 4 cards hiển thị đầy đủ */
+    min-width: 250px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.promo-carousel .promo-card-link:hover {
+    transform: translateY(-4px);
+}
+
+.promo-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.promo-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    background: #f0f0f0;
+}
+
+.promo-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.promo-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #00b14f; /* Màu xanh Grab */
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.promo-info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.promo-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1c1c1c;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.promo-tags {
+    font-size: 13px;
+    color: #707070;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.promo-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #707070;
+    margin-top: auto;
+}
+
+.promo-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.promo-meta i {
+    color: #707070;
+}
+
+.promo-meta i.fa-star {
+    color: #ffb400; /* Màu vàng sao */
+}
+
+/* Icon tag ở góc dưới */
+.promo-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.tag-icon {
+    color: #00b14f;
+    font-size: 16px;
+}
+
+/* Nút mũi tên */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.carousel-arrow:hover {
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.carousel-arrow.left {
+    left: -20px;
+}
+
+.carousel-arrow.right {
+    right: -20px;
+}
+
+.carousel-arrow i {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Nút See all promotions */
+.see-all-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.btn-see-all {
+    display: block;
+    width: 100%;
+    max-width: 1200px;
+    padding: 14px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #676767;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-see-all:hover {
+    background: #f7f7f7;
+}

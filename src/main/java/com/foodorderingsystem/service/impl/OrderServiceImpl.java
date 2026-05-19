@@ -37,17 +37,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void createOrderFromCart(Long userId, Cart cart) {
+    public Order createOrderFromCart(Long userId, Cart cart, com.foodorderingsystem.dto.CheckoutRequest request) {
 
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
-            return;
+            return null;
         }
 
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         order.setOrderDate(LocalDateTime.now());
+        
+        if (request != null) {
+            String fullAddress = request.getAddress() != null ? request.getAddress() : "";
+            if (request.getDetailAddress() != null && !request.getDetailAddress().isEmpty()) {
+                fullAddress = request.getDetailAddress() + ", " + fullAddress;
+            }
+            order.setDeliveryAddress(fullAddress);
+            order.setDeliveryNote(request.getNote());
+            order.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "CASH");
+        }
 
         order = orderRepository.save(order);
 
@@ -68,9 +78,9 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setOrder(order);
             orderItem.setFood(food);
             orderItem.setQuantity(item.getQuantity());
-            orderItem.setPrice(food.getPrice());
+            orderItem.setPrice(food.getActivePrice());
 
-            total += food.getPrice() * item.getQuantity();
+            total += food.getActivePrice() * item.getQuantity();
 
             orderItemRepository.save(orderItem);
             orderItems.add(orderItem);
@@ -82,11 +92,22 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         cart.getItems().clear();
+        return order;
+    }
+
+    @Override
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).orElse(null);
     }
 
     @Override
     public List<Order> getAll() {
         return orderRepository.findAllByOrderByOrderIdDesc();
+    }
+
+    @Override
+    public List<Order> getOrdersByUsername(String username) {
+        return orderRepository.findByUser_UsernameOrderByOrderDateDesc(username);
     }
 
     @Override

@@ -67,7 +67,15 @@
                                 </td>
                                 <td th:text="${food.categoryName != null ? food.categoryName : 'N/A'}">Category</td>
                                 <td th:text="${food.restaurantName != null ? food.restaurantName : 'N/A'}">Restaurant</td>
-                                <td th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                                <td>
+                                    <div th:if="${food.discountPrice != null && food.discountPrice > 0}">
+                                        <span th:text="${#numbers.formatDecimal(food.price - food.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'" style="font-weight: bold; color: #00B14F;"></span>
+                                        <span th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'" style="text-decoration: line-through; font-size: 11px; color: #999; margin-left: 5px;"></span>
+                                    </div>
+                                    <div th:if="${food.discountPrice == null || food.discountPrice <= 0}">
+                                        <span th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                                    </div>
+                                </td>
                                 <td>
                                     <span class="status-text" 
                                           th:classappend="${food.status.name() == 'AVAILABLE' ? 'instock' : 'outstock'}"

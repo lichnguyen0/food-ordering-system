@@ -6,55 +6,264 @@
     <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'orders', '')}">
         <main>
             <div class="page-header">
-                <h1 class="page-title-main">Order Management</h1>
+                <h1 class="page-title-main">Bảng điều khiển Đơn hàng</h1>
             </div>
 
-            <div th:if="${success}" class="alert-success">
-                <i class="fa-solid fa-circle-check" style="margin-right: 10px;"></i>
-                <strong th:text="${success}">Success!</strong>
+            <!-- Tabs -->
+            <div class="order-tabs">
+                <button class="tab-btn active" data-target="tab-pending">
+                    Chờ xác nhận <span class="tab-badge" th:text="${pendingOrders.size()}">0</span>
+                </button>
+                <button class="tab-btn" data-target="tab-processing">
+                    Trong bếp <span class="tab-badge" th:text="${processingOrders.size()}">0</span>
+                </button>
+                <button class="tab-btn" data-target="tab-shipping">
+                    Đang giao <span class="tab-badge" th:text="${shippingOrders.size()}">0</span>
+                </button>
+                <button class="tab-btn" data-target="tab-completed">
+                    Lịch sử <span class="tab-badge" th:text="${completedOrders.size()}">0</span>
+                </button>
             </div>
 
-            <div class="product-list-card">
-                <table class="food-management-table">
-                    <thead>
-                        <tr>
-                            <th>ORDER ID</th>
-                            <th>USER</th>
-                            <th>RESTAURANT</th>
-                            <th>ITEMS</th>
-                            <th>TOTAL</th>
-                            <th>STATUS</th>
-                            <th>DATE</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="order : ${orders}">
-                            <td th:text="'#' + ${order.orderId}">#1001</td>
-                            <td th:text="${order.user != null ? order.user.username : 'Guest'}">User</td>
-                            <td th:text="${order.restaurant != null ? order.restaurant.name : 'N/A'}">Restaurant</td>
-                            <td th:text="${order.items.size()} + ' items'">3 items</td>
-                            <td th:text="'$' + ${order.totalAmount}" class="fw-bold">$45.00</td>
-                            <td>
-                                <span class="status-badge" 
-                                      th:classappend="${order.status.name() == 'DELIVERED' ? 'status-delivered' : (order.status.name() == 'CANCELLED' ? 'status-cancelled' : 'status-pending')}"
-                                      th:text="${order.status}">PENDING</span>
-                            </td>
-                            <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2026</td>
-                            <td>
-                                <div class="action-btns">
-                                    <form th:if="${order.status.name() == 'PENDING'}" th:action="@{/admin/orders/update-status}" method="post">
-                                        <input type="hidden" name="orderId" th:value="${order.orderId}">
-                                        <input type="hidden" name="status" value="DELIVERED">
-                                        <button type="submit" class="action-btn edit" title="Mark Delivered"><i class="fa-solid fa-check"></i></button>
-                                    </form>
-                                    <a th:href="@{/admin/orders/detail/{id}(id=${order.orderId})}" class="action-btn edit" title="View Detail"><i class="fa-solid fa-eye"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Tab Content: PENDING -->
+            <div id="tab-pending" class="tab-content active">
+                <div class="kanban-grid">
+                    <div th:if="${pendingOrders.empty}" class="no-data-msg">Không có đơn hàng mới nào.</div>
+                    <div th:each="order : ${pendingOrders}" class="order-card pending" th:id="'order-card-' + ${order.orderId}">
+                        <div class="order-header">
+                            <span class="order-id" th:text="'#' + ${order.orderId}">#1001</span>
+                            <span class="order-time">
+                                <i class="fa-regular fa-clock"></i> 
+                                <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">12:30</span>
+                            </span>
+                        </div>
+                        <div class="order-customer">
+                            <div class="customer-avatar" th:text="${order.user != null ? #strings.substring(order.user.username,0,1).toUpperCase() : 'G'}">G</div>
+                            <div class="customer-info">
+                                <h4 th:text="${order.user != null ? order.user.fullName : 'Guest'}">Tên Khách Hàng</h4>
+                                <p th:text="${order.user != null ? order.user.username : 'guest'}">username</p>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            <div th:each="item : ${order.orderItems}" class="item-row">
+                                <span class="item-qty" th:text="${item.quantity} + 'x'">1x</span>
+                                <span th:text="${item.food.foodName}">Tên món</span>
+                            </div>
+                            <div class="order-note" th:if="${order.deliveryNote != null && !order.deliveryNote.isEmpty()}">
+                                <i class="fa-solid fa-comment-dots"></i> <span th:text="${order.deliveryNote}"></span>
+                            </div>
+                        </div>
+                        <div class="delivery-details">
+                            <div><i class="fa-solid fa-location-dot"></i> <span th:text="${order.deliveryAddress}"></span></div>
+                            <div><i class="fa-solid fa-wallet"></i> <span th:text="${order.paymentMethod}"></span></div>
+                        </div>
+                        <div class="order-footer">
+                            <span>Tổng tiền</span>
+                            <span class="total-amount" th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-action btn-reject" th:attr="onclick=|updateStatusAjax(${order.orderId}, 'CANCELLED')|">Từ chối</button>
+                            <button class="btn-action btn-accept" th:attr="onclick=|updateStatusAjax(${order.orderId}, 'PREPARING')|">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- Tab Content: PROCESSING -->
+            <div id="tab-processing" class="tab-content">
+                <div class="kanban-grid">
+                    <div th:if="${processingOrders.empty}" class="no-data-msg">Không có đơn hàng nào trong bếp.</div>
+                    <div th:each="order : ${processingOrders}" class="order-card processing" th:id="'order-card-' + ${order.orderId}">
+                        <div class="order-header">
+                            <span class="order-id" th:text="'#' + ${order.orderId}">#1001</span>
+                            <span class="order-time">
+                                <i class="fa-regular fa-clock"></i> 
+                                <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">12:30</span>
+                            </span>
+                        </div>
+                        <div class="order-customer">
+                            <div class="customer-avatar" th:text="${order.user != null ? #strings.substring(order.user.username,0,1).toUpperCase() : 'G'}">G</div>
+                            <div class="customer-info">
+                                <h4 th:text="${order.user != null ? order.user.fullName : 'Guest'}">Tên Khách Hàng</h4>
+                                <p th:text="${order.user != null ? order.user.username : 'guest'}">username</p>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            <div th:each="item : ${order.orderItems}" class="item-row">
+                                <span class="item-qty" th:text="${item.quantity} + 'x'">1x</span>
+                                <span th:text="${item.food.foodName}">Tên món</span>
+                            </div>
+                            <div class="order-note" th:if="${order.deliveryNote != null && !order.deliveryNote.isEmpty()}">
+                                <i class="fa-solid fa-comment-dots"></i> <span th:text="${order.deliveryNote}"></span>
+                            </div>
+                        </div>
+                        <div class="delivery-details">
+                            <div><i class="fa-solid fa-location-dot"></i> <span th:text="${order.deliveryAddress}"></span></div>
+                            <div><i class="fa-solid fa-wallet"></i> <span th:text="${order.paymentMethod}"></span></div>
+                        </div>
+                        <div class="order-footer">
+                            <span>Tổng tiền</span>
+                            <span class="total-amount" th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-action btn-cook" th:attr="onclick=|updateStatusAjax(${order.orderId}, 'DELIVERING')|">Nấu xong & Giao đi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: SHIPPING -->
+            <div id="tab-shipping" class="tab-content">
+                <div class="kanban-grid">
+                    <div th:if="${shippingOrders.empty}" class="no-data-msg">Không có đơn hàng nào đang giao.</div>
+                    <div th:each="order : ${shippingOrders}" class="order-card shipping" th:id="'order-card-' + ${order.orderId}">
+                        <div class="order-header">
+                            <span class="order-id" th:text="'#' + ${order.orderId}">#1001</span>
+                            <span class="order-time">
+                                <i class="fa-regular fa-clock"></i> 
+                                <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">12:30</span>
+                            </span>
+                        </div>
+                        <div class="order-customer">
+                            <div class="customer-avatar" th:text="${order.user != null ? #strings.substring(order.user.username,0,1).toUpperCase() : 'G'}">G</div>
+                            <div class="customer-info">
+                                <h4 th:text="${order.user != null ? order.user.fullName : 'Guest'}">Tên Khách Hàng</h4>
+                                <p th:text="${order.user != null ? order.user.username : 'guest'}">username</p>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            <div th:each="item : ${order.orderItems}" class="item-row">
+                                <span class="item-qty" th:text="${item.quantity} + 'x'">1x</span>
+                                <span th:text="${item.food.foodName}">Tên món</span>
+                            </div>
+                        </div>
+                        <div class="delivery-details">
+                            <div><i class="fa-solid fa-location-dot"></i> <span th:text="${order.deliveryAddress}"></span></div>
+                            <div><i class="fa-solid fa-wallet"></i> <span th:text="${order.paymentMethod}"></span></div>
+                        </div>
+                        <div class="order-footer">
+                            <span>Tổng tiền</span>
+                            <span class="total-amount" th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-action btn-ship" th:attr="onclick=|updateStatusAjax(${order.orderId}, 'DELIVERED')|">Đã giao thành công</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: COMPLETED -->
+            <div id="tab-completed" class="tab-content">
+                <div class="product-list-card">
+                    <table class="food-management-table">
+                        <thead>
+                            <tr>
+                                <th>MÃ ĐƠN</th>
+                                <th>KHÁCH HÀNG</th>
+                                <th>ĐỊA CHỈ</th>
+                                <th>TỔNG TIỀN</th>
+                                <th>TRẠNG THÁI</th>
+                                <th>THỜI GIAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${completedOrders}">
+                                <td th:text="'#' + ${order.orderId}">#1001</td>
+                                <td th:text="${order.user != null ? order.user.username : 'Guest'}">User</td>
+                                <td th:text="${order.deliveryAddress}">Address</td>
+                                <td th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'" class="fw-bold">0 ₫</td>
+                                <td>
+                                    <span class="status-badge" 
+                                          th:classappend="${order.status.name() == 'DELIVERED' ? 'status-delivered' : 'status-cancelled'}"
+                                          th:text="${order.status}">DELIVERED</span>
+                                </td>
+                                <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">15/05/2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <style>
+                .no-data-msg {
+                    padding: 20px;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    color: #64748b;
+                    font-style: italic;
+                    grid-column: 1 / -1;
+                    text-align: center;
+                }
+            </style>
+
+            <script>
+                // Tab switching logic
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        
+                        this.classList.add('active');
+                        document.getElementById(this.getAttribute('data-target')).classList.add('active');
+                    });
+                });
+
+                // Restore active tab from localStorage if available
+                const savedTab = localStorage.getItem('activeOrderTab');
+                if (savedTab) {
+                    const btn = document.querySelector(`.tab-btn[data-target="${savedTab}"]`);
+                    if (btn) btn.click();
+                }
+
+                // Save tab state when clicked
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        localStorage.setItem('activeOrderTab', this.getAttribute('data-target'));
+                    });
+                });
+
+                // AJAX Update Status
+                function updateStatusAjax(orderId, status) {
+                    if (status === 'CANCELLED') {
+                        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Khách hàng sẽ không nhận được món!')) return;
+                    }
+                    
+                    // Add loading state to button
+                    const btn = event.currentTarget;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                    btn.disabled = true;
+
+                    const formData = new URLSearchParams();
+                    formData.append('orderId', orderId);
+                    formData.append('status', status);
+
+                    fetch('/admin/orders/api/update-status', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Tải lại trang để dữ liệu đồng bộ
+                            window.location.reload();
+                        } else {
+                            alert('Cập nhật thất bại!');
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Đã xảy ra lỗi kết nối!');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+                }
+            </script>
         </main>
     </div>
 

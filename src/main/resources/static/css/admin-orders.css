@@ -1,0 +1,250 @@
+/* Admin Order Cockpit Styles */
+
+/* Tabs */
+.order-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.tab-btn.active {
+    background: #0f172a;
+    color: #fff;
+}
+
+.tab-badge {
+    background: #e2e8f0;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.tab-btn.active .tab-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Kanban Grid */
+.kanban-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* Order Card */
+.order-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.order-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+}
+
+.order-card.pending::before { background: #ef4444; }
+.order-card.processing::before { background: #f59e0b; }
+.order-card.shipping::before { background: #10b981; }
+
+.order-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.order-id {
+    font-weight: 700;
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.order-time {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.order-customer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.customer-avatar {
+    width: 36px;
+    height: 36px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-weight: bold;
+}
+
+.customer-info h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.customer-info p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Order Items */
+.order-items {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #334155;
+}
+
+.item-qty {
+    font-weight: 700;
+    color: #0f172a;
+    width: 25px;
+}
+
+/* Delivery Details */
+.delivery-details {
+    font-size: 13px;
+    color: #475569;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.delivery-details i {
+    width: 16px;
+    color: #94a3b8;
+}
+
+.order-note {
+    background: #fefce8;
+    border-left: 3px solid #eab308;
+    padding: 8px;
+    font-size: 12px;
+    color: #854d0e;
+    border-radius: 0 4px 4px 0;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+    margin-top: auto;
+}
+
+.total-amount {
+    font-weight: 800;
+    font-size: 16px;
+    color: #0f172a;
+}
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: opacity 0.2s ease;
+}
+
+.btn-action:hover {
+    opacity: 0.9;
+}
+
+.btn-accept { background: #ef4444; color: #fff; }
+.btn-cook { background: #f59e0b; color: #fff; }
+.btn-ship { background: #10b981; color: #fff; }
+.btn-reject { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

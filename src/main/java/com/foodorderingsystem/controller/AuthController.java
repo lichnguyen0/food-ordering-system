@@ -25,8 +25,9 @@ public class AuthController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("categories", categoryRepository.findAll());
-        model.addAttribute("restaurants", restaurantRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findByActiveTrueOrderByDisplayOrderAsc());
+        // Chỉ lấy nhà hàng có ưu đãi đang hoạt động cho trang Home
+        model.addAttribute("restaurants", restaurantRepository.findActivePromos(java.time.LocalDate.now()));
         return "home";
     }
 }

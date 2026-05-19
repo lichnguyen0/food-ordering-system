@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ưu đãi LunoFood | LunoFood</title>
+    <meta name="description" content="Khám phá tất cả nhà hàng đang có ưu đãi đặc biệt trên LunoFood. Đặt ngay để nhận giảm giá hấp dẫn!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/promotions.css(v=1.2)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header(false)}"></div>
+
+    <!-- Banner Header -->
+    <div class="promotions-header">
+        <div class="container">
+            <h1><i class="fa-solid fa-tag"></i> Ưu đãi LunoFood</h1>
+            <p>Các nhà hàng đang có chương trình khuyến mãi đặc biệt dành cho bạn</p>
+            <span class="promo-count-badge">
+                <span th:text="${promoRestaurants.size()}">0</span> nhà hàng đang ưu đãi
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="promotions-page">
+        <div class="container main-content">
+
+            <div class="promotions-grid">
+
+                <!-- Empty state -->
+                <div th:if="${promoRestaurants.empty}" class="empty-promo">
+                    <i class="fa-solid fa-tag"></i>
+                    <h3>Chưa có ưu đãi nào</h3>
+                    <p>Hãy quay lại sau, LunoFood sẽ sớm cập nhật các ưu đãi mới nhé!</p>
+                </div>
+
+                <!-- Restaurant Cards -->
+                <a th:each="r : ${promoRestaurants}"
+                   th:href="@{/restaurant/{id}(id=${r.restaurantId})}"
+                   class="promo-page-card-link">
+                    <div class="promo-page-card">
+                        <div class="promo-page-img-wrapper">
+                            <img th:if="${r.image != null}" th:src="${r.image}" th:alt="${r.name}">
+                            <i th:if="${r.image == null}" class="fa-solid fa-store no-img-icon"></i>
+                            <span class="promo-page-badge" th:text="${r.promoDiscount != null ? 'Giảm ' + r.promoDiscount.intValue() + '%' : 'Promo'}">Promo</span>
+                        </div>
+                        <div class="promo-page-info">
+                            <div class="promo-page-name" th:text="${r.name}">Tên nhà hàng</div>
+                            <div class="promo-page-address" th:text="${r.categoriesString}">Danh mục</div>
+
+                            <div class="promo-page-meta">
+                                <span>
+                                    <i class="fa-solid fa-star"></i>
+                                    <span th:text="${r.rating != null ? r.rating : '4.5'}">4.5</span>
+                                </span>
+                                <span><i class="fa-solid fa-clock"></i> 25 phút</span>
+                                <span>1.5 km</span>
+                            </div>
+
+                            <div class="promo-page-footer">
+                                <i class="fa-solid fa-tag tag-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

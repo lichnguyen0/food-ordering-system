@@ -117,4 +117,18 @@ document.addEventListener('DOMContentLoaded', function() {
             statusHidden.value = this.checked ? 'AVAILABLE' : 'SOLD_OUT';
         });
     }
+
+    // Dynamic Discount Toggle Logic
+    const discountPriceInput = document.getElementById('discountPrice');
+    const discountToggle = document.getElementById('discountToggle');
+    if (discountPriceInput && discountToggle) {
+        const updateDiscountToggle = () => {
+            const val = discountPriceInput.value.trim();
+            discountToggle.checked = (val !== '' && parseFloat(val) > 0);
+        };
+        discountPriceInput.addEventListener('input', updateDiscountToggle);
+        discountPriceInput.addEventListener('change', updateDiscountToggle);
+        // Initial run
+        updateDiscountToggle();
+    }
 });

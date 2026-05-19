@@ -18,6 +18,9 @@ public class Food {
     @Column(nullable = false)
     private double price;
 
+    @Column(name = "discount_price")
+    private Double discountPrice; // Giá sau giảm (null nếu không giảm)
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -37,4 +40,8 @@ public class Food {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurantId")
     private Restaurant restaurant;
+
+    public double getActivePrice() {
+        return (discountPrice != null && discountPrice > 0) ? (price - discountPrice) : price;
+    }
 }

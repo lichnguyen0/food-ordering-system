@@ -1,0 +1,102 @@
+/* CSS cho trang form nhà hàng */
+
+.image-preview-container {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    display: inline-block;
+    background: #fafafa;
+}
+
+.image-preview-container img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 6px;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.image-preview-container img.has-image {
+    display: block;
+}
+
+/* Toggle switch cho Promo */
+.promo-toggle-wrapper {
+    padding: 14px 16px;
+    background: #f8fff9;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+}
+
+.promo-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+}
+
+.promo-toggle-input {
+    display: none;
+}
+
+.promo-toggle-slider {
+    position: relative;
+    width: 46px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 24px;
+    flex-shrink: 0;
+    transition: background 0.25s;
+}
+
+.promo-toggle-slider::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.promo-toggle-input:checked ~ .promo-toggle-slider {
+    background: #00b14f;
+}
+
+.promo-toggle-input:checked ~ .promo-toggle-slider::after {
+    transform: translateX(22px);
+}
+
+.promo-toggle-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.promo-toggle-hint {
+    font-size: 12px;
+    color: #777;
+    margin: 8px 0 0 60px;
+}
+
+/* Chi tiết ưu đãi */
+.promo-detail-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+    .promo-detail-section {
+        grid-template-columns: 1fr;
+    }
+}

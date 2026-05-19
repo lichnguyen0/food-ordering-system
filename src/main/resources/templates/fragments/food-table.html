@@ -10,7 +10,15 @@
     <tr th:each="food : ${foods}">
         <td><img th:src="${food.image}" width="80"></td>
         <td th:text="${food.foodName}"></td>
-        <td th:text="${food.price}"></td>
+        <td>
+            <div th:if="${food.discountPrice != null && food.discountPrice > 0}">
+                <span th:text="${#numbers.formatDecimal(food.price - food.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'" style="font-weight: bold; color: #00B14F;"></span>
+                <span th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'" style="text-decoration: line-through; font-size: 12px; color: #999; margin-left: 5px;"></span>
+            </div>
+            <div th:if="${food.discountPrice == null || food.discountPrice <= 0}">
+                <span th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+            </div>
+        </td>
         <td th:text="${food.status}"></td>
 
         <td>

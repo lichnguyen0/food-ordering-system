@@ -3,6 +3,7 @@ package com.foodorderingsystem.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -33,9 +34,48 @@ public class Restaurant {
 
     private String image;
 
+    @Column(name = "has_promo", nullable = false)
+    private boolean hasPromo = false;
+
+    // % giảm giá (ví dụ: 20.0 = giảm 20%)
+    @Column(name = "promo_discount")
+    private Double promoDiscount;
+
+    // Ngày bắt đầu và kết thúc ưu đãi
+    @Column(name = "promo_start_date")
+    private LocalDate promoStartDate;
+
+    @Column(name = "promo_end_date")
+    private LocalDate promoEndDate;
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Food> foods;
     
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Order> orders;
+
+    @Transient
+    public String getCategoriesString() {
+        if (foods == null || foods.isEmpty()) {
+            return "Đồ ăn";
+        }
+        return foods.stream()
+            .map(Food::getCategory)
+            .filter(java.util.Objects::nonNull)
+            .map(Category::getCategoryName)
+            .distinct()
+            .collect(java.util.stream.Collectors.joining(", "));
+    }
+
+    @Transient
+    public int getDeliveryTime() {
+        if (restaurantId == null) return 25;
+        return 15 + (int)(restaurantId % 6) * 5;
+    }
+
+    @Transient
+    public double getDistance() {
+        if (restaurantId == null) return 1.5;
+        return 0.5 + (double)(restaurantId % 9) * 0.5;
+    }
 }

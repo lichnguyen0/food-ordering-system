@@ -19,6 +19,7 @@ public class OrderHistory {
     private Order order;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private OrderStatus status;
 
     private LocalDateTime updateTime;

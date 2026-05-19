@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByOrderByOrderIdDesc();
+    
+    List<Order> findByUser_UsernameOrderByOrderDateDesc(String username);
 
     List<Order> findByOrderDateBetween(Date start, Date end);
 
