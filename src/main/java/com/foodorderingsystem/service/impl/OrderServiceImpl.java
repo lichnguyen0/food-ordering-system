@@ -22,17 +22,20 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final UserRepository userRepository;
     private final FoodRepository foodRepository;
+    private final com.foodorderingsystem.repository.CouponRepository couponRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             UserRepository userRepository,
                             FoodRepository foodRepository,
-                            com.foodorderingsystem.repository.OrderHistoryRepository orderHistoryRepository) {
+                            com.foodorderingsystem.repository.OrderHistoryRepository orderHistoryRepository,
+                            com.foodorderingsystem.repository.CouponRepository couponRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userRepository = userRepository;
         this.foodRepository = foodRepository;
         this.orderHistoryRepository = orderHistoryRepository;
+        this.couponRepository = couponRepository;
     }
 
     @Override
@@ -78,16 +81,67 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setOrder(order);
             orderItem.setFood(food);
             orderItem.setQuantity(item.getQuantity());
-            orderItem.setPrice(food.getActivePrice());
+            orderItem.setPrice(item.getUnitPrice());
+            orderItem.setOptionsText(item.getOptionsText());
 
-            total += food.getActivePrice() * item.getQuantity();
+            total += item.getUnitPrice() * item.getQuantity();
 
             orderItemRepository.save(orderItem);
             orderItems.add(orderItem);
         }
 
         order.setOrderItems(orderItems);
-        order.setTotalAmount(total);
+
+        // Calculate delivery fee based on first restaurant distance
+        Restaurant restaurant = null;
+        for (CartItem item : cart.getItems().values()) {
+            if (item.getFood() != null && item.getFood().getRestaurant() != null) {
+                restaurant = item.getFood().getRestaurant();
+                break;
+            }
+        }
+
+        double deliveryFee = 16000.0;
+        if (restaurant != null) {
+            order.setRestaurant(restaurant);
+            Long rId = restaurant.getRestaurantId();
+            double distance = (rId == null) ? 1.5 : (0.5 + (double)(rId % 9) * 0.5);
+            deliveryFee = 5000.0 + (distance * 5000.0);
+        }
+        order.setDeliveryFee(deliveryFee);
+        
+        double discountAmount = 0.0;
+        if (request != null && request.getCouponCode() != null && !request.getCouponCode().trim().isEmpty()) {
+            String cleanCode = request.getCouponCode().trim();
+            com.foodorderingsystem.model.Coupon coupon = couponRepository.findByCodeIgnoreCaseAndActiveTrue(cleanCode).orElse(null);
+            if (coupon != null && total >= coupon.getMinOrderValue()) {
+                if ("PERCENTAGE".equals(coupon.getDiscountType())) {
+                    discountAmount = total * (coupon.getDiscountValue() / 100.0);
+                    if (coupon.getMaxDiscountAmount() > 0 && discountAmount > coupon.getMaxDiscountAmount()) {
+                        discountAmount = coupon.getMaxDiscountAmount();
+                    }
+                } else if ("FIXED_AMOUNT".equals(coupon.getDiscountType())) {
+                    discountAmount = coupon.getDiscountValue();
+                }
+                
+                // Cap discount at subtotal
+                if (discountAmount > total) {
+                    discountAmount = total;
+                }
+                
+                order.setCouponCode(coupon.getCode());
+                order.setDiscountAmount(discountAmount);
+                
+                // Update coupon use count
+                coupon.setUsedCount(coupon.getUsedCount() + 1);
+                if (coupon.getUsedCount() >= coupon.getUsageLimit()) {
+                    coupon.setActive(false);
+                }
+                couponRepository.save(coupon);
+            }
+        }
+        
+        order.setTotalAmount(Math.max(0.0, total + deliveryFee - discountAmount));
 
         orderRepository.save(order);
 
@@ -112,7 +166,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getTopRevenue(int n) {
-        List<Order> orders = orderRepository.findAll();
+        // Exclude cancelled orders when calculating top revenue
+        List<Order> orders = orderRepository.findAll().stream()
+                .filter(o -> o.getStatus() != OrderStatus.CANCELLED)
+                .collect(java.util.stream.Collectors.toList());
         orders.sort((a, b) -> Double.compare(b.getTotalAmount(), a.getTotalAmount()));
         if (n > orders.size()) n = orders.size();
         return orders.subList(0, n);
@@ -136,7 +193,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public double calculateTotalRevenue() {
+        // Sum totalAmount for all orders except cancelled ones
         return orderRepository.findAll().stream()
+                .filter(o -> o.getStatus() != OrderStatus.CANCELLED)
                 .mapToDouble(Order::getTotalAmount)
                 .sum();
     }

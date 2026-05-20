@@ -94,7 +94,10 @@
                         <div class="item-img">
                             <img th:src="${item.food.image != null ? item.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="Food">
                         </div>
-                        <div class="item-name" th:text="${item.food.foodName}">Bún bò Huế Thường</div>
+                        <div class="item-name-group" style="flex: 1;">
+                            <div class="item-name" th:text="${item.food.foodName}" style="font-weight: 500;">Bún bò Huế Thường</div>
+                            <div class="item-options" th:if="${item.optionsText != null}" th:text="${item.optionsText}" style="font-size: 12px; color: #666; margin-top: 4px;"></div>
+                        </div>
                         <div class="item-price" th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
                     </div>
                 </div>
@@ -102,15 +105,19 @@
                 <div class="summary-totals tracking-summary-totals">
                     <div class="total-row">
                         <span>Tổng tạm tính</span>
-                        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                        <span th:text="${#numbers.formatDecimal(order.totalAmount + (order.discountAmount != null ? order.discountAmount : 0.0) - order.deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </div>
+                    <div class="total-row" th:if="${order.discountAmount != null && order.discountAmount > 0}">
+                        <span>Khuyến mãi giảm giá (<span th:text="${order.couponCode}"></span>)</span>
+                        <span style="color: var(--primary-red); font-weight: 600;" th:text="'-' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
                     </div>
                     <div class="total-row">
                         <span>Phí giao hàng</span>
-                        <span>16.000 ₫</span>
+                        <span th:text="${#numbers.formatDecimal(order.deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
                     </div>
                     <div class="total-row tracking-grand-total">
                         <span>Tổng cộng</span>
-                        <span th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
                     </div>
                 </div>
             </div>

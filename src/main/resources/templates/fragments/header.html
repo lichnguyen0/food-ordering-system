@@ -56,31 +56,58 @@
             <!-- Cart Sidebar (Off-canvas) -->
             <div id="cartSidebar" class="cart-sidebar">
                 <div class="sidebar-header">
-                    <h3>Giỏ hàng</h3>
+                    <button id="backToCartBtn" class="close-btn" onclick="switchSidebarView('cart')" style="display:none;"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3 id="sidebarTitle">Giỏ hàng của bạn</h3>
                     <button class="close-btn" onclick="toggleCartSidebar()">&times;</button>
                 </div>
-                <div class="sidebar-content">
-                    <!-- Empty State -->
-                    <div class="empty-cart-state" id="emptyCartState">
-                        <div class="empty-cart-icon">
+                
+                <!-- CART VIEW -->
+                <div class="sidebar-content" id="cartViewContainer" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+                    <div id="cartSidebarItems" class="cart-sidebar-items" style="flex: 1; overflow-y: auto; padding: 20px;">
+                        <div class="empty-cart-message">
                             <i class="fa-solid fa-basket-shopping"></i>
+                            <p>Giỏ hàng đang trống</p>
+                            <a href="javascript:void(0)" class="continue-shopping-btn" onclick="toggleCartSidebar()">Duyệt nhà hàng</a>
                         </div>
-                        <h4>Giỏ hàng của bạn đang trống</h4>
-                        <p>Hãy thêm những món ăn ngon lành vào giỏ hàng của bạn nhé!</p>
-                        <a href="javascript:void(0)" class="continue-shopping-btn" onclick="toggleCartSidebar()">Duyệt nhà hàng</a>
+                    </div>
+                    <div class="sidebar-footer" id="cartSidebarFooter" style="display: none; padding: 20px; border-top: 1px solid #eee; background: #fff;">
+                        <div class="total-row" style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 15px; color: #111;">
+                            <span>Tổng cộng:</span>
+                            <span id="cartSidebarTotal">0 ₫</span>
+                        </div>
+                        <a href="/checkout" class="btn-checkout" style="display: block; text-align: center; text-decoration: none; width: 100%; font-weight: 700; padding: 12px; border-radius: 8px;">Tiến hành thanh toán</a>
+                    </div>
+                </div>
+
+                <!-- OPTIONS VIEW -->
+                <div class="sidebar-content" id="optionsViewContainer" style="display:none; padding: 0;">
+                    <!-- Scrollable options list -->
+                    <div class="options-scroll-area" id="optionsScrollArea" style="padding: 15px; flex-grow: 1; overflow-y: auto;">
+                        <div class="options-food-header" style="display: flex; gap: 15px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #eee; margin-bottom: 15px;">
+                            <img id="optFoodImage" src="" alt="Food" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 id="optFoodName" style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #111; line-height: 1.3;">Tên món</h4>
+                                <p id="optFoodDesc" style="color: #777; font-size: 12px; margin: 0 0 6px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;"></p>
+                                <div id="optFoodPrice" style="color: var(--grab-green); font-weight: 700; font-size: 15px;">0 ₫</div>
+                            </div>
+                        </div>
+                        <div id="optionsFormGroups"></div>
                     </div>
                     
-                    <!-- Cart Items State (Hidden by default for now) -->
-                    <div class="cart-items-state" id="cartItemsState" style="display: none;">
-                        <!-- Items will be injected here via JS if needed, or link to cart page -->
-                        <div class="cart-items-list"></div>
-                        <div class="cart-sidebar-footer">
-                            <div class="total-row">
-                                <span>Tổng cộng:</span>
-                                <span id="cartSidebarTotal">0 ₫</span>
+                    <!-- Fixed footer for adding to cart -->
+                    <div class="sidebar-footer" style="padding: 15px; border-top: 1px solid #eee; background: #fff;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <span style="font-weight: 500;">Số lượng</span>
+                            <div class="cart-quantity-controls" style="display: flex;">
+                                <button class="btn-decrease" onclick="changeOptQty(-1)"><i class="fa-solid fa-minus"></i></button>
+                                <span class="qty-text" id="optQtyDisplay" style="margin: 0 15px; display: flex; align-items: center;">1</span>
+                                <button class="btn-quick-add" onclick="changeOptQty(1)"><i class="fa-solid fa-plus"></i></button>
                             </div>
-                            <a href="/checkout" class="view-cart-btn">Thanh toán</a>
                         </div>
+                        <button id="btnConfirmAddOptions" class="btn-checkout" style="width: 100%; display: flex; justify-content: space-between;">
+                            <span>Thêm vào giỏ</span>
+                            <span id="optTotalPriceDisplay">0 ₫</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -94,121 +121,7 @@
             </div>
         </div>
     </div>
-    <script th:inline="javascript">
-        function toggleSidebar() {
-            const sidebar = document.getElementById('profileSidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar && overlay) {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-                
-                if (sidebar.classList.contains('show')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = 'auto';
-                }
-            }
-        }
-
-        function toggleCartSidebar() {
-            const sidebar = document.getElementById('cartSidebar');
-            const overlay = document.getElementById('cartSidebarOverlay');
-            if (sidebar && overlay) {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-                
-                if (sidebar.classList.contains('show')) {
-                    document.body.style.overflow = 'hidden';
-                    // Check cart status to update empty state
-                    fetch('/api/cart/status')
-                        .then(response => response.json())
-                        .then(data => {
-                            const emptyState = document.getElementById('emptyCartState');
-                            const itemsState = document.getElementById('cartItemsState');
-                            if (data.totalQuantity > 0) {
-                                emptyState.style.display = 'none';
-                                itemsState.style.display = 'block';
-                                document.getElementById('cartSidebarTotal').textContent = new Intl.NumberFormat('vi-VN').format(data.totalPrice) + ' ₫';
-                                renderCartItems(data.items);
-                            } else {
-                                emptyState.style.display = 'flex';
-                                itemsState.style.display = 'none';
-                            }
-                        })
-                        .catch(err => console.error("Error fetching cart status:", err));
-                } else {
-                    document.body.style.overflow = 'auto';
-                }
-            }
-        }
-
-        function renderCartItems(items) {
-            const listContainer = document.querySelector('.cart-items-list');
-            if (!listContainer) return;
-            
-            listContainer.innerHTML = '';
-            if (!items || items.length === 0) {
-                document.getElementById('emptyCartState').style.display = 'flex';
-                document.getElementById('cartItemsState').style.display = 'none';
-                return;
-            }
-            
-            items.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'cart-sidebar-item';
-                itemEl.innerHTML = `
-                    <div class="item-img">
-                        <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="${item.foodName}">
-                    </div>
-                    <div class="item-details">
-                        <div class="item-name">${item.foodName}</div>
-                        <div class="item-price">${new Intl.NumberFormat('vi-VN').format(item.price)} ₫</div>
-                        <div class="item-qty-controls">
-                            <button onclick="updateCartItem(${item.foodId}, 'decrease')">
-                                <i class="fa-solid ${item.quantity === 1 ? 'fa-trash' : 'fa-minus'}"></i>
-                            </button>
-                            <span class="qty-display">${item.quantity}</span>
-                            <button onclick="updateCartItem(${item.foodId}, 'add')">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                listContainer.appendChild(itemEl);
-            });
-        }
-
-        window.updateCartItem = function(foodId, action) {
-            const url = action === 'add' ? `/api/cart/add/${foodId}` : `/api/cart/decrease/${foodId}`;
-            fetch(url, { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    // Update header
-                    const badge = document.getElementById('headerCartBadge');
-                    const price = document.getElementById('headerCartPrice');
-                    if (badge && price) {
-                        if (data.totalQuantity > 0) {
-                            badge.style.display = 'inline-block';
-                            price.style.display = 'inline-block';
-                            badge.textContent = data.totalQuantity;
-                            price.textContent = new Intl.NumberFormat('vi-VN').format(data.totalPrice) + ' ₫';
-                        } else {
-                            badge.style.display = 'none';
-                            price.style.display = 'none';
-                        }
-                    }
-                    
-                    // Update sidebar
-                    document.getElementById('cartSidebarTotal').textContent = new Intl.NumberFormat('vi-VN').format(data.totalPrice) + ' ₫';
-                    renderCartItems(data.items);
-                    
-                    // Update food cards if on restaurant detail page
-                    if (typeof updateItemCardUI === 'function') {
-                        updateItemCardUI(foodId, data.itemQuantities[foodId] || 0);
-                    }
-                })
-        }
-    </script>
+    <script th:src="@{/js/cart-sidebar.js}"></script>
 </header>
 
 

@@ -19,6 +19,9 @@ public class OrderItem {
 
     private int quantity;
     private double price;
+    
+    @Column(columnDefinition = "TEXT")
+    private String optionsText;
 
     @ManyToOne
     @JoinColumn(name = "orderId")

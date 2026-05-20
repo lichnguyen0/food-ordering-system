@@ -45,7 +45,7 @@ public class SecurityConfig {
                     if (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_STAFF")) {
                         response.sendRedirect("/admin");
                     } else {
-                        response.sendRedirect("/foods");
+                        response.sendRedirect("/");
                     }
                 })
                 .permitAll()

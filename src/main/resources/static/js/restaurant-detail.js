@@ -149,6 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
         btnAdd.addEventListener('click', function(e) {
             e.preventDefault();
             
+            const card = this.closest('.food-card');
+            const foodName = card.querySelector('.food-name') ? card.querySelector('.food-name').textContent : 'Món ăn';
+            const priceText = card.querySelector('.food-price') ? card.querySelector('.food-price').textContent : '0';
+            const price = parseFloat(priceText.replace(/[^\d]/g, ''));
+            const image = card.querySelector('.food-img') ? card.querySelector('.food-img').src : '';
+            const desc = card.querySelector('.food-desc') ? card.querySelector('.food-desc').textContent : '';
+
             // Visual feedback on button
             const icon = this.querySelector('i');
             const originalClass = icon.className;
@@ -160,17 +167,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.background = '';
             }, 300);
 
-            // AJAX request to backend
-            fetch(`/api/cart/add/${foodId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateCartUI(data.totalQuantity, data.totalPrice);
-                updateItemCardUI(foodId, data.itemQuantities[foodId] || 0);
-            })
-            .catch(err => console.error("Error adding to cart:", err));
+            if (typeof window.openOptionsOrAdd === 'function') {
+                window.openOptionsOrAdd(foodId, foodName, price, image, desc);
+            }
         });
 
         btnDecrease.addEventListener('click', function(e) {
@@ -181,14 +180,16 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => this.style.transform = '', 150);
 
             // AJAX request to backend
-            fetch(`/api/cart/decrease/${foodId}`, {
+            // Note: We use foodId+"-0" for simple items, but backend can handle generic decrease if needed
+            fetch(`/api/cart/decrease-by-food/${foodId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
-                updateCartUI(data.totalQuantity, data.totalPrice);
-                updateItemCardUI(foodId, data.itemQuantities[foodId] || 0);
+                if (typeof updateCartUI === 'function') {
+                    updateCartUI(data);
+                }
             })
             .catch(err => console.error("Error decreasing cart item:", err));
         });

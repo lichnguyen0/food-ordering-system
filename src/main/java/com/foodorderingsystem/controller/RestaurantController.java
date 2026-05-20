@@ -21,15 +21,18 @@ public class RestaurantController {
     private final FoodRepository foodRepository;
     private final com.foodorderingsystem.repository.CollectionRepository collectionRepository;
     private final com.foodorderingsystem.repository.CategoryRepository categoryRepository;
+    private final com.foodorderingsystem.repository.CouponRepository couponRepository;
 
     public RestaurantController(RestaurantRepository restaurantRepository,
                                 FoodRepository foodRepository,
                                 com.foodorderingsystem.repository.CollectionRepository collectionRepository,
-                                com.foodorderingsystem.repository.CategoryRepository categoryRepository) {
+                                com.foodorderingsystem.repository.CategoryRepository categoryRepository,
+                                com.foodorderingsystem.repository.CouponRepository couponRepository) {
         this.restaurantRepository = restaurantRepository;
         this.foodRepository = foodRepository;
         this.collectionRepository = collectionRepository;
         this.categoryRepository = categoryRepository;
+        this.couponRepository = couponRepository;
     }
 
     @GetMapping
@@ -44,7 +47,7 @@ public class RestaurantController {
         model.addAttribute("restaurants", restaurants);
         model.addAttribute("categories", categoryRepository.findByActiveTrueOrderByDisplayOrderAsc());
         model.addAttribute("selectedCategoryId", categoryId);
-        return "restaurant-list-user";
+        return "user/restaurant-list-user";
     }
 
     @GetMapping("/{id}")
@@ -69,6 +72,7 @@ public class RestaurantController {
         
         model.addAttribute("foodsByCategory", foodsByCategory);
         model.addAttribute("totalFoods", foods.size());
-        return "restaurant-detail";
+        model.addAttribute("activeCoupons", couponRepository.findAllByActiveTrue());
+        return "user/restaurant-detail";
     }
 }

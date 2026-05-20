@@ -34,7 +34,7 @@ public class FoodController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("categoryId", categoryId);
 
-        return "menu";
+        return "user/menu";
     }
 
     @GetMapping("/filter")

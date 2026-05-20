@@ -1,0 +1,31 @@
+package com.foodorderingsystem.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Data
+@NoArgsConstructor
+public class OptionGroup { // nhóm chứa các tuỳ chọn ví dụ, size: M, L,  topping
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long groupId;
+
+    @Column(nullable = false)
+    private String groupName;
+
+    private boolean isRequired;
+    private boolean isMultiple;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "foodId")
+    @JsonIgnore
+    private Food food;
+
+    @OneToMany(mappedBy = "optionGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OptionItem> optionItems = new ArrayList<>();
+}

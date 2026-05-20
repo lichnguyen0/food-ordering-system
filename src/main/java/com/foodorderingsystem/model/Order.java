@@ -33,6 +33,7 @@ public class Order {
     private java.util.List<OrderHistory> history;
 
     private double totalAmount;
+    private Double deliveryFee;
 
     @Column(length = 255)
     private String deliveryAddress;
@@ -46,4 +47,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurantId")
     private Restaurant restaurant;
+
+    private String couponCode;
+    private double discountAmount = 0.0;
 }

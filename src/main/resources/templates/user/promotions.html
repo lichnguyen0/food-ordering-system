@@ -31,6 +31,11 @@
     <!-- Main Content -->
     <div class="promotions-page">
         <div class="container main-content">
+            <div class="promo-breadcrumb">
+                <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+                <span>/</span>
+                <span class="active-crumb">Ưu đãi</span>
+            </div>
 
             <div class="promotions-grid">
 
@@ -60,12 +65,8 @@
                                     <i class="fa-solid fa-star"></i>
                                     <span th:text="${r.rating != null ? r.rating : '4.5'}">4.5</span>
                                 </span>
-                                <span><i class="fa-solid fa-clock"></i> 25 phút</span>
-                                <span>1.5 km</span>
-                            </div>
-
-                            <div class="promo-page-footer">
-                                <i class="fa-solid fa-tag tag-icon"></i>
+                                <span><i class="fa-regular fa-clock"></i> <span th:text="${r.deliveryTime + ' phút'}">25 phút</span></span>
+                                <span><i class="fa-solid fa-road"></i> <span th:text="${r.distance + ' km'}">1.5 km</span></span>
                             </div>
                         </div>
                     </div>

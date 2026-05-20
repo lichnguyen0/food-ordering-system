@@ -27,8 +27,8 @@
             </div>
             <div class="card-content delivery-content">
                 <div class="delivery-time">
-                    <span class="time-label">Delivery arrival time</span>
-                    <span class="time-value">22 min (2.8 km away)</span>
+                    <span class="time-label">Thời gian giao hàng dự kiến</span>
+                    <span class="time-value" th:text="${deliveryTime + ' phút (' + deliveryDistance + ' km)'}">22 phút (2.8 km)</span>
                 </div>
                 
                 <div class="address-inputs">
@@ -66,19 +66,26 @@
                         <div class="item-img">
                             <img th:src="${itemEntry.value.food.image != null ? itemEntry.value.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="Food">
                         </div>
-                        <div class="item-name" th:text="${itemEntry.value.food.foodName}">Bún bò Huế Thường</div>
-                        <div class="item-price" th:text="${#numbers.formatDecimal(((itemEntry.value.food.discountPrice != null && itemEntry.value.food.discountPrice > 0) ? (itemEntry.value.food.price - itemEntry.value.food.discountPrice) : itemEntry.value.food.price) * itemEntry.value.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
+                        <div class="item-name-group" style="flex: 1;">
+                            <div class="item-name" th:text="${itemEntry.value.food.foodName}" style="font-weight: 500;">Bún bò Huế Thường</div>
+                            <div class="item-options" th:if="${itemEntry.value.optionsText != null}" th:text="${itemEntry.value.optionsText}" style="font-size: 12px; color: #666; margin-top: 4px;"></div>
+                        </div>
+                        <div class="item-price" th:text="${#numbers.formatDecimal(itemEntry.value.unitPrice * itemEntry.value.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</div>
                     </div>
                 </div>
 
                 <div class="summary-totals">
                     <div class="total-row">
                         <span>Tổng tạm tính</span>
-                        <span th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</span>
+                        <span id="subtotalText" th:data-price="${cart.totalPrice}" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</span>
                     </div>
                     <div class="total-row">
                         <span>Phí giao hàng và phí áp dụng <i class="fa-solid fa-circle-info"></i></span>
-                        <span>16.000 ₫</span>
+                        <span id="deliveryFeeText" th:data-price="${deliveryFee}" th:text="${#numbers.formatDecimal(deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">16.000 ₫</span>
+                    </div>
+                    <div class="total-row" id="discountRow" style="display: none; color: var(--primary-red); font-weight: 600;">
+                        <span>Khuyến mãi giảm giá (<span id="appliedCodeDisplay"></span>)</span>
+                        <span id="discountAmountDisplay">-0 ₫</span>
                     </div>
                 </div>
             </div>
@@ -128,21 +135,24 @@
                 <h2>Khuyến mãi</h2>
             </div>
             <div class="card-content promo-content">
-                <div class="promo-input-row">
-                    <input type="text" placeholder="Nhập mã khuyến mãi">
-                    <button class="btn-apply-promo" disabled>Áp dụng</button>
+                <input type="hidden" name="couponCode" id="couponCodeInput">
+                <div class="promo-input-row" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="promoInput" placeholder="Nhập mã khuyến mãi" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-weight: 500;">
+                    <button type="button" class="btn-apply-promo" onclick="applyPromoInput()" style="padding: 12px 24px; border-radius: 8px; background: var(--primary-red); color:#fff; border:none; font-weight:600; cursor:pointer;">Áp dụng</button>
                 </div>
                 
-                <div class="promo-list">
-                    <div class="promo-item">
+                <div class="promo-list" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div th:each="coupon : ${activeCoupons}" class="promo-item" style="border: 1px dashed #ffbaba; background: #fffcfc; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;">
                         <div class="promo-details">
-                            <h4>Giảm 30K, thêm ưu đãi bên dưới</h4>
-                            <p class="promo-code">Promo Code: HANOUTERNEWUSER</p>
-                            <p class="promo-expiry">Valid 2025-10-06 to 2027-01-03</p>
+                            <h4 th:text="${coupon.description}" style="margin:0 0 5px 0; font-size: 15px; font-weight: 700; color:#333;">Giảm 30K</h4>
+                            <p class="promo-code" style="margin: 0 0 4px 0; font-size: 13px; font-weight: 600; color: var(--primary-red);">Mã: <span th:text="${coupon.code}">HANOUTERNEWUSER</span></p>
+                            <p class="promo-expiry" style="margin: 0; font-size: 12px; color: #777;">Hạn dùng: <span th:text="${coupon.expiryDate}">2027-01-03</span> | Đơn tối thiểu: <span th:text="${#numbers.formatDecimal(coupon.minOrderValue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50K</span></p>
                         </div>
-                        <button class="btn-use-promo">APPLY</button>
+                        <button type="button" class="btn-use-promo" th:data-code="${coupon.code}" onclick="applyPromoCode(this.getAttribute('data-code'))" style="padding: 8px 16px; border-radius: 20px; border: 1px solid var(--primary-red); background: transparent; color: var(--primary-red); font-weight: 700; cursor: pointer; font-size: 13px; transition: all 0.2s;">ÁP DỤNG</button>
                     </div>
-                    <!-- More promo items can be added here -->
+                    <div th:if="${activeCoupons.empty}" style="text-align: center; color: #999; padding: 15px;">
+                        Không có mã giảm giá nào khả dụng lúc này.
+                    </div>
                 </div>
             </div>
         </div>
@@ -166,7 +176,7 @@
         <div class="bottom-bar-content">
             <div class="total-display">
                 <span class="total-label">Tổng cộng</span>
-                <span class="total-value" th:text="${#numbers.formatDecimal(cart.totalPrice + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">75.000 ₫</span>
+                <span class="total-value" th:text="${#numbers.formatDecimal(cart.totalPrice + deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">75.000 ₫</span>
             </div>
             <button type="submit" form="checkoutForm" class="btn-place-order">Đặt đơn</button>
         </div>

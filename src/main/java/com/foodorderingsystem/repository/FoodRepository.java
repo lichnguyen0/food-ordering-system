@@ -14,12 +14,12 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     List<Food> findByRestaurant_RestaurantId(Long restaurantId);
 
     @org.springframework.data.jpa.repository.Query("SELECT f FROM Food f " +
-           "LEFT JOIN f.category c " +
-           "LEFT JOIN f.restaurant r " +
-           "WHERE (:keyword IS NULL OR :keyword = '' OR " +
-           "LOWER(f.foodName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(f.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LEFT JOIN f.category c " + //Join với category của food.
+           "LEFT JOIN f.restaurant r " +//LEFT JOIN f.restaurant r
+           "WHERE (:keyword IS NULL OR :keyword = '' OR " + // chức năng tìm kiếm theo
+           "LOWER(f.foodName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " + //tên món
+           "LOWER(f.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " + // mo tả
            "LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+           "LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')))") //tên nhà hàng
     List<Food> search(@org.springframework.data.repository.query.Param("keyword") String keyword);
 }

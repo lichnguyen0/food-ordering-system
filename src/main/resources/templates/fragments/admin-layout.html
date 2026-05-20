@@ -1,3 +1,5 @@
+<!-- thanh trên cùng, sidebar, bảng điều khiển, quản lý món ăn-->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
@@ -9,101 +11,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/admin-style.css?v=1.2">
     <link rel="stylesheet" href="/css/admin-orders.css">
+    <link rel="stylesheet" href="/css/admin-layout.css">
 </head>
 
 <body>
-    <!-- MASTER LAYOUT FRAGMENT -->
+    <!-- MẢNH BỐ CỤC CHÍNH -->
     <div th:fragment="layout (content, activeMenu, activeSub)" class="admin-container">
         <!-- Sidebar -->
         <aside th:replace="~{fragments/admin-layout :: sidebar(${activeMenu}, ${activeSub})}"></aside>
 
         <div class="main-dashboard">
-            <!-- Topbar -->
+            <!-- Thanh trên cùng -->
             <header th:replace="~{fragments/admin-layout :: topbar}"></header>
 
-            <!-- Main Content Area -->
+            <!-- Khu vực nội dung chính -->
             <div class="content-body">
                 <div th:replace="${content}"></div>
             </div>
         </div>
         
-        <!-- Sidebar Toggle Script & Style -->
-        <style>
-            .header-left { display: flex; align-items: center; gap: 20px; }
-            .sidebar-toggle {
-                background: none; border: none; font-size: 20px;
-                color: var(--text-dark); cursor: pointer; padding: 5px;
-                display: flex; align-items: center; justify-content: center;
-                transition: all 0.3s;
-            }
-            .sidebar-toggle:hover { color: var(--primary-red); }
-            
-            body.sidebar-collapsed .sidebar { left: -280px; }
-            body.sidebar-collapsed .main-dashboard { margin-left: 0; }
-            
-            @media (max-width: 992px) {
-                .sidebar { left: -280px; }
-                .main-dashboard { margin-left: 0; }
-                body.sidebar-open .sidebar { left: 0; }
-                body.sidebar-open .admin-container::after {
-                    content: "";
-                    position: fixed;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(0,0,0,0.5);
-                    z-index: 99;
-                }
-            }
-        </style>
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // 1. Sidebar Toggle
-                const sidebarBtn = document.getElementById('sidebarToggle');
-                if (sidebarBtn) {
-                    sidebarBtn.addEventListener('click', function() {
-                        if (window.innerWidth > 992) {
-                            document.body.classList.toggle('sidebar-collapsed');
-                        } else {
-                            document.body.classList.toggle('sidebar-open');
-                        }
-                    });
-                }
-
-                // 2. Profile Dropdown Toggle
-                const profileTrigger = document.getElementById('profileDropdownTrigger');
-                const profileDropdown = document.getElementById('profileDropdown');
-
-                if (profileTrigger && profileDropdown) {
-                    profileTrigger.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        profileDropdown.classList.toggle('show');
-                    });
-
-                    document.addEventListener('click', function(e) {
-                        if (!profileDropdown.contains(e.target) && !profileTrigger.contains(e.target)) {
-                            profileDropdown.classList.remove('show');
-                        }
-                    });
-                }
-
-                // 3. Logic Toggle Submenu (Dropdown Sidebar)
-                const submenuItems = document.querySelectorAll('.has-submenu > .menu-item');
-                submenuItems.forEach(item => {
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const parent = this.parentElement;
-                        const submenu = parent.querySelector('.submenu');
-                        parent.classList.toggle('open');
-                        if (submenu) {
-                            submenu.classList.toggle('show');
-                        }
-                    });
-                });
-            });
-        </script>
+        <!-- Tập lệnh chuyển đổi thanh bên & Style -->
+        <script th:src="@{/js/admin-layout.js}"></script>
     </div>
 
-    <!-- SIDEBAR FRAGMENT -->
+    <!-- MẢNH THANH BÊN -->
     <aside th:fragment="sidebar(activeMenu, activeSub)" class="sidebar">
         <div class="sidebar-logo">
             <span class="logo-luno">Luno</span><span class="logo-food">Food</span>
@@ -111,30 +42,30 @@
         <ul class="sidebar-menu">
             <li>
                 <a href="/admin" class="menu-item" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}">
-                    <i class="fa-solid fa-house"></i> Dashboard
+                    <i class="fa-solid fa-house"></i> Bảng điều khiển
                 </a>
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'food' ? 'open' : ''}">
                 <a href="javascript:void(0)" class="menu-item">
                     <i class="fa-solid fa-utensils"></i> 
-                    <span>Food Management</span>
+                    <span>Quản lý món ăn</span>
                     <i class="fa-solid fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'food' ? 'show' : ''}">
-                    <li><a href="/admin/foods" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Menu List</a></li>
-                    <li><a href="/admin/foods/grid" class="submenu-item" th:style="${activeSub == 'grid' ? 'color: #ff0018;' : ''}">Menu Grid</a></li>
-                    <li><a href="/admin/categories" class="submenu-item" th:style="${activeSub == 'categories' ? 'color: #ff0018;' : ''}">Category List</a></li>
+                    <li><a href="/admin/foods" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Danh sách món ăn</a></li>
+                    <li><a href="/admin/foods/grid" class="submenu-item" th:style="${activeSub == 'grid' ? 'color: #ff0018;' : ''}">Lưới món ăn</a></li>
+                    <li><a href="/admin/categories" class="submenu-item" th:style="${activeSub == 'categories' ? 'color: #ff0018;' : ''}">Danh mục món ăn</a></li>
                 </ul>
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'restaurant' ? 'open' : ''}">
                 <a href="javascript:void(0)" class="menu-item">
                     <i class="fa-solid fa-store"></i> 
-                    <span>Restaurant Management</span>
+                    <span>Quản lý nhà hàng</span>
                     <i class="fa-solid fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'restaurant' ? 'show' : ''}">
-                    <li><a href="/admin/restaurants" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Restaurant List</a></li>
-                    <li><a href="/admin/restaurants/add" class="submenu-item" th:style="${activeSub == 'add' ? 'color: #ff0018;' : ''}">Add Restaurant</a></li>
+                    <li><a href="/admin/restaurants" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Danh sách nhà hàng</a></li>
+                    <li><a href="/admin/restaurants/add" class="submenu-item" th:style="${activeSub == 'add' ? 'color: #ff0018;' : ''}">Thêm nhà hàng</a></li>
                 </ul>
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'marketing' ? 'open' : ''}">
@@ -146,16 +77,17 @@
                 <ul class="submenu" th:classappend="${activeMenu == 'marketing' ? 'show' : ''}">
                     <li><a href="/admin/collections" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Bộ sưu tập</a></li>
                     <li><a href="/admin/banners" class="submenu-item" th:style="${activeSub == 'banners' ? 'color: #ff0018;' : ''}">Banners</a></li>
+                    <li><a href="/admin/coupons" class="submenu-item" th:style="${activeSub == 'coupons' ? 'color: #ff0018;' : ''}">Mã giảm giá</a></li>
                 </ul>
             </li>
-            <li><a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
-            <li><a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Customers</a></li>
-            <li><a href="/admin/stats" class="menu-item" th:classappend="${activeMenu == 'stats' ? 'active' : ''}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
-            <li><a href="/admin/settings" class="menu-item" th:classappend="${activeMenu == 'settings' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            <li><a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</a></li>
+            <li><a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Khách hàng</a></li>
+            <li><a href="/admin/stats" class="menu-item" th:classappend="${activeMenu == 'stats' ? 'active' : ''}"><i class="fa-solid fa-chart-line"></i> Thống kê</a></li>
+            <li><a href="/admin/settings" class="menu-item" th:classappend="${activeMenu == 'settings' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Cài đặt</a></li>
         </ul>
     </aside>
 
-    <!-- TOPBAR FRAGMENT -->
+    <!-- MẢNH TOPBAR -->
     <header th:fragment="topbar" class="top-header">
         <div class="header-left">
             <button id="sidebarToggle" class="sidebar-toggle">
@@ -164,7 +96,7 @@
         </div>
         <div class="user-nav">
             <div class="search-bar">
-                <input type="text" placeholder="Search here...">
+                <input type="text" placeholder="Tìm kiếm...">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
             <div class="nav-icons-group">

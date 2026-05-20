@@ -41,6 +41,9 @@ public class Food {
     @JoinColumn(name = "restaurantId")
     private Restaurant restaurant;
 
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<OptionGroup> optionGroups = new java.util.ArrayList<>();
+
     public double getActivePrice() {
         return (discountPrice != null && discountPrice > 0) ? (price - discountPrice) : price;
     }

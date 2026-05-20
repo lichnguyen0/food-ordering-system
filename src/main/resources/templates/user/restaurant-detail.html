@@ -24,7 +24,7 @@
                 <nav class="breadcrumb-nav-white">
                     <a th:href="@{/}">Trang chủ</a>
                     <i class="fa-solid fa-chevron-right"></i>
-                    <a href="/restaurants">Nhà hàng</a>
+                    <a th:href="@{/restaurant}">Nhà hàng</a>
                     <i class="fa-solid fa-chevron-right"></i>
                     <span th:text="${restaurant.name}">Restaurant</span>
                 </nav>
@@ -59,9 +59,9 @@
                         </div>
 
                         <!-- Opening Hours -->
-                        <div class="res-opening-hours">
-                            <span class="status-dot"></span>
-                            <span class="status-text">Đang mở cửa</span>
+                        <div class="res-opening-hours" th:classappend="${restaurant.getStatusClass()}">
+                            <span class="status-dot" th:classappend="${restaurant.isOpen() ? 'open' : 'closed'}"></span>
+                            <span class="status-text" th:text="${restaurant.getOpenStatus()}">Đang mở cửa</span>
                             <span class="opening-time-label">Giờ mở cửa:</span>
                             <span class="opening-time-value" th:text="'Hôm nay ' + ${restaurant.operatingHours}">Hôm nay 07:00 - 22:00</span>
                         </div>
@@ -90,14 +90,23 @@
                         </div>
 
                         <!-- Offers -->
-                        <div class="res-offers">
-                            <div class="offer-item">
-                                <i class="fa-solid fa-tag"></i>
-                                <span>Giảm 20% cho đơn từ 100k</span>
+                        <div class="res-offers" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                            <!-- Khuyến mãi riêng của nhà hàng -->
+                            <div class="offer-item" th:if="${restaurant.hasPromo && restaurant.promoDiscount != null}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; background: #FFF5F5; border: 1px solid #FFD8D8;">
+                                <i class="fa-solid fa-tag" style="color: var(--primary-red);"></i>
+                                <span style="font-weight: 500;" th:text="'Giảm ' + ${#numbers.formatDecimal(restaurant.promoDiscount, 0, 'COMMA', 0, 'POINT')} + '% toàn thực đơn'">Giảm 20%</span>
                             </div>
-                            <div class="offer-item">
-                                <i class="fa-solid fa-truck-fast"></i>
-                                <span>Freeship 2km</span>
+                            
+                            <!-- Khoảng cách & Freeship tự động tính -->
+                            <div class="offer-item" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; background: #F0FFF4; border: 1px solid #C6F6D5;">
+                                <i class="fa-solid fa-truck-fast" style="color: #38A169;"></i>
+                                <span style="font-weight: 500; color: #276749;" th:text="'Freeship trong phạm vi ' + ${#numbers.formatDecimal(restaurant.getDistance() + 0.5, 0, 'COMMA', 1, 'POINT')} + ' km'">Freeship 2km</span>
+                            </div>
+
+                            <!-- Mã giảm giá hoạt động trên hệ thống -->
+                            <div th:each="coupon : ${activeCoupons}" class="offer-item" style="border: 1px dashed #FF8E8E; background: #FFF5F5; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-ticket" style="color: var(--primary-red); font-size: 13px;"></i>
+                                <span style="font-weight: 600; color: var(--primary-red);" th:text="'Mã: ' + ${coupon.code} + ' (' + ${coupon.description} + ')'">Nhập LUNO20</span>
                             </div>
                         </div>
 

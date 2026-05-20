@@ -17,10 +17,14 @@ public class OrderController {
 
     private final OrderService orderService;
     private final com.foodorderingsystem.repository.UserRepository userRepository;
+    private final com.foodorderingsystem.repository.CouponRepository couponRepository;
 
-    public OrderController(OrderService orderService, com.foodorderingsystem.repository.UserRepository userRepository) {
+    public OrderController(OrderService orderService, 
+                           com.foodorderingsystem.repository.UserRepository userRepository,
+                           com.foodorderingsystem.repository.CouponRepository couponRepository) {
         this.orderService = orderService;
         this.userRepository = userRepository;
+        this.couponRepository = couponRepository;
     }
 
     @GetMapping("/checkout")
@@ -28,8 +32,24 @@ public class OrderController {
         if (cart == null || cart.getItems().isEmpty()) {
             return "redirect:/"; // Redirect to home if cart is empty
         }
+        
+        double deliveryFee = 16000.0;
+        double distance = 1.5;
+        int deliveryTime = 25;
+        com.foodorderingsystem.model.CartItem firstItem = cart.getItems().values().iterator().next();
+        if (firstItem.getFood() != null && firstItem.getFood().getRestaurant() != null) {
+            Long rId = firstItem.getFood().getRestaurant().getRestaurantId();
+            distance = (rId == null) ? 1.5 : (0.5 + (double)(rId % 9) * 0.5);
+            deliveryTime = (rId == null) ? 25 : (15 + (int)(rId % 6) * 5);
+            deliveryFee = 5000.0 + (distance * 5000.0);
+        }
+        
         model.addAttribute("cart", cart);
-        return "checkout";
+        model.addAttribute("deliveryFee", deliveryFee);
+        model.addAttribute("deliveryDistance", distance);
+        model.addAttribute("deliveryTime", deliveryTime);
+        model.addAttribute("activeCoupons", couponRepository.findAllByActiveTrue());
+        return "order/checkout";
     }
 
     @PostMapping("/order/checkout")
@@ -83,7 +103,7 @@ public class OrderController {
         model.addAttribute("activeOrders", activeOrders);
         model.addAttribute("historyOrders", historyOrders);
         model.addAttribute("allOrders", userOrders);
-        return "order";
+        return "order/order";
     }
 
     @GetMapping("/order/tracking/{id}")
@@ -93,7 +113,7 @@ public class OrderController {
             return "redirect:/orders";
         }
         model.addAttribute("order", order);
-        return "order-tracking";
+        return "order/order-tracking";
     }
 
     @PostMapping("/order/cancel/{id}")

@@ -658,6 +658,30 @@
     .food-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ══════════════════════════════════
+   OPENING STATUS (OPEN/CLOSED)
+══════════════════════════════════ */
+
+.res-opening-hours.open .status-dot {
+    background-color: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+.res-opening-hours.closed .status-dot {
+    background-color: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.res-opening-hours.open .status-text {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.res-opening-hours.closed .status-text {
+    color: #ef4444;
+    font-weight: 600;
+}
+
 @media (max-width: 768px) {
     .restaurant-info-clean { flex-direction: column; align-items: flex-start; gap: 16px; }
     .res-name-big { font-size: 24px; }
