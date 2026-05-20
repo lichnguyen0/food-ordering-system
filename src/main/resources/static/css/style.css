@@ -192,9 +192,9 @@ body {
    ========================================== */
 .main-footer {
     background-color: var(--grab-green, #00B14F);
-    padding: 60px 0 40px 0;
+    padding: 40px 0 25px 0;
     color: #ffffff;
-    margin-top: 80px;
+    margin-top: 60px;
     font-family: 'Inter', sans-serif;
     width: 100%;
 }
@@ -215,9 +215,9 @@ body {
 .footer-logo {
     display: flex;
     align-items: center;
-    font-size: 32px;
+    font-size: 30px;
     font-family: 'Inter', sans-serif;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .footer-logo .logo-luno {
@@ -237,7 +237,7 @@ body {
 .footer-divider {
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
-    margin: 30px 0;
+    margin: 20px 0;
 }
 
 /* Grid Layout */
@@ -245,15 +245,15 @@ body {
     display: grid;
     grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr;
     gap: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .footer-col-new h4 {
     color: #ffffff;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .footer-col-new ul {
@@ -263,7 +263,7 @@ body {
 }
 
 .footer-col-new ul li {
-    margin-bottom: 14px;
+    margin-bottom: 8px;
 }
 
 .footer-col-new ul li a {

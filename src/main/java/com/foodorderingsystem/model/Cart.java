@@ -4,37 +4,46 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Cart {
-    private Map<Long, CartItem> items = new HashMap<>();
+    private Map<String, CartItem> items = new HashMap<>();
 
-    public void add(Food food) {
-        CartItem item = items.get(food.getFoodId());
+    public void add(Food food, String optionsText, double extraPrice) {
+        String cartItemId = food.getFoodId() + "-" + (optionsText != null ? optionsText.hashCode() : "0");
+        CartItem item = items.get(cartItemId);
         if (item == null) {
             item = new CartItem();
+            item.setCartItemId(cartItemId);
             item.setFood(food);
             item.setQuantity(1);
-            items.put(food.getFoodId(), item);
+            item.setOptionsText(optionsText);
+            item.setExtraPrice(extraPrice);
+            items.put(cartItemId, item);
         } else {
             item.setQuantity(item.getQuantity() + 1);
         }
     }
 
-    public void remove(Long foodId) {
-        items.remove(foodId);
+    // Quá tải cho các mặt hàng cơ bản không có tùy chọn
+    public void add(Food food) {
+        add(food, null, 0);
     }
 
-    public void updateQuantity(Long foodId, int quantity) {
-        if (items.containsKey(foodId)) {
+    public void remove(String cartItemId) {
+        items.remove(cartItemId);
+    }
+
+    public void updateQuantity(String cartItemId, int quantity) {
+        if (items.containsKey(cartItemId)) {
             if (quantity <= 0) {
-                items.remove(foodId);
+                items.remove(cartItemId);
             } else {
-                items.get(foodId).setQuantity(quantity);
+                items.get(cartItemId).setQuantity(quantity);
             }
         }
     }
 
     public double getTotalPrice() {
          return items.values().stream()
-                 .mapToDouble(item -> item.getFood().getActivePrice() * item.getQuantity())
+                 .mapToDouble(item -> item.getUnitPrice() * item.getQuantity())
                  .sum();
      }
 
@@ -48,7 +57,29 @@ public class Cart {
         items.clear();
     }
 
-    public Map<Long, CartItem> getItems() {
+    public Map<String, CartItem> getItems() {
         return items;
+    }
+
+    public Long getRestaurantId() {
+        if (items.isEmpty()) {
+            return null;
+        }
+        CartItem firstItem = items.values().iterator().next();
+        if (firstItem.getFood() != null && firstItem.getFood().getRestaurant() != null) {
+            return firstItem.getFood().getRestaurant().getRestaurantId();
+        }
+        return null;
+    }
+
+    public String getRestaurantName() {
+        if (items.isEmpty()) {
+            return null;
+        }
+        CartItem firstItem = items.values().iterator().next();
+        if (firstItem.getFood() != null && firstItem.getFood().getRestaurant() != null) {
+            return firstItem.getFood().getRestaurant().getName();
+        }
+        return null;
     }
 }

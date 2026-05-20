@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Collection {
+public class Collection { // bộ sưu tập
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

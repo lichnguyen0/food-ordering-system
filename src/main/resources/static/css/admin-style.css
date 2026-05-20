@@ -1148,11 +1148,11 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.admin-switch-input:checked + .admin-switch-slider {
+.admin-switch-input:checked ~ .admin-switch-slider {
     background-color: var(--primary-red);
 }
 
-.admin-switch-input:checked + .admin-switch-slider:before {
+.admin-switch-input:checked ~ .admin-switch-slider:before {
     transform: translateX(24px);
 }
 

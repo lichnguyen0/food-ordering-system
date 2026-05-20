@@ -132,3 +132,100 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDiscountToggle();
     }
 });
+
+// Dynamic Option Groups Logic
+function addOptionGroup() {
+    const container = document.getElementById('optionGroupsContainer');
+    const groupCount = container.querySelectorAll('.option-group-card').length;
+    
+    const groupHtml = `
+        <div class="option-group-card" style="border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; position: relative;">
+            <button type="button" onclick="this.closest('.option-group-card').remove(); reindexOptions();" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #dc3545; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+            <input type="hidden" name="optionGroups[${groupCount}].groupId" value="">
+            
+            <div class="form-row" style="margin-bottom: 10px;">
+                <div class="form-group" style="flex: 2;">
+                    <label>Tên Nhóm (VD: Kích cỡ, Topping)</label>
+                    <input type="text" name="optionGroups[${groupCount}].groupName" class="form-control group-name-input" required>
+                </div>
+                <div class="form-group" style="flex: 1; display: flex; align-items: center; gap: 10px; margin-top: 25px;">
+                    <label style="margin:0; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" name="optionGroups[${groupCount}].required" value="true"> Bắt buộc
+                    </label>
+                    <label style="margin:0; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" name="optionGroups[${groupCount}].multiple" value="true"> Chọn nhiều
+                    </label>
+                </div>
+            </div>
+            
+            <div class="option-items-container">
+                <label style="font-size: 13px; font-weight: 500; color: #555; display: block; margin-bottom: 8px;">Danh sách Tùy chọn con:</label>
+                <div class="items-list">
+                    <!-- Items go here -->
+                </div>
+                <button type="button" onclick="addOptionItem(this)" style="background: none; border: 1px dashed #ccc; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 5px; color: #666; width: 100%;"><i class="fa-solid fa-plus"></i> Thêm tùy chọn con</button>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', groupHtml);
+    reindexOptions();
+}
+
+function addOptionItem(btn) {
+    const itemsList = btn.previousElementSibling;
+    const groupCard = btn.closest('.option-group-card');
+    
+    // Get current group index by searching all groups
+    const allGroups = document.querySelectorAll('.option-group-card');
+    const groupIndex = Array.from(allGroups).indexOf(groupCard);
+    
+    const itemCount = itemsList.querySelectorAll('.option-item-row').length;
+    
+    const itemHtml = `
+        <div class="option-item-row" style="display: flex; gap: 10px; margin-bottom: 8px; align-items: center;">
+            <input type="hidden" name="optionGroups[${groupIndex}].optionItems[${itemCount}].itemId" value="">
+            <input type="text" name="optionGroups[${groupIndex}].optionItems[${itemCount}].itemName" class="form-control item-name-input" placeholder="Tên (VD: Size L)" required style="flex: 2; padding: 6px 12px;">
+            <div class="price-input-wrapper" style="flex: 1; margin: 0;">
+                <input type="number" name="optionGroups[${groupIndex}].optionItems[${itemCount}].extraPrice" class="form-control item-price-input" placeholder="Giá cộng thêm" value="0" style="padding: 6px 12px;" required>
+                <span class="price-suffix" style="padding: 6px;">₫</span>
+            </div>
+            <button type="button" onclick="this.closest('.option-item-row').remove(); reindexOptions();" style="background: none; border: none; color: #dc3545; cursor: pointer; padding: 5px;"><i class="fa-solid fa-times"></i></button>
+        </div>
+    `;
+    
+    itemsList.insertAdjacentHTML('beforeend', itemHtml);
+    reindexOptions();
+}
+
+function reindexOptions() {
+    const groups = document.querySelectorAll('.option-group-card');
+    groups.forEach((group, gIndex) => {
+        // Reindex Group Inputs
+        const groupId = group.querySelector('input[name$=".groupId"]');
+        if (groupId) groupId.name = `optionGroups[${gIndex}].groupId`;
+        
+        const groupName = group.querySelector('.group-name-input');
+        if (groupName) groupName.name = `optionGroups[${gIndex}].groupName`;
+        
+        const reqCheck = group.querySelector('input[name$=".required"]');
+        if (reqCheck) reqCheck.name = `optionGroups[${gIndex}].required`;
+        
+        const mulCheck = group.querySelector('input[name$=".multiple"]');
+        if (mulCheck) mulCheck.name = `optionGroups[${gIndex}].multiple`;
+        
+        // Reindex Item Inputs
+        const items = group.querySelectorAll('.option-item-row');
+        items.forEach((item, iIndex) => {
+            const itemId = item.querySelector('input[name*=".itemId"]');
+            if (itemId) itemId.name = `optionGroups[${gIndex}].optionItems[${iIndex}].itemId`;
+            
+            const itemName = item.querySelector('.item-name-input');
+            if (itemName) itemName.name = `optionGroups[${gIndex}].optionItems[${iIndex}].itemName`;
+            
+            const extraPrice = item.querySelector('.item-price-input');
+            if (extraPrice) extraPrice.name = `optionGroups[${gIndex}].optionItems[${iIndex}].extraPrice`;
+        });
+    });
+}
+

@@ -8,4 +8,5 @@ public class CheckoutRequest {
     private String detailAddress;
     private String note;
     private String paymentMethod;
+    private String couponCode;
 }

@@ -5,27 +5,27 @@
 
     <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'dashboard', '')}">
         <main>
-            <h2 style="margin-bottom: 30px;">Welcome, Admin</h2>
+            <h2 style="margin-bottom: 30px;">Chào mừng, Admin</h2>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <span class="stat-label">Total Revenue</span>
-                    <span class="stat-value" th:text="'$' + ${totalRevenue}">$8,451</span>
+                    <span class="stat-label">Tổng doanh thu</span>
+                    <span class="stat-value" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
                     <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 3.2%</div>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">Total Orders</span>
+                    <span class="stat-label">Tổng đơn hàng</span>
                     <span class="stat-value" th:text="${totalOrders}">3,973</span>
                     <div class="stat-trend trend-down"><i class="fa-solid fa-arrow-down"></i> 4.5%</div>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">Total Food Items</span>
+                    <span class="stat-label">Tổng món ăn</span>
                     <span class="stat-value" th:text="${totalFood}">7,333</span>
                     <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 12.5%</div>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">Active Users</span>
-                    <span class="stat-value">124</span>
+                    <span class="stat-label">Người dùng hoạt động</span>
+                    <span class="stat-value">1</span>
                     <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 9.5%</div>
                 </div>
             </div>
@@ -33,23 +33,23 @@
             <div class="dashboard-row">
                 <section class="content-card">
                     <div class="card-header">
-                        <span class="card-title">Recent Orders Requested</span>
-                        <button class="btn-view-all">View All</button>
+                        <span class="card-title">Yêu cầu đơn hàng gần đây</span>
+                        <button class="btn-view-all">Xem tất cả</button>
                     </div>
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>Order ID</th>
-                                <th>User</th>
-                                <th>Total Amount</th>
-                                <th>Status</th>
+                                <th>Mã đơn hàng</th>
+                                <th>Người dùng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="o : ${recentOrders}">
                                 <td th:text="'#' + ${o.orderId}">#1234</td>
-                                <td th:text="${o.user != null ? o.user.username : 'Guest User'}">User</td>
-                                <td th:text="'$' + ${o.totalAmount}">$25.00</td>
+                                <td th:text="${o.user != null ? o.user.username : 'Khách vãng lai'}">User</td>
+                                <td th:text="${#numbers.formatDecimal(o.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25.000 ₫</td>
                                 <td>
                                     <span class="status-badge" 
                                           th:classappend="${o.status.name() == 'DELIVERED' ? 'status-delivered' : (o.status.name() == 'CANCELLED' ? 'status-cancelled' : 'status-pending')}"
@@ -62,7 +62,7 @@
 
                 <section class="content-card">
                     <div class="card-header">
-                        <span class="card-title">Monthly Revenue</span>
+                        <span class="card-title">Doanh thu hàng tháng</span>
                     </div>
                     <div class="chart-container">
                         <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 40%;"></div></div>
@@ -72,7 +72,7 @@
                         <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 65%;"></div></div>
                     </div>
                     <div style="margin-top: 20px; color: var(--text-muted); font-size: 14px;">
-                        <p>Performance is 15% better than last month.</p>
+                        <p>Hiệu suất tốt hơn 15% so với tháng trước.</p>
                     </div>
                 </section>
             </div>

@@ -20,7 +20,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "auth/login";
     }
 
     @GetMapping("/")
@@ -28,7 +28,7 @@ public class AuthController {
         model.addAttribute("categories", categoryRepository.findByActiveTrueOrderByDisplayOrderAsc());
         // Chỉ lấy nhà hàng có ưu đãi đang hoạt động cho trang Home
         model.addAttribute("restaurants", restaurantRepository.findActivePromos(java.time.LocalDate.now()));
-        return "home";
+        return "user/home";
     }
 }
 

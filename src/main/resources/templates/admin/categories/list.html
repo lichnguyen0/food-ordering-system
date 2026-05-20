@@ -1,3 +1,4 @@
+<!-- category list -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/admin-layout :: admin-head}"></head>
@@ -18,7 +19,7 @@
                 </a>
             </div>
 
-            <!-- Flash messages using global alert stylesheet classes -->
+            <!-- Tin nhắn Flash sử dụng các lớp biểu định kiểu cảnh báo toàn cầu -->
             <div th:if="${success}" class="alert-success">
                 <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i> <span th:text="${success}"></span>
             </div>

@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="item-details">
                                         <div class="item-name" th:text="${item.food.foodName}">Tên món ăn</div>
-                                        <div class="item-variant">Phân loại hàng: Mặc định</div>
+                                        <div class="item-variant" th:text="${item.optionsText != null ? 'Tùy chọn: ' + item.optionsText : ''}" th:if="${item.optionsText != null && !item.optionsText.isEmpty()}"></div>
                                         <div class="item-qty" th:text="'x' + ${item.quantity}">x1</div>
                                     </div>
                                     <div class="item-price" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">715.000₫</div>
@@ -129,7 +129,7 @@
                             <div class="customer-order-footer">
                                 <div class="total-row">
                                     <span class="total-label">Thành tiền:</span>
-                                    <span class="total-amount" th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">503.360₫</span>
+                                    <span class="total-amount" th:text="${#numbers.formatDecimal(order.deliveryFee != null ? order.totalAmount : (order.totalAmount + 16000), 0, 'COMMA', 0, 'POINT')} + ' ₫'">503.360₫</span>
                                 </div>
                                 <div class="action-row">
                                     <!-- Add Tracking button for active orders -->

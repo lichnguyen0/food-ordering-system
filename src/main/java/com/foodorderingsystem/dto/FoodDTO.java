@@ -37,4 +37,24 @@ public class FoodDTO {
     private String restaurantName;
 
     private java.util.List<String> additionalImages = new java.util.ArrayList<>();
+
+    private java.util.List<OptionGroupDTO> optionGroups = new java.util.ArrayList<>();
+
+    @Data
+    @NoArgsConstructor
+    public static class OptionGroupDTO {
+        private Long groupId;
+        private String groupName;
+        private boolean isRequired;
+        private boolean isMultiple;
+        private java.util.List<OptionItemDTO> optionItems = new java.util.ArrayList<>();
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class OptionItemDTO {
+        private Long itemId;
+        private String itemName;
+        private double extraPrice;
+    }
 }

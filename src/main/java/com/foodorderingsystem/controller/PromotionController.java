@@ -21,6 +21,6 @@ public class PromotionController {
     public String promotions(Model model) {
         // Chỉ lấy nhà hàng có ưu đãi đang HOẠT ĐỘNG (chưa hết hạn)
         model.addAttribute("promoRestaurants", restaurantRepository.findActivePromos(LocalDate.now()));
-        return "promotions";
+        return "user/promotions";
     }
 }

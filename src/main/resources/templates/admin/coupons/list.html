@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'marketing', 'coupons')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main">Quản lý Mã Giảm Giá</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" style="color: var(--primary-red); text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <span style="color: var(--text-dark);">Coupons</span>
+                    </div>
+                </div>
+                <a href="/admin/coupons/add" class="btn-add-new">
+                    <i class="fa-solid fa-plus"></i> Thêm Mã Mới
+                </a>
+            </div>
+
+            <div class="product-list-card">
+                <table class="food-management-table">
+                    <thead>
+                        <tr>
+                            <th>MÃ</th>
+                            <th>MÔ TẢ</th>
+                            <th>LOẠI GIẢM GIÁ</th>
+                            <th>GIÁ TRỊ</th>
+                            <th>ĐƠN TỐI THIỂU</th>
+                            <th>HẠN DÙNG</th>
+                            <th>LƯỢT DÙNG</th>
+                            <th>TRẠNG THÁI</th>
+                            <th style="width: 150px;">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${coupons}">
+                            <td class="fw-bold" style="color: var(--primary-red);" th:text="${c.code}">GIAM20</td>
+                            <td th:text="${c.description}">Giảm giá đặc biệt ngày hè</td>
+                            <td th:text="${c.discountType == 'PERCENTAGE' ? 'Phần trăm (%)' : 'Số tiền cố định (đ)'}">Phần trăm (%)</td>
+                            <td th:text="${c.discountType == 'PERCENTAGE' ? c.discountValue + '%' : #numbers.formatDecimal(c.discountValue, 0, 'COMMA', 0, 'POINT') + ' ₫'}">20%</td>
+                            <td th:text="${#numbers.formatDecimal(c.minOrderValue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50.000 ₫</td>
+                            <td th:text="${c.expiryDate}">2026-12-31</td>
+                            <td th:text="${c.usedCount} + ' / ' + ${c.usageLimit}">0 / 100</td>
+                            <td>
+                                <span th:class="${c.active ? 'status-badge active' : 'status-badge inactive'}" 
+                                      th:text="${c.active ? 'Đang hoạt động' : 'Tạm dừng'}">Đang hoạt động</span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a th:href="@{/admin/coupons/edit/{id}(id=${c.couponId})}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
+                                    <a th:href="@{/admin/coupons/delete/{id}(id=${c.couponId})}" class="action-btn delete" onclick="return confirm('Bạn có chắc chắn muốn xóa mã giảm giá này?')"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${coupons.empty}">
+                            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                Chưa có mã giảm giá nào. Hãy tạo mã giảm giá mới!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

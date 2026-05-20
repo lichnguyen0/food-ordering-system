@@ -1,5 +1,5 @@
 package com.foodorderingsystem.mapper;
-
+//Mapper là lớp chuyên dùng để chuyển đổi object. Cụ thể Chuyển: DTO ↔ Entity
 import com.foodorderingsystem.dto.FoodDTO;
 import com.foodorderingsystem.model.Category;
 import com.foodorderingsystem.model.Food;
@@ -17,17 +17,17 @@ public class FoodMapper {
         this.restaurantRepository = restaurantRepository;
     }
 
-    public FoodDTO toDTO(Food food) {
+    public FoodDTO toDTO(Food food) {  // nhiệm vụ chuyển object Food Entity thành FoodDTO
         FoodDTO dto = new FoodDTO();
-        dto.setFoodId(food.getFoodId());
+        dto.setFoodId(food.getFoodId()); //Mapping field. ý nghĩa lấy dữ liệu từ food copy sang dto
         dto.setFoodName(food.getFoodName());
         dto.setPrice(food.getPrice());
-        dto.setDiscountPrice(food.getDiscountPrice());
+        dto.setDiscountPrice(food.getDiscountPrice()); // cho frontend biết giá giảm
         dto.setDescription(food.getDescription());
         dto.setImage(food.getImage());
         dto.setStatus(food.getStatus());
-        if (food.getCategory() != null) {
-            dto.setCategoryId(food.getCategory().getCategoryId());
+        if (food.getCategory() != null) { //Nếu category của food khác null  // thức ăn có danh mục
+            dto.setCategoryId(food.getCategory().getCategoryId()); //category từ food// Lấy categoryId từ category vừa lấy được.Gán giá trị vừa lấy vào DTO.
             dto.setCategoryName(food.getCategory().getCategoryName());
         }
 
@@ -40,6 +40,26 @@ public class FoodMapper {
             dto.setAdditionalImages(food.getImages().stream()
                 .map(com.foodorderingsystem.model.FoodImage::getImageUrl)
                 .collect(java.util.stream.Collectors.toList()));
+        }
+        if (food.getOptionGroups() != null) {
+            dto.setOptionGroups(food.getOptionGroups().stream().map(g -> {
+                FoodDTO.OptionGroupDTO gDTO = new FoodDTO.OptionGroupDTO();
+                gDTO.setGroupId(g.getGroupId());
+                gDTO.setGroupName(g.getGroupName());
+                gDTO.setRequired(g.isRequired());
+                gDTO.setMultiple(g.isMultiple());
+                
+                if (g.getOptionItems() != null) {
+                    gDTO.setOptionItems(g.getOptionItems().stream().map(i -> {
+                        FoodDTO.OptionItemDTO iDTO = new FoodDTO.OptionItemDTO();
+                        iDTO.setItemId(i.getItemId());
+                        iDTO.setItemName(i.getItemName());
+                        iDTO.setExtraPrice(i.getExtraPrice());
+                        return iDTO;
+                    }).collect(java.util.stream.Collectors.toList()));
+                }
+                return gDTO;
+            }).collect(java.util.stream.Collectors.toList()));
         }
         
         return dto;
@@ -72,6 +92,30 @@ public class FoodMapper {
                 .collect(java.util.stream.Collectors.toList()));
         }
         
+        if (dto.getOptionGroups() != null) {
+            Food finalFood = food;
+            food.setOptionGroups(dto.getOptionGroups().stream().map(gDTO -> {
+                com.foodorderingsystem.model.OptionGroup g = new com.foodorderingsystem.model.OptionGroup();
+                g.setGroupId(gDTO.getGroupId());
+                g.setGroupName(gDTO.getGroupName());
+                g.setRequired(gDTO.isRequired());
+                g.setMultiple(gDTO.isMultiple());
+                g.setFood(finalFood);
+                
+                if (gDTO.getOptionItems() != null) {
+                    g.setOptionItems(gDTO.getOptionItems().stream().map(iDTO -> {
+                        com.foodorderingsystem.model.OptionItem i = new com.foodorderingsystem.model.OptionItem();
+                        i.setItemId(iDTO.getItemId());
+                        i.setItemName(iDTO.getItemName());
+                        i.setExtraPrice(iDTO.getExtraPrice());
+                        i.setOptionGroup(g);
+                        return i;
+                    }).collect(java.util.stream.Collectors.toList()));
+                }
+                return g;
+            }).collect(java.util.stream.Collectors.toList()));
+        }
+
         return food;
     }
 }

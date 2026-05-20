@@ -51,10 +51,69 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function() {
             const btn = document.querySelector('.btn-place-order');
             if (btn) {
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đặt hàng...';
                 btn.style.opacity = '0.7';
                 btn.style.pointerEvents = 'none';
             }
         });
     }
+
+    // Apply Promo Code
+    window.applyPromoCode = function(code) {
+        if (!code || code.trim() === '') return;
+        
+        fetch(`/api/cart/apply-coupon/${code}`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update input value
+                    const inputField = document.getElementById('promoInput');
+                    if (inputField) inputField.value = data.code;
+                    
+                    const hiddenInput = document.getElementById('couponCodeInput');
+                    if (hiddenInput) hiddenInput.value = data.code;
+                    
+                    // Display discount row
+                    const discountRow = document.getElementById('discountRow');
+                    const appliedCodeDisplay = document.getElementById('appliedCodeDisplay');
+                    const discountAmountDisplay = document.getElementById('discountAmountDisplay');
+                    
+                    if (discountRow && appliedCodeDisplay && discountAmountDisplay) {
+                        appliedCodeDisplay.textContent = data.code;
+                        discountAmountDisplay.textContent = '-' + new Intl.NumberFormat('vi-VN').format(data.discountAmount) + ' ₫';
+                        discountRow.style.display = 'flex';
+                    }
+                    
+                    // Recalculate and update final total amount at bottom bar
+                    const subtotalTextEl = document.getElementById('subtotalText');
+                    const deliveryFeeTextEl = document.getElementById('deliveryFeeText');
+                    const totalValueEl = document.querySelector('.total-value');
+                    
+                    if (subtotalTextEl && deliveryFeeTextEl && totalValueEl) {
+                        const subtotal = parseFloat(subtotalTextEl.getAttribute('data-price') || 0);
+                        const deliveryFee = parseFloat(deliveryFeeTextEl.getAttribute('data-price') || 0);
+                        const finalTotal = Math.max(0, subtotal + deliveryFee - data.discountAmount);
+                        
+                        totalValueEl.textContent = new Intl.NumberFormat('vi-VN').format(finalTotal) + ' ₫';
+                    }
+                    
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(err => {
+                console.error("Error applying promo:", err);
+                alert("Đã xảy ra lỗi khi áp dụng mã giảm giá!");
+            });
+    };
+
+    window.applyPromoInput = function() {
+        const inputField = document.getElementById('promoInput');
+        if (inputField && inputField.value.trim() !== '') {
+            applyPromoCode(inputField.value.trim().toUpperCase());
+        } else {
+            alert("Vui lòng nhập mã giảm giá trước!");
+        }
+    };
 });

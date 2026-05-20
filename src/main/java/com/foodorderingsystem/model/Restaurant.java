@@ -78,4 +78,42 @@ public class Restaurant {
         if (restaurantId == null) return 1.5;
         return 0.5 + (double)(restaurantId % 9) * 0.5;
     }
+
+    @Transient
+    public boolean isOpen() {
+        if (operatingHours == null || operatingHours.isEmpty()) {
+            return false;
+        }
+        
+        java.time.LocalTime now = java.time.LocalTime.now();
+        String[] periods = operatingHours.split("\\s+");
+        
+        for (String period : periods) {
+            String[] times = period.split("-");
+            if (times.length == 2) {
+                try {
+                    java.time.LocalTime openTime = java.time.LocalTime.parse(times[0]);
+                    java.time.LocalTime closeTime = java.time.LocalTime.parse(times[1]);
+                    
+                    if ((now.isAfter(openTime) || now.equals(openTime)) && 
+                        (now.isBefore(closeTime) || now.equals(closeTime))) {
+                        return true;
+                    }
+                } catch (Exception e) {
+                    // Invalid time format, skip
+                }
+            }
+        }
+        return false;
+    }
+
+    @Transient
+    public String getOpenStatus() {
+        return isOpen() ? "Đang mở cửa" : "Đóng cửa";
+    }
+
+    @Transient
+    public String getStatusClass() {
+        return isOpen() ? "open" : "closed";
+    }
 }

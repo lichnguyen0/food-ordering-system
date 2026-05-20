@@ -214,3 +214,34 @@
     font-weight: 500;
     margin-top: 8px;
 }
+
+/* Breadcrumb under banner (on grey background) */
+.promo-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #888888;
+    margin-bottom: 20px;
+    padding-top: 5px;
+}
+
+.promo-breadcrumb a {
+    color: #00b14f; /* Green color to match Grab brand */
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.promo-breadcrumb a:hover {
+    color: #007a38;
+    text-decoration: underline;
+}
+
+.promo-breadcrumb span.active-crumb {
+    color: #1c1c1c;
+    font-weight: 600;
+}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+</head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'marketing', 'coupons')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main" th:text="${coupon.couponId == null ? 'Thêm Mã Giảm Giá Mới' : 'Chỉnh Sửa Mã Giảm Giá'}">Thêm Mã Mới</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" style="color: var(--primary-red); text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <a href="/admin/coupons" style="color: var(--primary-red); text-decoration: none;">Coupons</a> / 
+                        <span th:text="${coupon.couponId == null ? 'Add' : 'Edit'}">Add New</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-container-card" style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div class="card-header-main" style="margin-bottom: 30px;">
+                    <h5 class="product-list-title" style="margin: 0; font-size: 18px;">Thông tin Mã Giảm Giá</h5>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 5px;">Nhập thông tin chi tiết chương trình khuyến mãi và mã giảm giá để áp dụng khi thanh toán.</p>
+                </div>
+
+                <form th:action="${coupon.couponId == null ? '/admin/coupons/add' : '/admin/coupons/edit/' + coupon.couponId}" th:object="${coupon}" method="post">
+                    <input type="hidden" th:field="*{couponId}">
+                    
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Mã giảm giá (Coupon Code)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-ticket"></i>
+                            <input type="text" th:field="*{code}" class="admin-input" placeholder="Vd: LUNO20, FREESHIP" style="text-transform: uppercase;" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Mô tả chương trình</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-align-left"></i>
+                            <input type="text" th:field="*{description}" class="admin-input" placeholder="Vd: Giảm 20% cho đơn từ 100K" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Loại giảm giá</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-percent"></i>
+                            <select th:field="*{discountType}" class="admin-input" required>
+                                <option value="PERCENTAGE">Phần trăm (%)</option>
+                                <option value="FIXED_AMOUNT">Số tiền cố định (đ)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Giá trị giảm giá</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <input type="number" step="any" th:field="*{discountValue}" class="admin-input" placeholder="Nhập số % hoặc số tiền cố định" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Giá trị đơn hàng tối thiểu (₫)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                            <input type="number" step="any" th:field="*{minOrderValue}" class="admin-input" placeholder="Vd: 50000" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Số tiền giảm tối đa (Áp dụng cho Phần trăm) (₫)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <input type="number" step="any" th:field="*{maxDiscountAmount}" class="admin-input" placeholder="Vd: 30000 (để trống nếu không giới hạn)">
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Ngày hết hạn</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <input type="date" th:field="*{expiryDate}" class="admin-input" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Giới hạn số lần sử dụng</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-user-clock"></i>
+                            <input type="number" th:field="*{usageLimit}" class="admin-input" placeholder="Vd: 100" required>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 20px;">
+                        <label class="admin-form-label" style="display: block; font-weight: 600; margin-bottom: 8px;">Trạng thái hiển thị</label>
+                        <div class="admin-switch-container">
+                            <label class="admin-switch">
+                                <input type="checkbox" th:field="*{active}" class="admin-switch-input">
+                                <span class="admin-switch-slider"></span>
+                            </label>
+                            <span class="admin-switch-label-text">Đang kích hoạt sử dụng</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-modern" style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                        <a href="/admin/coupons" class="btn-cancel-modern" style="padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; text-decoration: none; color: #333; font-weight: 600; font-size: 14px;">Hủy</a>
+                        <button type="submit" class="btn-save-modern" style="padding: 10px 20px; border-radius: 8px; background: var(--primary-red, #ff0018); border: none; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-check"></i>
+                            <span th:text="${coupon.couponId == null ? 'Lưu mã giảm giá' : 'Cập nhật mã giảm giá'}">Lưu mã giảm giá</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
