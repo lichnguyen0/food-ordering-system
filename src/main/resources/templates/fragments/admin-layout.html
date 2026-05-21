@@ -65,7 +65,9 @@
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'restaurant' ? 'show' : ''}">
                     <li><a href="/admin/restaurants" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Danh sách nhà hàng</a></li>
+<!--
                     <li><a href="/admin/restaurants/add" class="submenu-item" th:style="${activeSub == 'add' ? 'color: #ff0018;' : ''}">Thêm nhà hàng</a></li>
+-->
                 </ul>
             </li>
             <li class="has-submenu" th:classappend="${activeMenu == 'marketing' ? 'open' : ''}">

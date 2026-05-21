@@ -13,6 +13,10 @@ import com.foodorderingsystem.model.Food;
 import com.foodorderingsystem.model.FoodStatus;
 import com.foodorderingsystem.repository.CategoryRepository;
 import com.foodorderingsystem.repository.FoodRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -200,26 +204,28 @@ public class AdminFoodController {
     }
 
     /**
-     * Hiển thị danh sách món ăn dạng grid.
-     * Có thể lọc theo category.
+     * Hiển thị danh sách món ăn dạng grid (có phân trang server-side).
+     * Hỗ trợ lọc theo category và phân trang.
      */
     @GetMapping("/grid")
     public String grid(@RequestParam(required = false) Long categoryId,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "12") int size,
                        Model model) {
 
-        List<Food> foods;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("foodId").descending());
 
+        Page<Food> foodPage;
         if (categoryId != null) {
-            foods = foodRepository.findByCategory_CategoryId(categoryId);
+            foodPage = foodRepository.findByCategory_CategoryId(categoryId, pageable);
         } else {
-            foods = foodRepository.findAll();
+            foodPage = foodRepository.findAll(pageable);
         }
 
-        List<FoodDTO> foodDTOs = foods.stream()
-                .map(foodMapper::toDTO)
-                .collect(Collectors.toList());
+        Page<FoodDTO> foodDTOPage = foodPage.map(foodMapper::toDTO);
 
-        model.addAttribute("foods", foodDTOs);
+        model.addAttribute("foods", foodDTOPage.getContent());
+        model.addAttribute("foodPage", foodDTOPage);
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("selectedCategoryId", categoryId);
 
