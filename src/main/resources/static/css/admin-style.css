@@ -1190,3 +1190,118 @@ body {
     font-size: 11px;
     color: var(--text-muted);
 }
+
+/* --- Monthly Revenue Chart --- */
+.chart-container {
+    height: 250px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px;
+    position: relative;
+}
+
+.chart-bar {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    cursor: pointer;
+}
+
+.chart-bar-fill {
+    width: 100%;
+    max-width: 48px;
+    background: linear-gradient(180deg, #ff0018 0%, #cc0015 100%);
+    border-radius: 6px 6px 0 0;
+    transition: height 0.6s ease, opacity 0.3s ease;
+}
+
+.chart-bar:hover .chart-bar-fill {
+    opacity: 0.85;
+}
+
+.chart-bar:nth-last-child(1) .chart-bar-fill {
+    background: linear-gradient(180deg, #00B14F 0%, #00b386 100%);
+}
+
+.chart-bar-fill:hover {
+    opacity: 0.9;
+    transform: scaleY(1.02);
+    transform-origin: bottom;
+}
+
+.chart-bar-label {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.chart-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px;
+}
+
+/* Tooltip */
+.chart-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.chart-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1a1a2e;
+}
+
+.chart-bar:hover .chart-tooltip {
+    opacity: 1;
+}
+
+/* Growth indicators */
+.growth-up {
+    color: #00B14F;
+}
+
+.growth-up i {
+    margin-right: 6px;
+}
+
+.growth-down {
+    color: #ff0018;
+}
+
+.growth-down i {
+    margin-right: 6px;
+}
+
+.growth-neutral {
+    color: var(--text-muted);
+}
+
+.growth-neutral i {
+    margin-right: 6px;
+}

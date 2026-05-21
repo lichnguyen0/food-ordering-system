@@ -25,7 +25,7 @@
                 </div>
                 <div class="stat-card">
                     <span class="stat-label">Người dùng hoạt động</span>
-                    <span class="stat-value">1</span>
+                    <span class="stat-value" th:text="${activeUsers}">1</span>
                     <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 9.5%</div>
                 </div>
             </div>
@@ -64,15 +64,35 @@
                     <div class="card-header">
                         <span class="card-title">Doanh thu hàng tháng</span>
                     </div>
-                    <div class="chart-container">
-                        <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 40%;"></div></div>
-                        <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 70%;"></div></div>
-                        <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 55%;"></div></div>
-                        <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 90%;"></div></div>
-                        <div class="chart-bar" style="height: 100%;"><div class="chart-bar-fill" style="height: 65%;"></div></div>
+                    <div class="chart-container" th:if="${monthlyRevenueStats != null and !monthlyRevenueStats.empty}">
+                        <div class="chart-bar" th:each="stat, iter : ${monthlyRevenueStats}" style="height: 100%;">
+                            <div class="chart-bar-fill" th:style="'height: ' + ((${stat.revenue} / ${monthMaxRevenue} * 100) < 0 ? 1 : (${stat.revenue} / ${monthMaxRevenue} * 100)) + '%'"></div>
+                            <div class="chart-tooltip"
+                                 th:text="${#numbers.formatDecimal(stat.revenue, 0, 'COMMA', 0, 'POINT')} + ' ₫\nT' + ${stat.month} + '/' + ${stat.year}">
+                            </div>
+                        </div>
                     </div>
-                    <div style="margin-top: 20px; color: var(--text-muted); font-size: 14px;">
-                        <p>Hiệu suất tốt hơn 15% so với tháng trước.</p>
+                    <div class="chart-container" th:if="${monthlyRevenueStats == null or monthlyRevenueStats.empty}">
+                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;color:var(--text-muted);">
+                            <i class="fa-solid fa-chart-simple" style="font-size:40px;margin-bottom:12px;"></i>
+                            <p>Chưa có dữ liệu doanh thu</p>
+                        </div>
+                    </div>
+                    <div class="chart-labels" th:if="${monthlyRevenueStats != null and !monthlyRevenueStats.empty}">
+                        <span class="chart-bar-label" th:each="stat : ${monthlyRevenueStats}" th:text="'T' + ${stat.month}">T3</span>
+                    </div>
+                    <div style="margin-top: 20px; color: var(--text-muted); font-size: 14px;" th:if="${monthlyRevenueStats != null and !monthlyRevenueStats.empty}">
+                        <p th:if="${growthPercent > 0}" class="growth-up">
+                            <i class="fa-solid fa-arrow-trend-up"></i> Doanh thu tháng này cao hơn
+                            <span th:text="${#numbers.formatDecimal(growthPercent, 1, 'COMMA', 1, 'POINT')}">15.0</span>% so với tháng trước.
+                        </p>
+                        <p th:if="${growthPercent < 0}" class="growth-down">
+                            <i class="fa-solid fa-arrow-trend-down"></i> Doanh thu tháng này thấp hơn
+                            <span th:text="${#numbers.formatDecimal(Math.abs(growthPercent), 1, 'COMMA', 1, 'POINT')}">15.0</span>% so với tháng trước.
+                        </p>
+                        <p th:if="${growthPercent == 0}" class="growth-neutral">
+                            <i class="fa-solid fa-minus"></i> Doanh thu tháng này bằng với tháng trước.
+                        </p>
                     </div>
                 </section>
             </div>
