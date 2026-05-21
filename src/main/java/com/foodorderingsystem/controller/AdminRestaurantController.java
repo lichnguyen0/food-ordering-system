@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Controller
 @RequestMapping("/admin/restaurants")
@@ -26,8 +29,16 @@ public class AdminRestaurantController {
 
     // List all restaurants
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("restaurants", restaurantRepository.findAll());
+    public String list(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Restaurant> restaurantPage = restaurantRepository.findAll(pageable);
+        model.addAttribute("restaurants", restaurantPage.getContent());
+        model.addAttribute("totalPages", restaurantPage.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalElements", restaurantPage.getTotalElements());
         return "admin/restaurant-list";
     }
 
