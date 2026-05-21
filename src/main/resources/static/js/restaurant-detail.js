@@ -148,6 +148,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         btnAdd.addEventListener('click', function(e) {
             e.preventDefault();
+
+            if (!(window.isUserLoggedIn || false)) {
+                if (typeof window.showLoginRequiredModal === 'function') {
+                    window.showLoginRequiredModal();
+                }
+                return;
+            }
             
             const card = this.closest('.food-card');
             const foodName = card.querySelector('.food-name') ? card.querySelector('.food-name').textContent : 'Món ăn';
