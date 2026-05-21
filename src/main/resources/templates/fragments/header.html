@@ -75,7 +75,7 @@
                             <span>Tổng cộng:</span>
                             <span id="cartSidebarTotal">0 ₫</span>
                         </div>
-                        <a href="/checkout" class="btn-checkout" style="display: block; text-align: center; text-decoration: none; width: 100%; font-weight: 700; padding: 12px; border-radius: 8px;">Tiến hành thanh toán</a>
+                        <a href="/checkout" class="btn-checkout" onclick="return (typeof window.checkLoginBeforeCheckout === 'function' ? window.checkLoginBeforeCheckout(event) : true);" style="display: block; text-align: center; text-decoration: none; width: 100%; font-weight: 700; padding: 12px; border-radius: 8px;">Tiến hành thanh toán</a>
                     </div>
                 </div>
 
@@ -121,6 +121,11 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.isUserLoggedIn = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+        /*]]>*/
+    </script>
     <script th:src="@{/js/cart-sidebar.js}"></script>
 </header>
 

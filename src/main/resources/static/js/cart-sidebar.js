@@ -143,6 +143,12 @@ window.updateCartItemStr = function(cartItemId, action, foodId, optionsText, uni
 
 // This is called from the Food Grid "+" button
 window.openOptionsOrAdd = function(foodId, foodName, price, image, desc) {
+    if (!(window.isUserLoggedIn || false)) {
+        if (typeof window.showLoginRequiredModal === 'function') {
+            window.showLoginRequiredModal();
+        }
+        return;
+    }
     fetch(`/api/food/${foodId}/options`)
         .then(r => r.json())
         .then(options => {
@@ -394,3 +400,112 @@ function showCustomConfirmModal(restaurantName, onConfirm, onCancel) {
         confirmBtn.style.background = '#FF4D4F';
     });
 }
+
+window.showLoginRequiredModal = function() {
+    // Remove existing modal if any
+    const existingModal = document.getElementById('loginRequiredModal');
+    if (existingModal) existingModal.remove();
+
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.id = 'loginRequiredModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 99999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+
+    // Modal container card
+    const card = document.createElement('div');
+    card.style.cssText = `
+        background: #fff;
+        width: 90%;
+        max-width: 380px;
+        border-radius: 16px;
+        padding: 28px 24px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        text-align: center;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    `;
+
+    // Modal content HTML
+    card.innerHTML = `
+        <div style="width: 56px; height: 56px; background: #FFF5F5; color: #FF4D4F; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 24px;">
+            <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 700; color: #1f1f1f;">Vui lòng đăng nhập</h3>
+        <p style="margin: 0 0 24px 0; font-size: 14.5px; line-height: 1.5; color: #666;">
+            Bạn cần đăng nhập để thêm món ăn vào giỏ hàng và đặt đơn.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button id="loginCancelBtn" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #d9d9d9; background: #fff; color: #595959; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                Hủy
+            </button>
+            <button id="loginConfirmBtn" style="flex: 1; padding: 12px; border-radius: 8px; border: none; background: #FF4D4F; color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                Đăng nhập
+            </button>
+        </div>
+    `;
+
+    modal.appendChild(card);
+    document.body.appendChild(modal);
+
+    // Fade in transition
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 10);
+
+    // Close function
+    const closeModal = () => {
+        modal.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    };
+
+    // Event listeners
+    document.getElementById('loginCancelBtn').addEventListener('click', () => {
+        closeModal();
+    });
+    document.getElementById('loginConfirmBtn').addEventListener('click', () => {
+        window.location.href = '/login';
+    });
+
+    // Button hovers (copy from conflict modal)
+    const cancelBtn = document.getElementById('loginCancelBtn');
+    cancelBtn.addEventListener('mouseenter', () => {
+        cancelBtn.style.background = '#f5f5f5';
+        cancelBtn.style.borderColor = '#d9d9d9';
+    });
+    cancelBtn.addEventListener('mouseleave', () => {
+        cancelBtn.style.background = '#fff';
+        cancelBtn.style.borderColor = '#d9d9d9';
+    });
+
+    const confirmBtn = document.getElementById('loginConfirmBtn');
+    confirmBtn.addEventListener('mouseenter', () => {
+        confirmBtn.style.background = '#ff7875';
+    });
+    confirmBtn.addEventListener('mouseleave', () => {
+        confirmBtn.style.background = '#FF4D4F';
+    });
+}
+
+window.checkLoginBeforeCheckout = function(e) {
+    if (!(window.isUserLoggedIn || false)) {
+        e.preventDefault();
+        if (typeof window.showLoginRequiredModal === 'function') {
+            window.showLoginRequiredModal();
+        }
+        return false;
+    }
+    return true;
+};
