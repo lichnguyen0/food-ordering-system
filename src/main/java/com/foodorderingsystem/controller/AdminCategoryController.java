@@ -45,7 +45,7 @@ public class AdminCategoryController {
         return "admin/categories/form";
     }
 
-    // Save (Create or Update)
+    // Lưu (Tạo hoặc Cập nhật)
     @PostMapping("/save")
     public String save(@ModelAttribute("category") Category category,
                        @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
@@ -72,7 +72,7 @@ public class AdminCategoryController {
         return "redirect:/admin/categories";
     }
 
-    // Delete category
+    // Xóa danh mục
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

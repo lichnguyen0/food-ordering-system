@@ -61,6 +61,7 @@
                             <span>Tổng tiền</span>
                             <span class="total-amount" th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
                         </div>
+                        //đoạn mã khiến trạng thái có thể cập nhật // các nút hành động gọi hàm updateStatusAjax với id và trạng thái tương ứng
                         <div class="card-actions">
                             <button class="btn-action btn-reject" th:attr="onclick=|updateStatusAjax(${order.orderId}, 'CANCELLED')|">Từ chối</button>
                             <button class="btn-action btn-accept" th:attr="onclick=|updateStatusAjax(${order.orderId}, 'PREPARING')|">Xác nhận</button>

@@ -47,18 +47,18 @@ public class AdminRestaurantController {
         return "admin/restaurant-form";
     }
 
-    // Save (create or update)
+    // Lưu (tạo hoặc cập nhật)
     @PostMapping("/save")
     public String save(@ModelAttribute("restaurant") Restaurant restaurant,
                        @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                        RedirectAttributes redirectAttributes) throws IOException {
 
-        // Handle image upload
+        // Xử lý tải lên hình ảnh
         if (imageFile != null && !imageFile.isEmpty()) {
             String imagePath = fileService.saveImage(imageFile);
             restaurant.setImage(imagePath);
         } else if (restaurant.getRestaurantId() != null) {
-            // Keep existing image if editing and no new image uploaded
+            // Giữ hình ảnh hiện có nếu chỉnh sửa và không có hình ảnh mới được tải lên
             Restaurant existing = restaurantRepository.findById(restaurant.getRestaurantId()).orElse(null);
             if (existing != null) {
                 restaurant.setImage(existing.getImage());

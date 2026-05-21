@@ -76,14 +76,20 @@
                 </a>
                 <ul class="submenu" th:classappend="${activeMenu == 'marketing' ? 'show' : ''}">
                     <li><a href="/admin/collections" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Bộ sưu tập</a></li>
-                    <li><a href="/admin/banners" class="submenu-item" th:style="${activeSub == 'banners' ? 'color: #ff0018;' : ''}">Banners</a></li>
+                    <!--<li><a href="/admin/banners" class="submenu-item" th:style="${activeSub == 'banners' ? 'color: #ff0018;' : ''}">Banners</a></li>-->
                     <li><a href="/admin/coupons" class="submenu-item" th:style="${activeSub == 'coupons' ? 'color: #ff0018;' : ''}">Mã giảm giá</a></li>
                 </ul>
             </li>
             <li><a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</a></li>
+<!--
             <li><a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Khách hàng</a></li>
+-->
+<!--
             <li><a href="/admin/stats" class="menu-item" th:classappend="${activeMenu == 'stats' ? 'active' : ''}"><i class="fa-solid fa-chart-line"></i> Thống kê</a></li>
+-->
+<!--
             <li><a href="/admin/settings" class="menu-item" th:classappend="${activeMenu == 'settings' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Cài đặt</a></li>
+-->
         </ul>
     </aside>
 

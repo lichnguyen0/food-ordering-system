@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Food Ordering System</title>
+    <!-- Google Fonts Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="register-wrapper">
+    <!-- Cột bên trái: Ảnh nền Pesto Pasta -->
+    <div class="register-left" th:style="'background-image: url(' + @{/images/login-bg.png} + ');'">
+    </div>
+
+    <!-- Cột bên phải: Biểu mẫu đăng ký -->
+    <div class="register-right">
+        <div class="register-card-wrapper">
+            <div class="register-header">
+                <h1>Create Account</h1>
+                <p class="register-subtitle">Join us to order delicious food and track your orders!</p>
+            </div>
+
+            <form th:action="@{/register}" method="post" class="register-form" id="registerForm">
+                <!-- Thông báo Lỗi -->
+                <div th:if="${error}" class="alert alert-danger" id="errorAlert">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${error}"></span>
+                </div>
+
+                <!-- Trường Họ và tên -->
+                <div class="form-group">
+                    <label class="form-label" for="fullName">Full Name</label>
+                    <div class="input-container">
+                        <input type="text" id="fullName" name="fullName" th:value="${fullName}" class="form-control" placeholder="John Doe" required>
+                    </div>
+                </div>
+
+                <!-- Lưới 2 cột cho Username và Email -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <div class="input-container">
+                            <input type="text" id="username" name="username" th:value="${username}" class="form-control" placeholder="johndoe" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <div class="input-container">
+                            <input type="email" id="email" name="email" th:value="${email}" class="form-control" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lưới 2 cột cho Password và Confirm Password -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-container">
+                            <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                        <div class="input-container">
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register" id="btnRegister">Sign Up</button>
+            </form>
+
+            <div class="register-footer">
+                Already have an account? <a th:href="@{/login}" class="login-link">Log In</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liên kết tới tệp JavaScript riêng biệt -->
+<script th:src="@{/js/register.js}"></script>
+</body>
+</html>

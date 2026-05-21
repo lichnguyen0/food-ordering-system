@@ -6,10 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
+
 public class FoodDTO {
+
     private Long foodId;
 
     @NotBlank(message = "Tên món ăn không được để trống")
@@ -18,9 +22,10 @@ public class FoodDTO {
     @Positive(message = "Giá phải lớn hơn 0")
     private double price;
 
-    private Double discountPrice; // Thêm trường này để nhận dữ liệu từ form
+    private Double discountPrice;
 
     private String description;
+
     private String image;
 
     @NotNull(message = "Vui lòng chọn danh mục")
@@ -36,25 +41,99 @@ public class FoodDTO {
 
     private String restaurantName;
 
-    private java.util.List<String> additionalImages = new java.util.ArrayList<>();
+    private List<String> additionalImages = new ArrayList<>();
 
-    private java.util.List<OptionGroupDTO> optionGroups = new java.util.ArrayList<>();
+    private List<OptionGroupDTO> optionGroups = new ArrayList<>();
 
-    @Data
-    @NoArgsConstructor
     public static class OptionGroupDTO {
+
         private Long groupId;
+
         private String groupName;
+
         private boolean isRequired;
+
         private boolean isMultiple;
-        private java.util.List<OptionItemDTO> optionItems = new java.util.ArrayList<>();
+
+        private List<OptionItemDTO> optionItems = new ArrayList<>();
+
+        public OptionGroupDTO() {
+        }
+
+        public Long getGroupId() {
+            return groupId;
+        }
+
+        public void setGroupId(Long groupId) {
+            this.groupId = groupId;
+        }
+
+        public String getGroupName() {
+            return groupName;
+        }
+
+        public void setGroupName(String groupName) {
+            this.groupName = groupName;
+        }
+
+        public boolean isRequired() {
+            return isRequired;
+        }
+
+        public void setRequired(boolean required) {
+            isRequired = required;
+        }
+
+        public boolean isMultiple() {
+            return isMultiple;
+        }
+
+        public void setMultiple(boolean multiple) {
+            isMultiple = multiple;
+        }
+
+        public List<OptionItemDTO> getOptionItems() {
+            return optionItems;
+        }
+
+        public void setOptionItems(List<OptionItemDTO> optionItems) {
+            this.optionItems = optionItems;
+        }
     }
 
-    @Data
-    @NoArgsConstructor
     public static class OptionItemDTO {
+
         private Long itemId;
+
         private String itemName;
+
         private double extraPrice;
+
+        public OptionItemDTO() {
+        }
+
+        public Long getItemId() {
+            return itemId;
+        }
+
+        public void setItemId(Long itemId) {
+            this.itemId = itemId;
+        }
+
+        public String getItemName() {
+            return itemName;
+        }
+
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+
+        public double getExtraPrice() {
+            return extraPrice;
+        }
+
+        public void setExtraPrice(double extraPrice) {
+            this.extraPrice = extraPrice;
+        }
     }
 }

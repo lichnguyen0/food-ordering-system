@@ -205,22 +205,21 @@ window.openOptionsOrAdd = function(foodId, foodName, price, image, desc) {
                 
                 switchSidebarView('options');
             } else {
-                // No options, add directly
+                // Kiểu 1: Món đơn giản (không có tùy chọn)
+                // Thêm thẳng vào giỏ hàng, cập nhật header badge + card UI
+                // KHÔNG mở sidebar để không gián đoạn trải nghiệm lướt menu
                 const addFoodDirect = (force = false) => {
                     fetch(`/api/cart/add/${foodId}${force ? '?force=true' : ''}`, { method: 'POST' })
                         .then(r => r.json())
                         .then(data => {
                             if (data.status === 'CONFLICT') {
+                                // Vẫn hiển thị modal cảnh báo trùng cửa hàng (không liên quan đến sidebar)
                                 showCustomConfirmModal(data.conflictRestaurantName, () => {
                                     addFoodDirect(true);
                                 });
                             } else {
+                                // Chỉ cập nhật UI (header badge + thẻ món ăn), không mở sidebar
                                 updateCartUI(data);
-                                const sidebar = document.getElementById('cartSidebar');
-                                const overlay = document.getElementById('cartSidebarOverlay');
-                                sidebar.classList.add('show');
-                                overlay.classList.add('show');
-                                switchSidebarView('cart');
                             }
                         })
                         .catch(err => console.error("Error adding directly:", err));
