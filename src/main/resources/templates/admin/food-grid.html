@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-food-grid.css}">
+</head>
 <body class="admin-body">
 
     <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', 'grid')}">
@@ -18,8 +21,29 @@
                 </a>
             </div>
 
+            <!-- Category Filter -->
+            <div class="food-grid-filter">
+                <label for="categoryFilter">Lọc theo danh mục:</label>
+                <select id="categoryFilter" class="table-search-input">
+                    <option value="">Tất cả món ăn</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.categoryId}"
+                            th:text="${cat.categoryName}"
+                            th:selected="${selectedCategoryId != null && selectedCategoryId == cat.categoryId}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Food Grid -->
             <div class="catalogue-grid">
-                <div th:each="food : ${foods}" class="food-card">
+                <!-- Empty State -->
+                <div th:if="${foods.empty}" class="food-grid-empty">
+                    <i class="fa-solid fa-utensils"></i>
+                    <p>Không có món ăn nào trong danh mục này.</p>
+                </div>
+
+                <!-- Food Cards -->
+                <div th:each="food : ${foods}" th:unless="${foods.empty}" class="food-card">
                     <div class="food-img-wrapper">
                         <img th:src="${food.image != null ? food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="Food">
                     </div>
@@ -51,8 +75,40 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Pagination -->
+            <div class="grid-pagination-footer" th:if="${foodPage != null && foodPage.totalElements > 0}">
+                <div class="pagination-info">
+                    Hiển thị
+                    <span th:text="${foodPage.number * foodPage.size + 1}">1</span>
+                    -
+                    <span th:text="${foodPage.number * foodPage.size + foodPage.numberOfElements}">12</span>
+                    /
+                    <span th:text="${foodPage.totalElements}">0</span> món ăn
+                </div>
+
+                <div class="pagination-btns" th:if="${foodPage.totalPages > 1}">
+                    <!-- Previous -->
+                    <a th:if="${foodPage.hasPrevious()}"
+                       th:href="@{/admin/foods/grid(page=${foodPage.number - 1}, size=${foodPage.size}, categoryId=${selectedCategoryId})}"
+                       class="page-btn">Trước</a>
+
+                    <!-- Page numbers -->
+                    <a th:each="i : ${#numbers.sequence(0, foodPage.totalPages - 1)}"
+                       th:href="@{/admin/foods/grid(page=${i}, size=${foodPage.size}, categoryId=${selectedCategoryId})}"
+                       th:text="${i + 1}"
+                       th:classappend="${i == foodPage.number} ? 'active' : ''"
+                       class="page-btn"></a>
+
+                    <!-- Next -->
+                    <a th:if="${foodPage.hasNext()}"
+                       th:href="@{/admin/foods/grid(page=${foodPage.number + 1}, size=${foodPage.size}, categoryId=${selectedCategoryId})}"
+                       class="page-btn">Tiếp</a>
+                </div>
+            </div>
         </main>
     </div>
 
+    <script th:src="@{/js/admin-food-grid.js}"></script>
 </body>
 </html>

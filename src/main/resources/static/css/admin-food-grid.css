@@ -1,0 +1,106 @@
+/* ========================================
+   Admin Food Grid - Page Specific Styles
+   Tách riêng theo yêu cầu: không nhúng CSS vào HTML
+   ======================================== */
+
+/* Filter bar */
+.food-grid-filter {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.food-grid-filter label {
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
+}
+
+.food-grid-filter select {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 220px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.food-grid-filter select:focus {
+    outline: none;
+    border-color: #EE5D50;
+    box-shadow: 0 0 0 3px rgba(238, 93, 80, 0.1);
+}
+
+/* Grid container improvements */
+.catalogue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Pagination footer for grid page */
+.grid-pagination-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 0;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+}
+
+/* Make sure existing pagination styles from admin-style.css work well here */
+.grid-pagination-footer .pagination-info {
+    font-size: 13px;
+    color: #666;
+}
+
+.grid-pagination-footer .pagination-btns {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* Empty state for grid */
+.food-grid-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+    background: #fafafa;
+    border-radius: 12px;
+    grid-column: 1 / -1;
+}
+
+.food-grid-empty i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    color: #ddd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .catalogue-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    .food-grid-filter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .food-grid-filter select {
+        width: 100%;
+    }
+
+    .grid-pagination-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

@@ -3,16 +3,11 @@ package com.foodorderingsystem.controller;
 import com.foodorderingsystem.model.Order;
 import org.springframework.http.ResponseEntity;
 
-
-import com.foodorderingsystem.dto.CatalogueResponse;
-import com.foodorderingsystem.dto.FoodDTO;
 import com.foodorderingsystem.mapper.FoodMapper;
-import com.foodorderingsystem.model.Food;
 import com.foodorderingsystem.model.OrderStatus;
 import com.foodorderingsystem.repository.FoodRepository;
 import com.foodorderingsystem.service.OrderService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
