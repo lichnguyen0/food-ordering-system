@@ -6,9 +6,9 @@
     <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'restaurant', 'list')}">
         <main>
             <div class="page-header">
-                <h1 class="page-title-main">Restaurant List</h1>
+                <h1 class="page-title-main">Danh sách nhà hàng</h1>
                 <a href="/admin/restaurants/add" class="btn-add-new">
-                    <i class="fa-solid fa-plus"></i> Add Restaurant
+                    <i class="fa-solid fa-plus"></i> Thêm nhà hàng
                 </a>
             </div>
 
@@ -17,29 +17,48 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>NAME</th>
-                            <th>ADDRESS</th>
-                            <th>PHONE</th>
-                            <th>OPERATING HOURS</th>
-                            <th>ACTIONS</th>
+                            <th>TÊN</th>
+                            <th>ĐỊA CHỈ</th>
+                            <th style="white-space: nowrap;">SỐ ĐIỆN THOẠI</th>
+                            <th>GIỜ HOẠT ĐỘNG</th>
+                            <th style="white-space: nowrap;">HÀNH ĐỘNG</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="r : ${restaurants}">
                             <td th:text="'#' + ${r.restaurantId}">#1</td>
-                            <td th:text="${r.name}" class="fw-bold">Restaurant Name</td>
-                            <td th:text="${r.address}">Address</td>
-                            <td th:text="${r.phone}">Phone</td>
-                            <td th:text="${r.operatingHours}">09:00 - 21:00</td>
+                            <td th:text="${r.name}" class="fw-bold">Tên nhà hàng</td>
+                            <td th:text="${r.address}">Địa chỉ</td>
+                            <td th:text="${r.phone}">Số điện thoại</td>
+                            <td th:text="${r.operatingHours}">07:00 - 21:00</td>
                             <td>
                                 <div class="action-btns">
                                     <a th:href="@{/admin/restaurants/edit/{id}(id=${r.restaurantId})}" class="action-btn edit"><i class="fa-solid fa-pen"></i></a>
-                                    <a th:href="@{/admin/restaurants/delete/{id}(id=${r.restaurantId})}" class="action-btn delete" onclick="return confirm('Delete this restaurant?')"><i class="fa-solid fa-trash"></i></a>
+                                    <a th:href="@{/admin/restaurants/delete/{id}(id=${r.restaurantId})}" class="action-btn delete" onclick="return confirm('Xóa nhà hàng này?')"><i class="fa-solid fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination Footer -->
+            <div class="card-footer-pagination" th:if="${totalPages > 1}">
+                <div class="pagination-info" th:text="${'Hiển thị ' + ((currentPage * pageSize) + 1) + ' đến ' + (((currentPage * pageSize) + pageSize) > totalElements ? totalElements : ((currentPage * pageSize) + pageSize)) + ' của tổng ' + totalElements + ' nhà hàng'}">
+                    Showing 1 to 10 of 25 entries
+                </div>
+                <div class="pagination-btns">
+                    <a th:href="@{/admin/restaurants(page=${currentPage - 1 < 0 ? 0 : currentPage - 1}, size=${pageSize})}"
+                       th:class="${currentPage == 0 ? 'page-btn-prev disabled' : 'page-btn-prev'}"
+                       th:style="${currentPage == 0 ? 'pointer-events:none; opacity:0.5;' : ''}">
+                        <i class="fa-solid fa-chevron-left"></i> Trước
+                    </a>
+                    <a th:href="@{/admin/restaurants(page=${currentPage + 1}, size=${pageSize})}"
+                       th:class="${currentPage ge (totalPages - 1) ? 'page-btn-next disabled' : 'page-btn-next'}"
+                       th:style="${currentPage ge (totalPages - 1) ? 'pointer-events:none; opacity:0.5;' : ''}">
+                        Sau <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
             </div>
         </main>
     </div>

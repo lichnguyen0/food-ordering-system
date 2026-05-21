@@ -1,7 +1,10 @@
 <!-- category list -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/admin-layout :: admin-head}"></head>
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-category-list.css}">
+</head>
 <body class="admin-body">
 
     <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'food', 'categories')}">
@@ -25,6 +28,19 @@
             </div>
             <div th:if="${error}" class="alert-danger" style="padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; display: flex; align-items: center; gap: 8px;">
                 <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${error}"></span>
+            </div>
+
+            <!-- Actions Row: Search -->
+            <div class="category-actions-row">
+                <label for="categorySearch" class="search-label">Tìm kiếm</label>
+                <div class="category-search-wrapper">
+                    <input type="text"
+                           id="categorySearch"
+                           class="table-search-input"
+                           placeholder="Nhập tên danh mục..."
+                           th:value="${keyword}">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
             </div>
 
             <div class="product-list-card">
@@ -66,8 +82,40 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <div class="category-pagination-footer" th:if="${categoryPage != null and categoryPage.totalElements > 0}">
+                <div class="pagination-info">
+                    Hiển thị
+                    <span th:text="${categoryPage.number * categoryPage.size + 1}">1</span>
+                    -
+                    <span th:text="${categoryPage.number * categoryPage.size + categoryPage.numberOfElements}">10</span>
+                    /
+                    <span th:text="${categoryPage.totalElements}">0</span> danh mục
+                </div>
+
+                <div class="pagination-btns" th:if="${categoryPage.totalPages > 1}">
+                    <!-- Previous -->
+                    <a th:if="${categoryPage.hasPrevious()}"
+                       th:href="@{/admin/categories(page=${categoryPage.number - 1}, size=${categoryPage.size}, keyword=${keyword})}"
+                       class="page-btn">Trước</a>
+
+                    <!-- Page numbers -->
+                    <a th:each="i : ${#numbers.sequence(0, categoryPage.totalPages - 1)}"
+                       th:href="@{/admin/categories(page=${i}, size=${categoryPage.size}, keyword=${keyword})}"
+                       th:text="${i + 1}"
+                       th:classappend="${i == categoryPage.number} ? 'active' : ''"
+                       class="page-btn"></a>
+
+                    <!-- Next -->
+                    <a th:if="${categoryPage.hasNext()}"
+                       th:href="@{/admin/categories(page=${categoryPage.number + 1}, size=${categoryPage.size}, keyword=${keyword})}"
+                       class="page-btn">Tiếp</a>
+                </div>
+            </div>
         </main>
     </div>
 
+    <script th:src="@{/js/admin-category-list.js}"></script>
 </body>
 </html>

@@ -3,6 +3,9 @@ package com.foodorderingsystem.controller;
 import com.foodorderingsystem.model.Category;
 import com.foodorderingsystem.repository.CategoryRepository;
 import com.foodorderingsystem.service.FileService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +25,30 @@ public class AdminCategoryController {
         this.fileService = fileService;
     }
 
-    // List all categories
+    /**
+     * Danh sách danh mục món ăn có phân trang server-side.
+     * Hỗ trợ tìm kiếm theo tên danh mục.
+     */
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("categories", categoryRepository.findAll());
+    public String list(@RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
+                       @RequestParam(required = false) String keyword,
+                       Model model) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                org.springframework.data.domain.Sort.by("categoryName").ascending());
+
+        Page<Category> categoryPage;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            categoryPage = categoryRepository.findByCategoryNameContaining(keyword.trim(), pageable);
+        } else {
+            categoryPage = categoryRepository.findAll(pageable);
+        }
+
+        model.addAttribute("categories", categoryPage.getContent());
+        model.addAttribute("categoryPage", categoryPage);
+        model.addAttribute("keyword", keyword);
+
         return "admin/categories/list";
     }
 
