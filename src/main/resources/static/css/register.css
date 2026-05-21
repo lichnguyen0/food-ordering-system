@@ -24,15 +24,15 @@ body, html {
 }
 
 /* Bố cục chính Split-Screen */
-.login-wrapper {
+.register-wrapper {
     display: flex;
     min-height: 100vh;
     width: 100%;
 }
 
 /* Cột bên trái: Ảnh đồ ăn */
-.login-left {
-    width: 38.5%; /* Tỷ lệ khớp với ảnh mẫu */
+.register-left {
+    width: 38.5%;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -40,7 +40,7 @@ body, html {
 }
 
 /* Lớp phủ gradient nhẹ trên ảnh */
-.login-left::before {
+.register-left::before {
     content: '';
     position: absolute;
     top: 0;
@@ -51,53 +51,63 @@ body, html {
     pointer-events: none;
 }
 
-/* Cột bên phải: Form đăng nhập */
-.login-right {
+/* Cột bên phải: Form đăng ký */
+.register-right {
     width: 61.5%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px 40px;
+    padding: 40px;
     background-color: var(--bg-light);
 }
 
-.login-card-wrapper {
+.register-card-wrapper {
     width: 100%;
-    max-width: 440px;
-    padding: 20px 0;
+    max-width: 560px; /* Bố cục rộng hơn để hiển thị 2 cột đẹp hơn */
+    padding: 10px 0;
 }
 
 /* Tiêu đề & phụ đề */
-.login-header {
-    margin-bottom: 35px;
+.register-header {
+    margin-bottom: 25px;
 }
 
-.login-header h1 {
-    font-size: 36px;
+.register-header h1 {
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-black);
     letter-spacing: -0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
-.login-subtitle {
-    font-size: 15px;
+.register-subtitle {
+    font-size: 14px;
     color: var(--text-grey);
     font-weight: 400;
     line-height: 1.5;
 }
 
+/* Cấu trúc Lưới 2 Cột */
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
 /* Form Groups */
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 18px;
 }
 
 .form-label {
     display: block;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-black);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .input-container {
@@ -107,8 +117,8 @@ body, html {
 
 .form-control {
     width: 100%;
-    padding: 13px 16px;
-    font-size: 15px;
+    padding: 11px 14px;
+    font-size: 14px;
     font-family: var(--font-family);
     color: var(--text-black);
     background-color: var(--bg-light);
@@ -130,95 +140,10 @@ body, html {
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.03);
 }
 
-/* Form options (checkbox & forgot link) */
-.form-options {
-    margin-top: 28px;
-    margin-bottom: 12px;
-}
-
-.remember-me {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
-}
-
-.remember-me input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
-/* Custom Checkbox */
-.custom-checkbox {
-    position: relative;
-    height: 20px;
-    width: 20px;
-    background-color: #FFFFFF;
-    border: 1px solid #CBD5E0;
-    border-radius: 4px;
-    margin-right: 10px;
-    transition: all 0.2s ease;
-}
-
-/* Hover Checkbox */
-.remember-me:hover input ~ .custom-checkbox {
-    border-color: #718096;
-}
-
-/* Checkbox được check */
-.remember-me input:checked ~ .custom-checkbox {
-    background-color: var(--bg-light);
-    border-color: #718096;
-}
-
-/* Dấu tích */
-.custom-checkbox::after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 6px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid #4A5568;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
-
-.remember-me input:checked ~ .custom-checkbox::after {
-    display: block;
-}
-
-.label-text {
-    font-size: 14px;
-    font-weight: 500;
-    color: #4A5568;
-}
-
-/* Nút quên mật khẩu */
-.forgot-link-wrapper {
-    margin-bottom: 28px;
-}
-
-.forgot-password {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--primary-red);
-    text-decoration: underline;
-    transition: color 0.15s ease;
-}
-
-.forgot-password:hover {
-    color: var(--primary-hover);
-}
-
-/* Nút đăng nhập */
-.btn-login {
+/* Nút đăng ký */
+.btn-register {
     width: 100%;
-    padding: 15px 24px;
+    padding: 13px 24px;
     font-size: 15px;
     font-weight: 600;
     color: #FFFFFF;
@@ -232,21 +157,22 @@ body, html {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    margin-top: 25px;
 }
 
-.btn-login:hover {
+.btn-register:hover {
     background-color: var(--primary-hover);
     box-shadow: 0 6px 16px rgba(255, 0, 28, 0.25);
     transform: translateY(-1px);
 }
 
-.btn-login:active {
+.btn-register:active {
     transform: translateY(0);
     box-shadow: 0 2px 8px rgba(255, 0, 28, 0.15);
 }
 
 /* Loading state */
-.btn-login.is-loading {
+.btn-register.is-loading {
     background-color: var(--primary-hover);
     cursor: not-allowed;
     opacity: 0.9;
@@ -256,11 +182,11 @@ body, html {
 
 /* Thông báo cảnh báo (Alerts) */
 .alert {
-    padding: 12px 16px;
+    padding: 11px 14px;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -273,28 +199,22 @@ body, html {
     border: 1px solid #FED7D7;
 }
 
-.alert-success {
-    background-color: #F0FFF4;
-    color: #2F855A;
-    border: 1px solid #C6F6D5;
-}
-
 /* Chân trang */
-.login-footer {
+.register-footer {
     text-align: center;
     font-size: 14px;
     color: var(--text-grey);
-    margin-top: 30px;
+    margin-top: 25px;
 }
 
-.create-account-link {
+.login-link {
     color: var(--primary-red);
     text-decoration: none;
     font-weight: 600;
     transition: all 0.15s ease;
 }
 
-.create-account-link:hover {
+.login-link:hover {
     color: var(--primary-hover);
     text-decoration: underline;
 }
@@ -313,26 +233,33 @@ body, html {
 
 /* Tương thích Responsive */
 @media (max-width: 1024px) {
-    .login-left {
+    .register-left {
         width: 32%;
     }
-    .login-right {
+    .register-right {
         width: 68%;
     }
 }
 
 @media (max-width: 868px) {
-    .login-left {
+    .register-left {
         display: none;
     }
-    .login-right {
+    .register-right {
         width: 100%;
         padding: 40px 24px;
     }
-    .login-card-wrapper {
-        max-width: 400px;
+    .register-card-wrapper {
+        max-width: 500px;
     }
-    .login-header h1 {
-        font-size: 32px;
+    .register-header h1 {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
     }
 }

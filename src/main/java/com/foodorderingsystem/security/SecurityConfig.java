@@ -9,10 +9,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final UserDetailsService userDetailsService;
+
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,9 +57,16 @@ public class SecurityConfig {
                 })
                 .permitAll()
             )
+            .rememberMe(rememberMe -> rememberMe
+                .userDetailsService(userDetailsService)
+                .key("foodOrderingSystemSecretRememberMeKey")
+                .tokenValiditySeconds(86400 * 14) // 14 days
+                .rememberMeParameter("remember-me")
+            )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
+                .deleteCookies("remember-me")
                 .permitAll()
             );
         

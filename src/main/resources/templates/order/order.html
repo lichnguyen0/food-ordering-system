@@ -28,26 +28,26 @@
                         </div>
                     </div>
                     <ul class="profile-menu">
-                        <li>
+                        <!--<li>
                             <a href="javascript:void(0)">
                                 <i class="fa-regular fa-bell"></i> Thông Báo
                             </a>
-                        </li>
-                        <li>
+                        </li>-->
+                        <!--<li>
                             <a href="javascript:void(0)">
                                 <i class="fa-regular fa-user"></i> Tài Khoản Của Tôi
                             </a>
-                        </li>
+                        </li>-->
                         <li>
                             <a href="javascript:void(0)" class="active">
                                 <i class="fa-solid fa-clipboard-list"></i> Đơn Mua
                             </a>
                         </li>
-                        <li>
+                        <!--<li>
                             <a href="javascript:void(0)">
                                 <i class="fa-solid fa-ticket"></i> Kho Voucher
                             </a>
-                        </li>
+                        </li>-->
                         <li>
                             <form th:action="@{/logout}" method="post" id="logoutFormProfile">
                                 <a href="javascript:void(0)" onclick="document.getElementById('logoutFormProfile').submit()">
@@ -58,10 +58,10 @@
                     </ul>
                 </aside>
 
-                <!-- Profile Main Content (Shopee Style Tabs) -->
+                <!-- Nội dung chính của hồ sơ -->
                 <div class="profile-main-content">
                     
-                    <!-- Tabs Navigation -->
+                    <!-- Điều hướng tab -->
                     <div class="orders-tabs">
                         <button class="order-tab-btn active" data-status="ALL">Tất cả <span class="tab-count">0</span></button>
                         <button class="order-tab-btn" data-status="PENDING">Chờ xác nhận <span class="tab-count">0</span></button>
@@ -71,23 +71,23 @@
                         <button class="order-tab-btn" data-status="CANCELLED">Đã hủy <span class="tab-count">0</span></button>
                     </div>
 
-                    <!-- Search Bar -->
+                    <!-- Thanh tìm kiếm -->
                     <div class="shopee-search-bar">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" placeholder="Bạn có thể tìm kiếm theo tên Nhà hàng, ID đơn hàng hoặc Tên Sản phẩm">
                     </div>
 
-                    <!-- Orders List -->
+                    <!-- Danh sách đơn đặt hàng -->
                     <div class="customer-order-list">
                         <div th:if="${allOrders == null || allOrders.empty}" class="empty-orders-msg">
                             <i class="fa-solid fa-box-open"></i>
                             <p>Bạn chưa có đơn hàng nào.</p>
                         </div>
 
-                        <!-- Order Card (Shopee Style) -->
+                        <!-- Thẻ đặt hàng (Shopee Style) -->
                         <div th:each="order : ${allOrders}" class="customer-order-card" th:data-order-status="${order.status.name()}">
                             
-                            <!-- Card Header: Restaurant & Status -->
+                            <!-- Tiêu đề thẻ: Nhà hàng & Trạng thái -->
                             <div class="customer-order-header">
                                 <div class="shop-info">
                                     <span class="shop-label">Yêu thích</span>

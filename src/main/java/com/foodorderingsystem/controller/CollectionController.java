@@ -7,8 +7,9 @@ import com.foodorderingsystem.repository.RestaurantRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Controller
 @RequestMapping("/admin/collections")
@@ -44,21 +45,25 @@ public class CollectionController {
         return "admin/collections/form";
     }
 
+
+
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
+
         Collection collection = collectionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Collection not found"));
-        
+
         // Trích xuất danh sách ID món ăn đã chọn để so sánh ở View dễ dàng hơn
         List<Long> selectedFoodIds = collection.getFoods().stream()
                 .map(food -> food.getFoodId())
-                .collect(java.util.stream.Collectors.toList());
-        
+                .collect(Collectors.toList());
+
         model.addAttribute("collection", collection);
         model.addAttribute("selectedFoodIds", selectedFoodIds);
         model.addAttribute("allFoods", foodRepository.findAll());
         model.addAttribute("restaurants", restaurantRepository.findAll());
         model.addAttribute("activeMenu", "marketing");
+
         return "admin/collections/form";
     }
 

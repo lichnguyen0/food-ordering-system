@@ -1,11 +1,18 @@
 package com.foodorderingsystem.controller;
 
 import com.foodorderingsystem.model.Cart;
+import com.foodorderingsystem.model.Coupon;
 import com.foodorderingsystem.model.Food;
 import com.foodorderingsystem.repository.FoodRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/cart")
@@ -28,13 +35,13 @@ public class CartApiController {
         return cart;
     }
 
-    // Default fast add without options
+    // Thêm nhanh mặc định mà không có tùy chọn
     @PostMapping("/add/{id}")
     public CartResponse add(@PathVariable Long id, @RequestParam(required = false, defaultValue = "false") boolean force, HttpSession session) {
         Cart cart = getCart(session);
         Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
-        
-        // Conflict detection: different restaurant
+
+        // Phát hiện xung đột: nhà hàng khác nhau
         Long currentRestId = cart.getRestaurantId();
         if (currentRestId != null && food.getRestaurant() != null && !currentRestId.equals(food.getRestaurant().getRestaurantId())) {
             if (force) {
@@ -43,19 +50,19 @@ public class CartApiController {
                 return createConflictResponse(cart, cart.getRestaurantName());
             }
         }
-        
+
         cart.add(food);
         session.setAttribute("cart", cart);
         return createResponse(cart);
     }
 
-    // Add with options
+    // Thêm với các tùy chọn
     @PostMapping("/add-with-options/{id}")
     public CartResponse addWithOptions(@PathVariable Long id, @RequestBody AddToCartRequest req, @RequestParam(required = false, defaultValue = "false") boolean force, HttpSession session) {
         Cart cart = getCart(session);
         Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
-        
-        // Conflict detection: different restaurant
+
+        // Phát hiện xung đột: nhà hàng khác nhau
         Long currentRestId = cart.getRestaurantId();
         if (currentRestId != null && food.getRestaurant() != null && !currentRestId.equals(food.getRestaurant().getRestaurantId())) {
             if (force) {
@@ -64,13 +71,13 @@ public class CartApiController {
                 return createConflictResponse(cart, cart.getRestaurantName());
             }
         }
-        
+
         cart.add(food, req.getOptionsText(), req.getExtraPrice());
         session.setAttribute("cart", cart);
         return createResponse(cart);
     }
 
-    // Increase using cartItemId (String)
+    // Tăng bằng cartItemId (Chuỗi)
     @PostMapping("/increase/{cartItemId}")
     public CartResponse increase(@PathVariable String cartItemId, HttpSession session) {
         Cart cart = getCart(session);
@@ -82,7 +89,7 @@ public class CartApiController {
         return createResponse(cart);
     }
 
-    // Decrease using cartItemId (String)
+    // Giảm bằng cartItemId (Chuỗi)
     @PostMapping("/decrease/{cartItemId}")
     public CartResponse decrease(@PathVariable String cartItemId, HttpSession session) {
         Cart cart = getCart(session);
@@ -98,7 +105,7 @@ public class CartApiController {
         return createResponse(cart);
     }
 
-    // Remove using cartItemId (String)
+    //Xóa bằng cartItemId (Chuỗi)
     @PostMapping("/remove/{cartItemId}")
     public CartResponse remove(@PathVariable String cartItemId, HttpSession session) {
         Cart cart = getCart(session);
@@ -107,20 +114,20 @@ public class CartApiController {
         return createResponse(cart);
     }
 
-    // Decrease by foodId (from the menu grid)
+    // Giảm theo foodId (từ lưới menu)
     @PostMapping("/decrease-by-food/{foodId}")
     public CartResponse decreaseByFood(@PathVariable Long foodId, HttpSession session) {
         Cart cart = getCart(session);
         String targetCartItemId = null;
-        // Find first matching cart item for this food
+        // Tìm mặt hàng giỏ hàng phù hợp đầu tiên cho thực phẩm này
         for (String key : cart.getItems().keySet()) {
             if (cart.getItems().get(key).getFood().getFoodId().equals(foodId)) {
                 targetCartItemId = key;
-                // Prefer the one without options if multiple exist
+                // Thích một trong những không có tùy chọn nếu có nhiều
                 if (key.endsWith("-0")) break;
             }
         }
-        
+
         if (targetCartItemId != null) {
             int currentQty = cart.getItems().get(targetCartItemId).getQuantity();
             if (currentQty <= 1) {
@@ -147,37 +154,68 @@ public class CartApiController {
         return createResponse(cart, "CONFLICT", "Bạn có muốn tạo giỏ hàng mới? Việc thêm món từ cửa hàng này sẽ xóa các món hiện có trong giỏ hàng từ cửa hàng trước đó.", conflictRestaurantName);
     }
 
-    private CartResponse createResponse(Cart cart, String status, String message, String conflictRestaurantName) {
-        java.util.Map<Long, Integer> itemQuantities = new java.util.HashMap<>();
-        java.util.List<CartItemDTO> items = new java.util.ArrayList<>();
-        
+    private CartResponse createResponse(Cart cart,
+                                        String status,
+                                        String message,
+                                        String conflictRestaurantName) {
+
+        Map<Long, Integer> itemQuantities = new HashMap<>();
+
+        List<CartItemDTO> items = new ArrayList<>();
+
         cart.getItems().forEach((id, item) -> {
-            // Aggregate quantity by foodId for the menu grid controls
-            itemQuantities.merge(item.getFood().getFoodId(), item.getQuantity(), Integer::sum);
-            
+
+            // Tổng hợp số lượng theo foodId cho các điều khiển lưới menu
+            itemQuantities.merge(
+                    item.getFood().getFoodId(),
+                    item.getQuantity(),
+                    Integer::sum
+            );
+
             items.add(new CartItemDTO(
-                item.getCartItemId(),
-                item.getFood().getFoodId(),
-                item.getFood().getFoodName(),
-                item.getUnitPrice(),
-                item.getFood().getImage(),
-                item.getQuantity(),
-                item.getOptionsText()
+                    item.getCartItemId(),
+                    item.getFood().getFoodId(),
+                    item.getFood().getFoodName(),
+                    item.getUnitPrice(),
+                    item.getFood().getImage(),
+                    item.getQuantity(),
+                    item.getOptionsText()
             ));
         });
 
         String activeRestaurantName = cart.getRestaurantName();
-        return new CartResponse(status, message, conflictRestaurantName, activeRestaurantName, cart.getTotalQuantity(), cart.getTotalPrice(), itemQuantities, items);
+
+        return new CartResponse(
+                status,
+                message,
+                conflictRestaurantName,
+                activeRestaurantName,
+                cart.getTotalQuantity(),
+                cart.getTotalPrice(),
+                itemQuantities,
+                items
+        );
     }
 
     public static class AddToCartRequest {
         private String optionsText;
         private double extraPrice;
 
-        public String getOptionsText() { return optionsText; }
-        public void setOptionsText(String optionsText) { this.optionsText = optionsText; }
-        public double getExtraPrice() { return extraPrice; }
-        public void setExtraPrice(double extraPrice) { this.extraPrice = extraPrice; }
+        public String getOptionsText() {
+            return optionsText;
+        }
+
+        public void setOptionsText(String optionsText) {
+            this.optionsText = optionsText;
+        }
+
+        public double getExtraPrice() {
+            return extraPrice;
+        }
+
+        public void setExtraPrice(double extraPrice) {
+            this.extraPrice = extraPrice;
+        }
     }
 
     public static class CartItemDTO {
@@ -199,26 +237,62 @@ public class CartApiController {
             this.optionsText = optionsText;
         }
 
-        public String getCartItemId() { return cartItemId; }
-        public Long getFoodId() { return foodId; }
-        public String getFoodName() { return foodName; }
-        public double getPrice() { return price; }
-        public String getImage() { return image; }
-        public int getQuantity() { return quantity; }
-        public String getOptionsText() { return optionsText; }
+        public String getCartItemId() {
+            return cartItemId;
+        }
+
+        public Long getFoodId() {
+            return foodId;
+        }
+
+        public String getFoodName() {
+            return foodName;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public String getImage() {
+            return image;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public String getOptionsText() {
+            return optionsText;
+        }
     }
 
     public static class CartResponse {
-        private String status;
-        private String message;
-        private String conflictRestaurantName;
-        private String activeRestaurantName;
-        private int totalQuantity;
-        private double totalPrice;
-        private java.util.Map<Long, Integer> itemQuantities;
-        private java.util.List<CartItemDTO> items;
 
-        public CartResponse(String status, String message, String conflictRestaurantName, String activeRestaurantName, int totalQuantity, double totalPrice, java.util.Map<Long, Integer> itemQuantities, java.util.List<CartItemDTO> items) {
+        private String status;
+
+        private String message;
+
+        private String conflictRestaurantName;
+
+        private String activeRestaurantName;
+
+        private int totalQuantity;
+
+        private double totalPrice;
+
+        private Map<Long, Integer> itemQuantities;
+
+        private List<CartItemDTO> items;
+
+        public CartResponse(String status,
+                            String message,
+                            String conflictRestaurantName,
+                            String activeRestaurantName,
+                            int totalQuantity,
+                            double totalPrice,
+                            Map<Long, Integer> itemQuantities,
+                            List<CartItemDTO> items) {
+
             this.status = status;
             this.message = message;
             this.conflictRestaurantName = conflictRestaurantName;
@@ -229,46 +303,98 @@ public class CartApiController {
             this.items = items;
         }
 
-        public String getStatus() { return status; }
-        public String getMessage() { return message; }
-        public String getConflictRestaurantName() { return conflictRestaurantName; }
-        public String getActiveRestaurantName() { return activeRestaurantName; }
-        public int getTotalQuantity() { return totalQuantity; }
-        public double getTotalPrice() { return totalPrice; }
-        public java.util.Map<Long, Integer> getItemQuantities() { return itemQuantities; }
-        public java.util.List<CartItemDTO> getItems() { return items; }
+        public String getStatus() {
+            return status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getConflictRestaurantName() {
+            return conflictRestaurantName;
+        }
+
+        public String getActiveRestaurantName() {
+            return activeRestaurantName;
+        }
+
+        public int getTotalQuantity() {
+            return totalQuantity;
+        }
+
+        public double getTotalPrice() {
+            return totalPrice;
+        }
+
+        public Map<Long, Integer> getItemQuantities() {
+            return itemQuantities;
+        }
+
+        public List<CartItemDTO> getItems() {
+            return items;
+        }
     }
 
-    // Apply coupon
+    // Áp dụng phiếu giảm giá
     @PostMapping("/apply-coupon/{code}")
-    public CouponResponse applyCoupon(@PathVariable String code, HttpSession session) {
+    public CouponResponse applyCoupon(@PathVariable String code,
+                                      HttpSession session) {
         Cart cart = getCart(session);
-        com.foodorderingsystem.model.Coupon coupon = couponRepository.findByCodeIgnoreCaseAndActiveTrue(code).orElse(null);
+
+        Coupon coupon = couponRepository
+                .findByCodeIgnoreCaseAndActiveTrue(code)
+                .orElse(null);
+
         if (coupon == null) {
-            return new CouponResponse(false, "Mã giảm giá không hợp lệ hoặc đã hết hạn!", 0.0);
+            return new CouponResponse(
+                    false,
+                    "Mã giảm giá không hợp lệ hoặc đã hết hạn!",
+                    0.0
+            );
         }
-        
+
         double subtotal = cart.getTotalPrice();
+
         if (subtotal < coupon.getMinOrderValue()) {
-            return new CouponResponse(false, "Đơn hàng tối thiểu phải đạt " + new java.text.DecimalFormat("#,###").format(coupon.getMinOrderValue()) + " ₫ để áp dụng mã này!", 0.0);
+            return new CouponResponse(
+                    false,
+                    "Đơn hàng tối thiểu phải đạt "
+                            + new DecimalFormat("#,###").format(coupon.getMinOrderValue())
+                            + " ₫ để áp dụng mã này!",
+                    0.0
+            );
         }
-        
+
         double discountAmount = 0.0;
+
         if ("PERCENTAGE".equals(coupon.getDiscountType())) {
+
             discountAmount = subtotal * (coupon.getDiscountValue() / 100.0);
-            if (coupon.getMaxDiscountAmount() > 0 && discountAmount > coupon.getMaxDiscountAmount()) {
+
+            if (coupon.getMaxDiscountAmount() > 0
+                    && discountAmount > coupon.getMaxDiscountAmount()) {
                 discountAmount = coupon.getMaxDiscountAmount();
             }
+
         } else if ("FIXED_AMOUNT".equals(coupon.getDiscountType())) {
+
             discountAmount = coupon.getDiscountValue();
         }
-        
+
         if (discountAmount > subtotal) {
             discountAmount = subtotal;
         }
-        
+
         session.setAttribute("appliedCouponCode", coupon.getCode());
-        return new CouponResponse(true, "Áp dụng mã giảm giá thành công!", discountAmount, coupon.getCode(), coupon.getDescription());
+
+        return new CouponResponse(
+                true,
+                "Áp dụng mã giảm giá thành công!",
+                discountAmount,
+                coupon.getCode(),
+                coupon.getDescription()
+        );
     }
 
     // Remove coupon
@@ -278,9 +404,9 @@ public class CartApiController {
         return new CouponResponse(true, "Đã hủy áp dụng mã giảm giá!", 0.0);
     }
 
-    // List active coupons
+    // Liệt kê phiếu giảm giá đang hoạt động
     @GetMapping("/active-coupons")
-    public java.util.List<com.foodorderingsystem.model.Coupon> getActiveCoupons() {
+    public List<Coupon> getActiveCoupons() {
         return couponRepository.findAllByActiveTrue();
     }
 
@@ -305,10 +431,24 @@ public class CartApiController {
             this.description = description;
         }
 
-        public boolean isSuccess() { return success; }
-        public String getMessage() { return message; }
-        public double getDiscountAmount() { return discountAmount; }
-        public String getCode() { return code; }
-        public String getDescription() { return description; }
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public double getDiscountAmount() {
+            return discountAmount;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 }
