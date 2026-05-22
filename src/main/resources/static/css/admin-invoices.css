@@ -1,0 +1,354 @@
+/* ==========================================================================
+   Admin Invoices Page Styles
+   ========================================================================== */
+
+   .admin-invoices-page {
+    padding: 24px;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 70px);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title-main {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.header-actions .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+}
+
+.btn-outline:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Sync / Backfill Button */
+.btn-sync {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border: none;
+}
+
+.btn-sync:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.btn-sync i {
+    transition: transform 0.5s ease;
+}
+
+.btn-sync:hover i {
+    transform: rotate(180deg);
+}
+
+/* Alert Boxes */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.alert-info {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.search-box {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #3b82f6;
+}
+
+.filter-group {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-select, .filter-date {
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #475569;
+    outline: none;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.filter-select:focus, .filter-date:focus {
+    border-color: #3b82f6;
+}
+
+/* Table */
+.table-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow-x: auto;
+    margin-bottom: 24px;
+}
+
+.invoices-table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+
+.invoices-table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.invoices-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+    font-size: 14px;
+}
+
+.invoices-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.invoice-id {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.customer-info .customer-name {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.customer-info .customer-phone {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.invoice-total {
+    font-weight: 700;
+    color: #ff0018; /* LunoFood brand color */
+}
+
+/* Payment Method Badges */
+.payment-method {
+    font-weight: 600;
+}
+.payment-method.cod { color: #16a34a; }
+.payment-method.momo { color: #d82d8b; }
+.payment-method.vnpay { color: #005baa; }
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+}
+
+.status-pending { background: #fef3c7; color: #d97706; }
+.status-confirmed { background: #e0f2fe; color: #0284c7; }
+.status-shipping { background: #dbeafe; color: #2563eb; }
+.status-completed { background: #dcfce7; color: #16a34a; }
+.status-cancelled { background: #fee2e2; color: #dc2626; }
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action,
+a.btn-action {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 6px;
+    border: none;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: #f1f5f9;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-action.view:hover { background-color: #e0f2fe; color: #0284c7; }
+.btn-action.print:hover { background-color: #fef3c7; color: #d97706; }
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.pagination-info {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.page-link:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.page-item.active .page-link {
+    background: #ff0018; /* LunoFood brand color */
+    border-color: #ff0018;
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    background: #f1f5f9;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-box {
+        max-width: 100%;
+    }
+    .filter-group {
+        flex-direction: column;
+    }
+    .pagination-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+}

@@ -21,7 +21,11 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/admin")
@@ -33,14 +37,16 @@ public class AdminController {
     private final FoodRepository foodRepository;
     private final FoodMapper foodMapper;
     private final UserRepository userRepository;
+    private final com.foodorderingsystem.service.InvoiceService invoiceService;
 
-    public AdminController(OrderService orderService, MonthlyStatService monthlyStatService, FoodRepository foodRepository, FoodMapper foodMapper, com.foodorderingsystem.repository.CategoryRepository categoryRepository, UserRepository userRepository) {
+    public AdminController(OrderService orderService, MonthlyStatService monthlyStatService, FoodRepository foodRepository, FoodMapper foodMapper, com.foodorderingsystem.repository.CategoryRepository categoryRepository, UserRepository userRepository, com.foodorderingsystem.service.InvoiceService invoiceService) {
         this.orderService = orderService;
         this.monthlyStatService = monthlyStatService;
         this.foodRepository = foodRepository;
         this.foodMapper = foodMapper;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.invoiceService = invoiceService;
     }
 
     /*
@@ -105,6 +111,22 @@ public class AdminController {
         return "admin/index";
     }
 
+    @GetMapping("/invoices")
+    public String invoices(Model model) {
+        model.addAttribute("invoices", invoiceService.getAllInvoices());
+        return "admin/invoices/list";
+    }
+
+    @GetMapping("/invoices/{id}")
+    public String invoiceDetail(@PathVariable Long id, Model model) {
+        com.foodorderingsystem.model.Invoice invoice = invoiceService.getInvoiceById(id);
+        if (invoice == null) {
+            return "redirect:/admin/invoices";
+        }
+        model.addAttribute("invoice", invoice);
+        return "admin/invoices/detail";
+    }
+
     /**
      * Hiển thị danh sách đơn hàng theo từng trạng thái.
      * Chia thành:
@@ -114,33 +136,34 @@ public class AdminController {
      * - Đơn hoàn thành / đã hủy
      */
     @GetMapping("/orders")
-    public String orders(Model model) {
+    public String orders(Model model, 
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "10") int size) {
 
-        // Lấy toàn bộ đơn hàng
-        List<Order> allOrders = orderService.getAll();
+        // Create Pageable object with sorting by orderId descending
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderId").descending());
 
-        List<Order> pendingOrders = allOrders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.PENDING)
-                .collect(Collectors.toList());
+        // Get paginated orders for each status
+        Page<Order> pendingOrdersPage = orderService.getPendingOrders(pageable);
+        Page<Order> processingOrdersPage = orderService.getProcessingOrders(pageable);
+        Page<Order> shippingOrdersPage = orderService.getShippingOrders(pageable);
+        Page<Order> completedOrdersPage = orderService.getCompletedOrders(pageable);
 
-        List<Order> processingOrders = allOrders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.PREPARING
-                        || o.getStatus() == OrderStatus.CONFIRMED)
-                .collect(Collectors.toList());
+        // Add page objects to model for displaying content
+        model.addAttribute("pendingOrdersPage", pendingOrdersPage);
+        model.addAttribute("processingOrdersPage", processingOrdersPage);
+        model.addAttribute("shippingOrdersPage", shippingOrdersPage);
+        model.addAttribute("completedOrdersPage", completedOrdersPage);
 
-        List<Order> shippingOrders = allOrders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.DELIVERING)
-                .collect(Collectors.toList());
+        // Add total counts for tab badges (using totalElements from pages)
+        model.addAttribute("pendingCount", pendingOrdersPage.getTotalElements());
+        model.addAttribute("processingCount", processingOrdersPage.getTotalElements());
+        model.addAttribute("shippingCount", shippingOrdersPage.getTotalElements());
+        model.addAttribute("completedCount", completedOrdersPage.getTotalElements());
 
-        List<Order> completedOrders = allOrders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.DELIVERED
-                        || o.getStatus() == OrderStatus.CANCELLED)
-                .collect(Collectors.toList());
-
-        model.addAttribute("pendingOrders", pendingOrders);
-        model.addAttribute("processingOrders", processingOrders);
-        model.addAttribute("shippingOrders", shippingOrders);
-        model.addAttribute("completedOrders", completedOrders);
+        // Add pagination info to model
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
 
         return "admin/orders";
     }
