@@ -12,24 +12,24 @@
             <!-- Tabs -->
             <div class="order-tabs">
                 <button class="tab-btn active" data-target="tab-pending">
-                    Chờ xác nhận <span class="tab-badge" th:text="${pendingOrders.size()}">0</span>
+                    Chờ xác nhận <span class="tab-badge" th:text="${pendingCount}">0</span>
                 </button>
                 <button class="tab-btn" data-target="tab-processing">
-                    Trong bếp <span class="tab-badge" th:text="${processingOrders.size()}">0</span>
+                    Trong bếp <span class="tab-badge" th:text="${processingCount}">0</span>
                 </button>
                 <button class="tab-btn" data-target="tab-shipping">
-                    Đang giao <span class="tab-badge" th:text="${shippingOrders.size()}">0</span>
+                    Đang giao <span class="tab-badge" th:text="${shippingCount}">0</span>
                 </button>
                 <button class="tab-btn" data-target="tab-completed">
-                    Lịch sử <span class="tab-badge" th:text="${completedOrders.size()}">0</span>
+                    Lịch sử <span class="tab-badge" th:text="${completedCount}">0</span>
                 </button>
             </div>
 
             <!-- Tab Content: PENDING -->
             <div id="tab-pending" class="tab-content active">
                 <div class="kanban-grid">
-                    <div th:if="${pendingOrders.empty}" class="no-data-msg">Không có đơn hàng mới nào.</div>
-                    <div th:each="order : ${pendingOrders}" class="order-card pending" th:id="'order-card-' + ${order.orderId}">
+                    <div th:if="${pendingOrdersPage.totalElements == 0}" class="no-data-msg">Không có đơn hàng mới nào.</div>
+                    <div th:each="order : ${pendingOrdersPage.content}" class="order-card pending" th:id="'order-card-' + ${order.orderId}">
                         <div class="order-header">
                             <span class="order-id" th:text="'#' + ${order.orderId}">#1001</span>
                             <span class="order-time">
@@ -68,13 +68,21 @@
                         </div>
                     </div>
                 </div>
+                <!-- Pagination for Pending -->
+                <div class="pagination" th:if="${pendingOrdersPage.totalPages > 1}">
+                    <a th:if="${pendingOrdersPage.hasPrevious()}" th:href="@{/admin/orders(page=${pendingOrdersPage.number - 1}, size=${pageSize})}">« Trước</a>
+                    <span th:unless="${pendingOrdersPage.hasPrevious()}" class="disabled">« Trước</span>
+                    <span>Trang <span th:text="${pendingOrdersPage.number + 1}"></span> / <span th:text="${pendingOrdersPage.totalPages}"></span></span>
+                    <a th:if="${pendingOrdersPage.hasNext()}" th:href="@{/admin/orders(page=${pendingOrdersPage.number + 1}, size=${pageSize})}">Sau »</a>
+                    <span th:unless="${pendingOrdersPage.hasNext()}" class="disabled">Sau »</span>
+                </div>
             </div>
-
+ 
             <!-- Tab Content: PROCESSING -->
             <div id="tab-processing" class="tab-content">
                 <div class="kanban-grid">
-                    <div th:if="${processingOrders.empty}" class="no-data-msg">Không có đơn hàng nào trong bếp.</div>
-                    <div th:each="order : ${processingOrders}" class="order-card processing" th:id="'order-card-' + ${order.orderId}">
+                    <div th:if="${processingOrdersPage.totalElements == 0}" class="no-data-msg">Không có đơn hàng nào trong bếp.</div>
+                    <div th:each="order : ${processingOrdersPage.content}" class="order-card processing" th:id="'order-card-' + ${order.orderId}">
                         <div class="order-header">
                             <span class="order-id" th:text="'#' + ${order.orderId}">#1001</span>
                             <span class="order-time">
@@ -111,13 +119,21 @@
                         </div>
                     </div>
                 </div>
+                <!-- Pagination for Processing -->
+                <div class="pagination" th:if="${processingOrdersPage.totalPages > 1}">
+                    <a th:if="${processingOrdersPage.hasPrevious()}" th:href="@{/admin/orders(page=${processingOrdersPage.number - 1}, size=${pageSize})}">« Trước</a>
+                    <span th:unless="${processingOrdersPage.hasPrevious()}" class="disabled">« Trước</span>
+                    <span>Trang <span th:text="${processingOrdersPage.number + 1}"></span> / <span th:text="${processingOrdersPage.totalPages}"></span></span>
+                    <a th:if="${processingOrdersPage.hasNext()}" th:href="@{/admin/orders(page=${processingOrdersPage.number + 1}, size=${pageSize})}">Sau »</a>
+                    <span th:unless="${processingOrdersPage.hasNext()}" class="disabled">Sau »</span>
+                </div>
             </div>
-
+ 
             <!-- Tab Content: SHIPPING -->
             <div id="tab-shipping" class="tab-content">
                 <div class="kanban-grid">
-                    <div th:if="${shippingOrders.empty}" class="no-data-msg">Không có đơn hàng nào đang giao.</div>
-                    <div th:each="order : ${shippingOrders}" class="order-card shipping" th:id="'order-card-' + ${order.orderId}">
+                    <div th:if="${shippingOrdersPage.totalElements == 0}" class="no-data-msg">Không có đơn hàng nào đang giao.</div>
+                    <div th:each="order : ${shippingOrdersPage.content}" class="order-card shipping" th:id="'order-card-' + ${order.orderId}">
                         <div class="order-header">
                             <span class="order-id" th:text="'#' + ${order.orderId}">#1001</span>
                             <span class="order-time">
@@ -151,8 +167,16 @@
                         </div>
                     </div>
                 </div>
+                <!-- Pagination for Shipping -->
+                <div class="pagination" th:if="${shippingOrdersPage.totalPages > 1}">
+                    <a th:if="${shippingOrdersPage.hasPrevious()}" th:href="@{/admin/orders(page=${shippingOrdersPage.number - 1}, size=${pageSize})}">« Trước</a>
+                    <span th:unless="${shippingOrdersPage.hasPrevious()}" class="disabled">« Trước</span>
+                    <span>Trang <span th:text="${shippingOrdersPage.number + 1}"></span> / <span th:text="${shippingOrdersPage.totalPages}"></span></span>
+                    <a th:if="${shippingOrdersPage.hasNext()}" th:href="@{/admin/orders(page=${shippingOrdersPage.number + 1}, size=${pageSize})}">Sau »</a>
+                    <span th:unless="${shippingOrdersPage.hasNext()}" class="disabled">Sau »</span>
+                </div>
             </div>
-
+ 
             <!-- Tab Content: COMPLETED -->
             <div id="tab-completed" class="tab-content">
                 <div class="product-list-card">
@@ -167,9 +191,12 @@
                                 <th>THỜI GIAN</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="order : ${completedOrders}">
-                                <td th:text="'#' + ${order.orderId}">#1001</td>
+                         <tbody>
+                             <tr th:if="${completedOrdersPage.totalElements == 0}">
+                                 <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">Không có đơn hàng nào trong lịch sử.</td>
+                             </tr>
+                             <tr th:each="order : ${completedOrdersPage.content}">
+                                 <td th:text="'#' + ${order.orderId}">#1001</td>
                                 <td th:text="${order.user != null ? order.user.username : 'Guest'}">User</td>
                                 <td th:text="${order.deliveryAddress}">Address</td>
                                 <td th:text="${#numbers.formatDecimal(order.totalAmount + 16000, 0, 'COMMA', 0, 'POINT')} + ' ₫'" class="fw-bold">0 ₫</td>
@@ -181,10 +208,18 @@
                                 <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">15/05/2026</td>
                             </tr>
                         </tbody>
-                    </table>
-                </div>
-            </div>
-
+                     </table>
+                 </div>
+                 <!-- Pagination for Completed -->
+                 <div class="pagination" th:if="${completedOrdersPage.totalPages > 1}">
+                     <a th:if="${completedOrdersPage.hasPrevious()}" th:href="@{/admin/orders(page=${completedOrdersPage.number - 1}, size=${pageSize})}">« Trước</a>
+                     <span th:unless="${completedOrdersPage.hasPrevious()}" class="disabled">« Trước</span>
+                     <span>Trang <span th:text="${completedOrdersPage.number + 1}"></span> / <span th:text="${completedOrdersPage.totalPages}"></span></span>
+                     <a th:if="${completedOrdersPage.hasNext()}" th:href="@{/admin/orders(page=${completedOrdersPage.number + 1}, size=${pageSize})}">Sau »</a>
+                     <span th:unless="${completedOrdersPage.hasNext()}" class="disabled">Sau »</span>
+                 </div>
+             </div>
+ 
             <style>
                 .no-data-msg {
                     padding: 20px;
@@ -194,6 +229,35 @@
                     font-style: italic;
                     grid-column: 1 / -1;
                     text-align: center;
+                }
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 8px;
+                    margin-top: 15px;
+                    font-size: 14px;
+                }
+                .pagination a {
+                    padding: 6px 12px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    text-decoration: none;
+                    color: #475569;
+                    background: white;
+                    transition: all 0.2s;
+                }
+                .pagination a:hover {
+                    background: #f1f5f9;
+                    border-color: #cbd5e1;
+                }
+                .pagination span {
+                    padding: 6px 10px;
+                    color: #64748b;
+                }
+                .pagination .disabled {
+                    color: #cbd5e1;
+                    pointer-events: none;
                 }
             </style>
 

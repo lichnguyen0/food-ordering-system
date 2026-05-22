@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -23,19 +26,22 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final FoodRepository foodRepository;
     private final com.foodorderingsystem.repository.CouponRepository couponRepository;
+    private final com.foodorderingsystem.service.InvoiceService invoiceService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             UserRepository userRepository,
                             FoodRepository foodRepository,
                             com.foodorderingsystem.repository.OrderHistoryRepository orderHistoryRepository,
-                            com.foodorderingsystem.repository.CouponRepository couponRepository) {
+                            com.foodorderingsystem.repository.CouponRepository couponRepository,
+                            com.foodorderingsystem.service.InvoiceService invoiceService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userRepository = userRepository;
         this.foodRepository = foodRepository;
         this.orderHistoryRepository = orderHistoryRepository;
         this.couponRepository = couponRepository;
+        this.invoiceService = invoiceService;
     }
 
     @Override
@@ -145,6 +151,9 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
 
+        // Sinh hóa đơn tự động
+        invoiceService.generateInvoiceForOrder(order);
+
         cart.getItems().clear();
         return order;
     }
@@ -184,6 +193,9 @@ public class OrderServiceImpl implements OrderService {
         
         // Log the status change
         orderHistoryRepository.save(new OrderHistory(order, status, LocalDateTime.now()));
+
+        // Đồng bộ trạng thái thanh toán của hóa đơn
+        invoiceService.updateInvoiceStatusBasedOnOrder(orderId, status);
     }
 
     @Override
@@ -198,5 +210,25 @@ public class OrderServiceImpl implements OrderService {
                 .filter(o -> o.getStatus() != OrderStatus.CANCELLED)
                 .mapToDouble(Order::getTotalAmount)
                 .sum();
+    }
+
+    @Override
+    public Page<Order> getPendingOrders(Pageable pageable) {
+        return orderRepository.findByStatus(OrderStatus.PENDING, pageable);
+    }
+
+    @Override
+    public Page<Order> getProcessingOrders(Pageable pageable) {
+        return orderRepository.findByStatusIn(List.of(OrderStatus.PREPARING, OrderStatus.CONFIRMED), pageable);
+    }
+
+    @Override
+    public Page<Order> getShippingOrders(Pageable pageable) {
+        return orderRepository.findByStatus(OrderStatus.DELIVERING, pageable);
+    }
+
+    @Override
+    public Page<Order> getCompletedOrders(Pageable pageable) {
+        return orderRepository.findByStatusIn(List.of(OrderStatus.DELIVERED, OrderStatus.CANCELLED), pageable);
     }
 }

@@ -83,6 +83,16 @@
                 </ul>
             </li>
             <li><a href="/admin/orders" class="menu-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</a></li>
+            <li class="has-submenu" th:classappend="${activeMenu == 'invoice' ? 'open' : ''}">
+                <a href="javascript:void(0)" class="menu-item">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> 
+                    <span>Hóa đơn</span>
+                    <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                </a>
+                <ul class="submenu" th:classappend="${activeMenu == 'invoice' ? 'show' : ''}">
+                    <li><a href="/admin/invoices" class="submenu-item" th:style="${activeSub == 'list' ? 'color: #ff0018;' : ''}">Danh sách hóa đơn</a></li>
+                </ul>
+            </li>
 <!--
             <li><a href="/admin/users" class="menu-item" th:classappend="${activeMenu == 'users' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Khách hàng</a></li>
 -->

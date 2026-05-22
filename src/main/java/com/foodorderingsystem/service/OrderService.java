@@ -2,9 +2,9 @@ package com.foodorderingsystem.service;
 
 import com.foodorderingsystem.model.Cart;
 import com.foodorderingsystem.model.Order;
-import com.foodorderingsystem.model.OrderItem;
 import com.foodorderingsystem.model.OrderStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -17,4 +17,10 @@ public interface OrderService {
     void updateStatus(Long orderId, OrderStatus status);
     long countOrders();
     double calculateTotalRevenue();
+    
+    // Paginated methods for admin orders page
+    Page<Order> getPendingOrders(Pageable pageable);
+    Page<Order> getProcessingOrders(Pageable pageable);
+    Page<Order> getShippingOrders(Pageable pageable);
+    Page<Order> getCompletedOrders(Pageable pageable);
 }

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <!-- CSS riêng cho trang chi tiết hóa đơn -->
+    <link rel="stylesheet" href="/css/admin-invoice-detail.css">
+</head>
+<body>
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'invoice', 'list')}">
+        <main class="admin-invoice-detail-page">
+            <!-- Thanh công cụ (Không in ra khi print) -->
+            <div class="action-bar no-print">
+                <a href="/admin/invoices" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Danh sách hóa đơn</a>
+                <div class="action-buttons">
+                    <button class="btn btn-primary btn-print" onclick="window.print()">
+                        <i class="fa-solid fa-print"></i> In Hóa Đơn
+                    </button>
+                    <!-- <button class="btn btn-outline"><i class="fa-solid fa-download"></i> Tải PDF</button> -->
+                </div>
+            </div>
+
+            <!-- Vùng hiển thị Hóa đơn (A4 Style) -->
+            <div class="invoice-document">
+                
+                <!-- Invoice Header -->
+                <div class="invoice-header">
+                    <div class="company-brand">
+                        <div class="logo">
+                            <span class="logo-luno">Luno</span><span class="logo-food">Food</span>
+                        </div>
+                        <p class="company-address">123 Đường Ẩm Thực, Quận 1, TP. HCM</p>
+                        <p class="company-contact">SĐT: 090 123 4567 | Email: hotro@lunofood.vn</p>
+                    </div>
+                    <div class="invoice-title-wrapper">
+                        <h1 class="invoice-title">HÓA ĐƠN</h1>
+                        <p class="invoice-number" th:text="'Số: ' + ${invoice.invoiceCode}">Số: INV-1001</p>
+                    </div>
+                </div>
+
+                <!-- Invoice Meta & Customer Info -->
+                <div class="invoice-meta-section">
+                    <div class="customer-details">
+                        <h3 class="section-heading">THÔNG TIN KHÁCH HÀNG</h3>
+                        <p><strong>Khách hàng:</strong> <span th:text="${invoice.customerName}">Nguyễn Văn A</span></p>
+                        <p><strong>Số điện thoại:</strong> <span th:text="${invoice.customerPhone}">0901234567</span></p>
+                        <p><strong>Địa chỉ giao:</strong> <span th:text="${invoice.order.deliveryAddress}">123 Đường ABC</span></p>
+                        <p th:if="${invoice.order.deliveryNote != null and !invoice.order.deliveryNote.isEmpty()}">
+                            <strong>Ghi chú:</strong> <span th:text="${invoice.order.deliveryNote}">Giao giờ hành chính</span>
+                        </p>
+                    </div>
+                    <div class="order-details">
+                        <h3 class="section-heading">THÔNG TIN ĐƠN HÀNG</h3>
+                        <p><strong>Mã Đơn (Order ID):</strong> <span th:text="'#' + ${invoice.order.orderId}">#1005</span></p>
+                        <p><strong>Ngày lập:</strong> <span th:text="${#temporals.format(invoice.createdAt, 'dd/MM/yyyy HH:mm')}">21/05/2026 14:30</span></p>
+                        <p><strong>Hình thức TT:</strong> 
+                            <span class="badge-payment" 
+                                  th:text="${invoice.paymentMethod == 'CASH' ? 'Tiền mặt' : (invoice.paymentMethod == 'MOMO' ? 'MoMo' : (invoice.paymentMethod == 'VNPAY' ? 'VNPay' : invoice.paymentMethod))}">Tiền mặt</span></p>
+                        <p>
+                            <strong>Trạng thái TT:</strong> 
+                            <span th:class="'status-badge status-' + ${#strings.toLowerCase(invoice.paymentStatus.name())}"
+                                  th:text="${invoice.paymentStatus.name() == 'UNPAID' ? 'Chưa thanh toán' : (invoice.paymentStatus.name() == 'PAID' ? 'Đã thanh toán' : invoice.paymentStatus.name())}">
+                                Đã thanh toán
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Invoice Items -->
+                <div class="invoice-items">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="text-center" width="5%">STT</th>
+                                <th width="45%">Sản phẩm / Dịch vụ</th>
+                                <th class="text-center" width="15%">Số lượng</th>
+                                <th class="text-right" width="15%">Đơn giá</th>
+                                <th class="text-right" width="20%">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item, iterStat : ${invoice.order.orderItems}">
+                                <td class="text-center" th:text="${iterStat.count}">1</td>
+                                <td>
+                                    <div class="item-name" th:text="${item.food.foodName}">Trà Sữa Trân Châu</div>
+                                    <div class="item-options" th:if="${item.optionsText != null and !item.optionsText.isEmpty()}" th:text="${item.optionsText}">Size M, Ít đá</div>
+                                </td>
+                                <td class="text-center" th:text="${item.quantity}">2</td>
+                                <td class="text-right" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">35,000đ</td>
+                                <td class="text-right fw-bold" th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + 'đ'">70,000đ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Invoice Summary -->
+                <div class="invoice-summary-wrapper">
+                    <div class="invoice-notes">
+                        <h4>Ghi chú nội bộ:</h4>
+                        <p>Hóa đơn này chỉ có giá trị lưu hành nội bộ và xác nhận giao dịch thành công. Không có giá trị thay thế hóa đơn VAT.</p>
+                    </div>
+                    <div class="invoice-summary">
+                        <div class="summary-line">
+                            <span class="label">Tổng tiền hàng:</span>
+                            <span class="value" th:text="${#numbers.formatDecimal(invoice.order.totalAmount - invoice.order.deliveryFee + invoice.order.discountAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">100,000đ</span>
+                        </div>
+                        <div class="summary-line">
+                            <span class="label">Phí giao hàng:</span>
+                            <span class="value" th:text="${#numbers.formatDecimal(invoice.order.deliveryFee, 0, 'COMMA', 0, 'POINT')} + 'đ'">15,000đ</span>
+                        </div>
+                        <div class="summary-line discount" th:if="${invoice.order.discountAmount > 0}">
+                            <span class="label">Khuyến mãi (<span th:text="${invoice.order.couponCode}">SALE</span>):</span>
+                            <span class="value" th:text="'-' + ${#numbers.formatDecimal(invoice.order.discountAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">-10,000đ</span>
+                        </div>
+                        <div class="summary-line total">
+                            <span class="label">TỔNG CỘNG:</span>
+                            <span class="value total-price" th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">105,000đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Footer -->
+                <div class="invoice-footer">
+                    <div class="footer-thankyou">
+                        <i class="fa-solid fa-heart"></i>
+                        <p>Cảm ơn quý khách đã sử dụng dịch vụ của LunoFood!</p>
+                        <p class="signature">Hẹn gặp lại quý khách lần sau.</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- JS riêng cho trang chi tiết -->
+            <script src="/js/admin-invoice-detail.js"></script>
+        </main>
+    </div>
+</body>
+</html>
