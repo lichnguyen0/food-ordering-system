@@ -87,6 +87,13 @@
                         <span>Khuyến mãi giảm giá (<span id="appliedCodeDisplay"></span>)</span>
                         <span id="discountAmountDisplay">-0 ₫</span>
                     </div>
+                    <div class="total-row final-total" id="finalTotalRow">
+                        <span>Thành tiền</span>
+                        <span id="finalTotalText" th:data-base="${cart.totalPrice + deliveryFee}"
+                              th:text="${#numbers.formatDecimal(cart.totalPrice + deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                            75.000 ₫
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -170,7 +177,10 @@
         </div>
         </form>
     </main>
-
+ 
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+ 
     <!-- Sticky Bottom Bar -->
     <div class="fixed-bottom-bar">
         <div class="bottom-bar-content">

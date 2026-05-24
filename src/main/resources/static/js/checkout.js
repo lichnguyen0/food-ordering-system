@@ -200,6 +200,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         const finalTotal = Math.max(0, subtotal + deliveryFee - data.discountAmount);
                         
                         totalValueEl.textContent = new Intl.NumberFormat('vi-VN').format(finalTotal) + ' ₫';
+
+                        // Update "Thành tiền" row inside Tóm tắt đơn hàng
+                        const finalTotalText = document.getElementById('finalTotalText');
+                        if (finalTotalText) {
+                            finalTotalText.textContent = new Intl.NumberFormat('vi-VN').format(finalTotal) + ' ₫';
+                        }
                     }
                     
                     alert(data.message);
