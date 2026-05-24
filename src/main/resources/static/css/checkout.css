@@ -13,7 +13,7 @@ body.checkout-body {
     font-family: 'Inter', sans-serif;
     color: var(--text-dark);
     margin: 0;
-    padding-bottom: 100px; /* Space for sticky bottom bar */
+    padding-bottom: 180px; /* Space for sticky bottom bar + footer */
 }
 
 .checkout-container {
@@ -195,6 +195,21 @@ body.checkout-body {
 .total-row i {
     color: #ccc;
     cursor: pointer;
+}
+
+/* Final total row in order summary */
+.final-total {
+    font-weight: 700;
+    font-size: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+    margin-top: 4px;
+}
+
+.final-total span:last-child {
+    color: var(--grab-green, #00b14f);
+    font-weight: 800;
+    font-size: 16px;
 }
 
 /* Custom Dropdown */
