@@ -72,6 +72,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Deliver modal logic
+    var deliverModalEl = document.getElementById('deliver-modal');
+    if (deliverModalEl) {
+        deliverModalEl.addEventListener('click', function (e) {
+            if (e.target === this) closeDeliverModal();
+        });
+    }
+
 });
 
 function showToast(message, isSuccess = true) {
@@ -90,3 +98,20 @@ function showToast(message, isSuccess = true) {
         toast.classList.remove('show');
     }, 3000);
 }
+
+// Open/close deliver modal (global so inline onclick can call it)
+function openDeliverModal(orderId) {
+    var el = document.getElementById('deliver-modal');
+    if (!el) return;
+    document.getElementById('deliver-order-id-display').textContent = '#' + orderId;
+    var form = document.getElementById('deliver-form');
+    if (form) form.action = '/shipper/order/' + orderId + '/delivered';
+    el.style.display = 'block';
+}
+
+function closeDeliverModal() {
+    var el = document.getElementById('deliver-modal');
+    if (!el) return;
+    el.style.display = 'none';
+}
+

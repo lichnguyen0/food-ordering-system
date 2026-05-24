@@ -45,18 +45,123 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle form submit loading effect
+    // ===== Confirmation Modal Logic =====
     const form = document.getElementById('checkoutForm');
+    const modal = document.getElementById('confirmOrderModal');
+    const btnPlaceOrder = document.querySelector('.btn-place-order');
+
+    // Intercept "Đặt đơn" button — show modal instead of submitting
+    if (btnPlaceOrder) {
+        btnPlaceOrder.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Validate form before showing modal
+            if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            syncModalTotals();
+            openConfirmModal();
+        });
+    }
+
+    // Also intercept form submit (in case submitted via Enter key)
     if (form) {
-        form.addEventListener('submit', function() {
-            const btn = document.querySelector('.btn-place-order');
-            if (btn) {
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đặt hàng...';
-                btn.style.opacity = '0.7';
-                btn.style.pointerEvents = 'none';
+        form.addEventListener('submit', function(e) {
+            if (!form.dataset.confirmed) {
+                e.preventDefault();
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                syncModalTotals();
+                openConfirmModal();
+            } else {
+                // Confirmed — show loading effect
+                const btn = document.querySelector('.btn-place-order');
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đặt hàng...';
+                    btn.style.opacity = '0.7';
+                    btn.style.pointerEvents = 'none';
+                }
             }
         });
     }
+
+    // Sync current totals into modal
+    function syncModalTotals() {
+        const totalValueEl = document.querySelector('.total-value');
+        const modalTotal = document.getElementById('modalTotal');
+        if (totalValueEl && modalTotal) {
+            modalTotal.textContent = totalValueEl.textContent;
+        }
+
+        // Sync discount if applied
+        const discountRow = document.getElementById('discountRow');
+        const modalDiscountRow = document.getElementById('modalDiscountRow');
+        const discountAmountDisplay = document.getElementById('discountAmountDisplay');
+        const modalDiscount = document.getElementById('modalDiscount');
+
+        if (discountRow && discountRow.style.display !== 'none') {
+            if (modalDiscountRow) modalDiscountRow.style.display = 'flex';
+            if (discountAmountDisplay && modalDiscount) {
+                modalDiscount.textContent = discountAmountDisplay.textContent;
+            }
+        }
+    }
+
+    // Open modal with animation
+    window.openConfirmModal = function() {
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Force reflow for animation
+            void modal.offsetWidth;
+        }
+    };
+
+    // Close modal
+    window.closeConfirmModal = function() {
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
+
+    // Confirm and submit the form
+    window.confirmAndSubmit = function() {
+        if (form) {
+            form.dataset.confirmed = 'true';
+            closeConfirmModal();
+            // Small delay for modal close animation
+            setTimeout(function() {
+                form.submit();
+                // Show loading on button
+                const btn = document.querySelector('.btn-place-order');
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đặt hàng...';
+                    btn.style.opacity = '0.7';
+                    btn.style.pointerEvents = 'none';
+                }
+            }, 200);
+        }
+    };
+
+    // Close modal on overlay click
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeConfirmModal();
+            }
+        });
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+            closeConfirmModal();
+        }
+    });
 
     // Apply Promo Code
     window.applyPromoCode = function(code) {

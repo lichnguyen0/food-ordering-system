@@ -18,8 +18,8 @@ public class OptionGroup { // nhóm chứa các tuỳ chọn ví dụ, size: M, 
     @Column(nullable = false)
     private String groupName;
 
-    private boolean isRequired;
-    private boolean isMultiple;
+    private boolean required;
+    private boolean multiple;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "foodId")
