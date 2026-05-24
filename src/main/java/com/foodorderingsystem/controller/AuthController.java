@@ -19,15 +19,18 @@ public class AuthController {
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.foodorderingsystem.service.FoodService foodService;
 
     public AuthController(CategoryRepository categoryRepository,
                           RestaurantRepository restaurantRepository,
                           UserRepository userRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          com.foodorderingsystem.service.FoodService foodService) {
         this.categoryRepository = categoryRepository;
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.foodService = foodService;
     }
 
     @GetMapping("/login")
@@ -88,6 +91,7 @@ public class AuthController {
         model.addAttribute("categories", categoryRepository.findByActiveTrueOrderByDisplayOrderAsc());
         // Chỉ lấy nhà hàng có ưu đãi đang hoạt động cho trang Home
         model.addAttribute("restaurants", restaurantRepository.findActivePromos(java.time.LocalDate.now()));
+        model.addAttribute("foods", foodService.getAllFoods());
         return "user/home";
     }
 }

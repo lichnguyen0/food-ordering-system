@@ -59,9 +59,9 @@
                     <!-- Dynamic Items from Cart -->
                     <div th:each="itemEntry : ${cart.items}" class="order-item-row">
                         <div class="item-qty-controls">
-                            <button class="qty-btn">-</button>
+                            <button type="button" class="qty-btn" th:data-id="${itemEntry.key}" onclick="updateCheckoutCart(this.getAttribute('data-id'), 'decrease')">-</button>
                             <span class="qty-val" th:text="${itemEntry.value.quantity}">1</span>
-                            <button class="qty-btn">+</button>
+                            <button type="button" class="qty-btn" th:data-id="${itemEntry.key}" onclick="updateCheckoutCart(this.getAttribute('data-id'), 'add')">+</button>
                         </div>
                         <div class="item-img">
                             <img th:src="${itemEntry.value.food.image != null ? itemEntry.value.food.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop'}" alt="Food">
@@ -221,5 +221,17 @@
     </div>
 
     <script th:src="@{/js/checkout.js}"></script>
+    <script>
+        function updateCheckoutCart(cartItemId, action) {
+            const url = action === 'add' ? `/api/cart/increase/${cartItemId}` : `/api/cart/decrease/${cartItemId}`;
+            fetch(url, { method: 'POST' })
+                .then(r => r.json())
+                .then(() => {
+                    // Tải lại trang để cập nhật tổng tiền và UI thanh toán
+                    window.location.reload();
+                })
+                .catch(err => console.error("Error updating cart:", err));
+        }
+    </script>
 </body>
 </html>
