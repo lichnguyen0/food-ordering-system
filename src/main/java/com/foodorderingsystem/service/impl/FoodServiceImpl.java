@@ -32,6 +32,22 @@ public class FoodServiceImpl implements FoodService {
         return foodRepository.findAll();
     }
 
+    @Override
+    public void toggleFoodStatus(Long foodId) {
+        Food food = foodRepository.findById(foodId).orElseThrow(() -> new IllegalArgumentException("Món ăn không tồn tại"));
+        if (food.getStatus() == com.foodorderingsystem.model.FoodStatus.AVAILABLE) {
+            food.setStatus(com.foodorderingsystem.model.FoodStatus.SOLD_OUT);
+        } else {
+            food.setStatus(com.foodorderingsystem.model.FoodStatus.AVAILABLE);
+        }
+        foodRepository.save(food);
+    }
+
+    @Override
+    public List<Food> getFoodsByRestaurant(Long restaurantId) {
+        return foodRepository.findByRestaurant_RestaurantId(restaurantId);
+    }
+
     public List<Food> getByCategoryId(Long categoryId) {
         return foodRepository.findByCategory_CategoryId(categoryId);
     }

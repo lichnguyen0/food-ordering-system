@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/shipper-layout :: shipper-head}"><title>Shipper Dashboard</title></head>
+<body>
+<div th:replace="~{fragments/shipper-layout :: layout(~{::main-content}, 'dashboard')}">
+    <th:block th:fragment="main-content">
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+            <div class="switch-container">
+                <span id="statusLabel" class="switch-label" th:text="${isAvailable != null && isAvailable ? 'Đang trực' : 'Nghỉ ngơi'}">Đang trực</span>
+                <label class="switch">
+                    <input type="checkbox" id="statusToggle" th:checked="${isAvailable != null && isAvailable}" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-icon cyan"><i class="fa-solid fa-truck-fast"></i></div>
+                <div>
+                    <div class="stat-value" th:text="${deliveringCount}">0</div>
+                    <div class="stat-label">Đang giao</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fa-solid fa-box-open"></i></div>
+                <div>
+                    <div class="stat-value" th:text="${availableCount}">0</div>
+                    <div class="stat-label">Đơn chờ lấy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đơn đang giao -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="fa-solid fa-truck-fast" style="color:#06b6d4"></i> Đơn đang giao của tôi</span>
+                <a href="/shipper/available" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Nhận đơn mới
+                </a>
+            </div>
+            <div style="padding:20px">
+                <div th:if="${#lists.isEmpty(myDeliveries)}" class="empty-state">
+                    <i class="fa-solid fa-truck"></i>
+                    <p style="font-weight:600">Bạn chưa có đơn nào đang giao</p>
+                    <a href="/shipper/available" class="btn btn-primary" style="margin-top:16px">
+                        <i class="fa-solid fa-search"></i> Xem đơn chờ lấy
+                    </a>
+                </div>
+
+                <div th:each="order : ${myDeliveries}" class="order-card delivering">
+                    <div class="info-row">
+                        <div>
+                            <div class="order-num" th:text="'Đơn #' + ${order.orderId}"></div>
+                            <div class="order-addr">
+                                <i class="fa-solid fa-location-dot" style="color:#06b6d4;margin-top:2px"></i>
+                                <span th:text="${order.deliveryAddress}">Địa chỉ</span>
+                            </div>
+                            <div style="margin-top:8px">
+                                <span style="font-size:12px;color:#64748b" th:text="${order.user?.fullName ?: order.user?.username}">Khách</span>
+                                &nbsp;|&nbsp;
+                                <span style="font-size:12px;color:#64748b" th:text="${order.user?.phone ?: '—'}">SĐT</span>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="order-amount"
+                                 th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT') + 'đ'}">0đ</div>
+                            <div style="font-size:11px;color:#64748b;margin-top:4px"
+                                 th:text="${order.paymentMethod}">CASH</div>
+                            <span class="badge badge-delivering" style="margin-top:8px">
+                                <i class="fa-solid fa-truck-fast"></i> Đang giao
+                            </span>
+                        </div>
+                    </div>
+                    <div style="border-top:1px solid #e2e8f0;margin-top:14px;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+                        <button type="button" class="btn btn-danger btn-sm" th:onclick="'openFailModal(' + ${order.orderId} + ')'">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Giao thất bại
+                        </button>
+                        <form th:action="@{/shipper/order/{id}/delivered(id=${order.orderId})}" method="post">
+                            <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Xác nhận đã giao hàng thành công?')">
+                                <i class="fa-solid fa-check-double"></i> Đã giao thành công
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- ═══ MODAL HỦY ĐƠN (GIAO THẤT BẠI) ═══ -->
+    <div id="cancel-modal" class="cancel-modal-overlay">
+        <div class="cancel-modal-box">
+            <div class="cancel-modal-header">
+                <div class="cancel-modal-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <div class="cancel-modal-title">Báo cáo giao thất bại</div>
+                    <div class="cancel-modal-subtitle">Đơn <span id="cancel-order-id-display"></span></div>
+                </div>
+            </div>
+            <form id="cancel-form" method="post" action="">
+                <label class="cancel-label">Lý do thất bại</label>
+                <select id="cancel-reason-select" class="cancel-select">
+                    <option value="Khách không nghe máy">📱 Khách không nghe máy</option>
+                    <option value="Sai địa chỉ / Không tìm thấy">📍 Sai địa chỉ / Không tìm thấy</option>
+                    <option value="Khách từ chối nhận hàng">🛑 Khách từ chối nhận hàng</option>
+                    <option value="Hỏng hóc trong lúc giao">💥 Hỏng hóc trong lúc giao</option>
+                    <option value="other">✏️ Lý do khác...</option>
+                </select>
+                <input type="text" id="cancel-reason-custom" name="reason" placeholder="Nhập lý do cụ thể..." class="cancel-input" style="display:none;" />
+                <div class="cancel-actions">
+                    <button type="button" onclick="closeFailModal()" class="cancel-btn-back">Quay lại</button>
+                    <button type="submit" class="cancel-btn-confirm"><i class="fa-solid fa-ban"></i> Xác nhận hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification">
+        <i class="fa-solid fa-circle-check" style="color: var(--primary); font-size: 1.2rem;"></i>
+        <span id="toast-message">Thành công!</span>
+    </div>
+
+    <script th:src="@{/js/shipper-dashboard.js}"></script>
+
+    </th:block>
+</div>
+</body>
+</html>

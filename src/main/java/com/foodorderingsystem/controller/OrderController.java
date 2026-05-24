@@ -122,6 +122,7 @@ public class OrderController {
                     return status.equals("PENDING")
                             || status.equals("CONFIRMED")
                             || status.equals("PREPARING")
+                            || status.equals("READY_FOR_PICKUP")
                             || status.equals("DELIVERING");
                 })
                 .collect(Collectors.toList());
@@ -130,6 +131,7 @@ public class OrderController {
                 .filter(o -> {
                     String status = o.getStatus().name();
                     return status.equals("DELIVERED")
+                            || status.equals("COMPLETED")
                             || status.equals("CANCELLED");
                 })
                 .collect(Collectors.toList());

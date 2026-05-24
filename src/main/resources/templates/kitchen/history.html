@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/kitchen-layout :: kitchen-head}">
+    <title>Lịch Sử Nấu</title>
+</head>
+
+<body>
+    <div th:replace="~{fragments/kitchen-layout :: layout(~{::main-content}, 'history')}">
+        <th:block th:fragment="main-content">
+            <link rel="stylesheet" th:href="@{/css/kitchen-history.css}">
+
+
+            <div th:if="${warningMessage}" class="alert alert-error">
+                <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${warningMessage}"></span>
+            </div>
+
+            <div class="history-container">
+                <div class="history-header">
+                    <div class="history-title">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        Lịch sử nấu của Bếp
+                    </div>
+
+                    <form method="get" action="/kitchen/history" class="filter-form">
+                        <div class="filter-group">
+                            <label for="startDate">Từ ngày</label>
+                            <input type="date" id="startDate" name="startDate" th:value="${startDate}"
+                                class="filter-input" />
+                        </div>
+                        <div class="filter-group">
+                            <label for="endDate">Đến ngày</label>
+                            <input type="date" id="endDate" name="endDate" th:value="${endDate}" class="filter-input" />
+                        </div>
+                        <button type="submit" class="btn-filter">
+                            <i class="fa-solid fa-filter"></i> Lọc đơn
+                        </button>
+                    </form>
+                </div>
+
+                <div th:if="${#lists.isEmpty(historyOrders)}" class="empty-state">
+                    <i class="fa-solid fa-receipt"></i>
+                    <p>Không tìm thấy đơn hàng nào trong khoảng thời gian này</p>
+                </div>
+
+                <table th:if="${!#lists.isEmpty(historyOrders)}" class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Đơn hàng</th>
+                            <th>Thời gian nấu</th>
+                            <th>Chi tiết món</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${historyOrders}">
+                            <td>
+                                <div>
+                                    <strong th:text="'Đơn #' + ${order.orderId}">#123</strong>
+                                    <div class="history-meta-text" th:text="${order.restaurant?.name ?: '—'}">Chi nhánh
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <span
+                                        th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">12:00</span>
+                                    <div class="history-meta-text" th:if="${order.readyAt}">
+                                        Hoàn tất: <span
+                                            th:text="${#temporals.format(order.readyAt, 'HH:mm')}">12:15</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="items-inline-list">
+                                    <div th:each="item : ${order.orderItems}">
+                                        <div class="item-inline-row">
+                                            <span class="item-inline-qty" th:text="${item.quantity} + 'x'">1x</span>
+                                            <span th:text="${item.food?.foodName}">Phở bò</span>
+                                        </div>
+                                        <div class="item-inline-opts" th:if="${item.optionsText}"
+                                            th:text="'– ' + ${item.optionsText}">Tùy chọn</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge" th:classappend="${
+                                  order.status.name() == 'READY_FOR_PICKUP' ? 'ready' :
+                                  (order.status.name() == 'DELIVERING' ? 'delivering' :
+                                  (order.status.name() == 'CANCELLED' ? 'cancelled' : 'completed'))
+                              }" th:text="${
+                                  order.status.name() == 'READY_FOR_PICKUP' ? 'Chờ Shipper' :
+                                  (order.status.name() == 'DELIVERING' ? 'Đang giao' :
+                                  (order.status.name() == 'CANCELLED' ? 'Đã hủy' : 'Đã giao xong'))
+                              }">
+                                    READY_FOR_PICKUP
+                                </span>
+                                <div class="history-meta-text" th:if="${order.status.name() == 'CANCELLED'}"
+                                    th:text="'Lý do: ' + ${order.cancelReason}">Hủy do hết hàng</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </th:block>
+    </div>
+</body>
+
+</html>

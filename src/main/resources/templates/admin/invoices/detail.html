@@ -62,6 +62,12 @@
                                 Đã thanh toán
                             </span>
                         </p>
+                        <p th:if="${invoice.order.status.name() == 'CANCELLED'}">
+                            <strong>Trạng thái Đơn:</strong> <span style="color:#ef4444; font-weight:bold;">ĐÃ HỦY</span>
+                        </p>
+                        <p th:if="${invoice.order.status.name() == 'CANCELLED'}">
+                            <strong>Lý do hủy:</strong> <span th:text="${invoice.order.cancelReason}" style="color:#ef4444;">Lý do</span>
+                        </p>
                     </div>
                 </div>
 

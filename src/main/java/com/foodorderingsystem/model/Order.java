@@ -23,14 +23,14 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private OrderStatus status; // PENDING...
+    private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private java.util.List<OrderItem> orderItems;
+    private List<OrderItem> orderItems;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("updateTime ASC")
-    private java.util.List<OrderHistory> history;
+    private List<OrderHistory> history;
 
     private double totalAmount;
     private Double deliveryFee;
@@ -50,4 +50,29 @@ public class Order {
 
     private String couponCode;
     private double discountAmount = 0.0;
+
+    // ── Shipper được giao đơn này ──────────────────────────────────────────
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipper_id")
+    private User shipper;
+
+    // ── Timestamps theo từng bước trong luồng đơn hàng ────────────────────
+    /** STAFF xác nhận đơn lúc nào */
+    private LocalDateTime confirmedAt;
+
+    /** KITCHEN bắt đầu nấu lúc nào */
+    private LocalDateTime preparingAt;
+
+    /** KITCHEN hoàn tất, sẵn sàng giao lúc nào */
+    private LocalDateTime readyAt;
+
+    /** SHIPPER nhận đơn để giao lúc nào */
+    private LocalDateTime deliveringAt;
+
+    /** SHIPPER giao thành công lúc nào */
+    private LocalDateTime deliveredAt;
+
+    // ── Lý do hủy đơn ─────────────────────────────────────────────────────
+    @Column(length = 500)
+    private String cancelReason;
 }

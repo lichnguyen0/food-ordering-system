@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/staff-layout :: staff-head}"></head>
+<body>
+<div th:replace="~{fragments/staff-layout :: layout(~{::main-content}, 'dashboard')}">
+    <th:block th:fragment="main-content">
+
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fa-solid fa-clock"></i></div>
+                <div>
+                    <div class="stat-value" th:text="${pendingCount}">0</div>
+                    <div class="stat-label">Chờ xác nhận</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                <div>
+                    <div class="stat-value" th:text="${confirmedCount}">0</div>
+                    <div class="stat-label">Đã xác nhận hôm nay</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"><i class="fa-solid fa-ban"></i></div>
+                <div>
+                    <div class="stat-value" th:text="${cancelledToday}">0</div>
+                    <div class="stat-label">Hủy hôm nay</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đơn hàng chờ xác nhận -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="fa-solid fa-hourglass-half" style="color:#f97316"></i> Đơn hàng chờ xác nhận</span>
+                <a href="/staff/orders" class="btn btn-outline btn-sm">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(recentPending)}" class="empty-state">
+                    <i class="fa-solid fa-check-circle" style="color:#22c55e"></i>
+                    <p style="font-weight:600;color:#15803d;margin-top:8px">Không có đơn nào chờ xác nhận!</p>
+                </div>
+                <table th:if="${!#lists.isEmpty(recentPending)}">
+                    <thead>
+                        <tr>
+                            <th>#Đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Nhà hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Thời gian đặt</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${recentPending}">
+                            <td><span class="order-id" th:text="'#' + ${order.orderId}"></span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <span class="customer-name" th:text="${order.user?.fullName ?: order.user?.username}">Khách</span>
+                                    <span class="customer-addr" th:text="${order.deliveryAddress}">Địa chỉ</span>
+                                </div>
+                            </td>
+                            <td th:text="${order.restaurant?.name ?: '—'}">—</td>
+                            <td>
+                                <span class="amount"
+                                      th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                            </td>
+                            <td>
+                                <span th:text="${#temporals.format(order.orderDate, 'dd/MM HH:mm')}">—</span>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <form th:action="@{/staff/order/{id}/confirm(id=${order.orderId})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fa-solid fa-check"></i> Xác nhận
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/staff/order/{id}/cancel(id=${order.orderId})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Hủy đơn hàng này?')">
+                                            <i class="fa-solid fa-xmark"></i> Hủy
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </th:block>
+</div>
+</body>
+</html>

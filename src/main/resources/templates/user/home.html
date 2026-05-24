@@ -82,11 +82,11 @@
 
         <!-- See all button -->
         <div class="see-all-wrapper">
-            <a href="/promotions" class="btn-see-all">See all promotions</a>
+            <a href="/promotions" class="btn-see-all">Xem tất cả các chương trình khuyến mãi</a>
         </div>
 
         <!-- Categories Section -->
-        <h2 class="section-title">There's something for everyone!</h2>
+        <h2 class="section-title">Có một cái gì đó cho tất cả mọi người!</h2>
         <div class="category-grid">
             <a th:each="c : ${categories}" th:href="@{/restaurant(categoryId=${c.categoryId})}" class="category-card">
                 <img th:src="${c.image != null && !c.image.empty ? c.image : 

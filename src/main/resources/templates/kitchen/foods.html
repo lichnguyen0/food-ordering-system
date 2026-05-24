@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/kitchen-layout :: kitchen-head}">
+    <title>Quản Lý Món Ăn</title>
+</head>
+<body>
+<div th:replace="~{fragments/kitchen-layout :: layout(~{::main-content}, 'foods')}">
+    <th:block th:fragment="main-content">
+
+        <div th:if="${warningMessage}" class="alert alert-error" style="margin-bottom: 20px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${warningMessage}"></span>
+        </div>
+
+        <div class="foods-container">
+            <div class="foods-header">
+                <div class="foods-title">
+                    <i class="fa-solid fa-utensils" style="color: var(--primary); margin-right: 6px;"></i>
+                    Danh sách món ăn &mdash; <span th:text="${restaurantName}">Nhà hàng</span>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(foods)}" style="text-align: center; padding: 40px; color: var(--muted);">
+                <i class="fa-solid fa-ban" style="font-size: 32px; margin-bottom: 12px; opacity: 0.3;"></i>
+                <p>Không tìm thấy món ăn nào</p>
+            </div>
+
+            <table th:if="${!#lists.isEmpty(foods)}" class="foods-table">
+                <thead>
+                <tr>
+                    <th>Món ăn</th>
+                    <th>Giá bán</th>
+                    <th>Trạng thái</th>
+                    <th style="text-align: center;">Bật/Tắt còn món</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="food : ${foods}">
+                    <td>
+                        <div class="food-info-cell">
+                            <img th:if="${food.image}" th:src="${food.image}" class="food-img" alt="Food Image"/>
+                            <div th:unless="${food.image}" class="food-img" style="display:flex; align-items:center; justify-content:center; color: var(--muted);">
+                                <i class="fa-solid fa-bowl-food" style="font-size: 20px;"></i>
+                            </div>
+                            <div class="food-info-text">
+                                <span class="food-name" th:text="${food.foodName}">Tên món</span>
+                                <span class="food-category" th:text="${food.category?.categoryName ?: 'Chưa phân loại'}">Danh mục</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <strong style="color: #fff;" th:text="${#numbers.formatDecimal(food.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</strong>
+                    </td>
+                    <td>
+                        <span th:id="'status-badge-' + ${food.foodId}"
+                              class="food-status-badge"
+                              th:classappend="${food.status.name() == 'AVAILABLE' ? 'available' : 'sold-out'}"
+                              th:text="${food.status.name() == 'AVAILABLE' ? 'Đang phục vụ' : 'Hết món'}">
+                            AVAILABLE
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <label class="switch">
+                            <input type="checkbox"
+                                   th:checked="${food.status.name() == 'AVAILABLE'}"
+                                   th:onchange="'toggleFoodStatus(' + ${food.foodId} + ', this)'"/>
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast-notification">
+            <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 1.2rem;"></i>
+            <span id="toast-message">Cập nhật thành công!</span>
+        </div>
+
+        <script th:src="@{/js/kitchen-foods.js}"></script>
+    </th:block>
+</div>
+</body>
+</html>
