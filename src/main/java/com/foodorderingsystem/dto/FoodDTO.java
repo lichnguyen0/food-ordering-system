@@ -45,62 +45,23 @@ public class FoodDTO {
 
     private List<OptionGroupDTO> optionGroups = new ArrayList<>();
 
+    @Data
+    @NoArgsConstructor
     public static class OptionGroupDTO {
 
         private Long groupId;
 
         private String groupName;
 
-        private boolean isRequired;
+        private boolean required;
 
-        private boolean isMultiple;
+        private boolean multiple;
 
         private List<OptionItemDTO> optionItems = new ArrayList<>();
-
-        public OptionGroupDTO() {
-        }
-
-        public Long getGroupId() {
-            return groupId;
-        }
-
-        public void setGroupId(Long groupId) {
-            this.groupId = groupId;
-        }
-
-        public String getGroupName() {
-            return groupName;
-        }
-
-        public void setGroupName(String groupName) {
-            this.groupName = groupName;
-        }
-
-        public boolean isRequired() {
-            return isRequired;
-        }
-
-        public void setRequired(boolean required) {
-            isRequired = required;
-        }
-
-        public boolean isMultiple() {
-            return isMultiple;
-        }
-
-        public void setMultiple(boolean multiple) {
-            isMultiple = multiple;
-        }
-
-        public List<OptionItemDTO> getOptionItems() {
-            return optionItems;
-        }
-
-        public void setOptionItems(List<OptionItemDTO> optionItems) {
-            this.optionItems = optionItems;
-        }
     }
 
+    @Data
+    @NoArgsConstructor
     public static class OptionItemDTO {
 
         private Long itemId;
@@ -108,32 +69,5 @@ public class FoodDTO {
         private String itemName;
 
         private double extraPrice;
-
-        public OptionItemDTO() {
-        }
-
-        public Long getItemId() {
-            return itemId;
-        }
-
-        public void setItemId(Long itemId) {
-            this.itemId = itemId;
-        }
-
-        public String getItemName() {
-            return itemName;
-        }
-
-        public void setItemName(String itemName) {
-            this.itemName = itemName;
-        }
-
-        public double getExtraPrice() {
-            return extraPrice;
-        }
-
-        public void setExtraPrice(double extraPrice) {
-            this.extraPrice = extraPrice;
-        }
     }
 }

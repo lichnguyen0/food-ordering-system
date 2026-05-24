@@ -182,6 +182,44 @@
         </div>
     </div>
 
+    <!-- Modal Xác nhận Đặt hàng -->
+    <div class="confirm-modal-overlay" id="confirmOrderModal">
+        <div class="confirm-modal">
+            <div class="confirm-modal-icon">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <h3 class="confirm-modal-title">Xác nhận đặt hàng</h3>
+            <p class="confirm-modal-desc">Bạn có chắc chắn muốn đặt đơn hàng này không?</p>
+            
+            <div class="confirm-modal-summary">
+                <div class="confirm-summary-row">
+                    <span>Tổng tạm tính</span>
+                    <span id="modalSubtotal" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                </div>
+                <div class="confirm-summary-row">
+                    <span>Phí giao hàng</span>
+                    <span id="modalDeliveryFee" th:text="${#numbers.formatDecimal(deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                </div>
+                <div class="confirm-summary-row confirm-discount-row" id="modalDiscountRow" style="display: none;">
+                    <span>Khuyến mãi</span>
+                    <span id="modalDiscount">-0 ₫</span>
+                </div>
+                <div class="confirm-summary-divider"></div>
+                <div class="confirm-summary-row confirm-total-row">
+                    <span>Tổng cộng</span>
+                    <span id="modalTotal" th:text="${#numbers.formatDecimal(cart.totalPrice + deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                </div>
+            </div>
+
+            <div class="confirm-modal-actions">
+                <button type="button" class="btn-confirm-cancel" id="btnCancelOrder" onclick="closeConfirmModal()">Hủy bỏ</button>
+                <button type="button" class="btn-confirm-submit" id="btnConfirmOrder" onclick="confirmAndSubmit()">
+                    <i class="fa-solid fa-check"></i> Xác nhận đặt
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/js/checkout.js}"></script>
 </body>
 </html>

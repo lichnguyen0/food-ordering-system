@@ -452,4 +452,192 @@ body.checkout-body {
     background: #009b45;
 }
 
+/* ===== Confirmation Modal ===== */
+.confirm-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
+.confirm-modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.confirm-modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 35px 30px 30px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.1);
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+.confirm-modal-overlay.active .confirm-modal {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.confirm-modal-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00b14f 0%, #00d45a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 25px rgba(0, 177, 79, 0.3);
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% { box-shadow: 0 8px 25px rgba(0, 177, 79, 0.3); }
+    50% { box-shadow: 0 8px 35px rgba(0, 177, 79, 0.5); }
+}
+
+.confirm-modal-icon i {
+    font-size: 28px;
+    color: #fff;
+}
+
+.confirm-modal-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 8px;
+}
+
+.confirm-modal-desc {
+    font-size: 14px;
+    color: #888;
+    margin: 0 0 25px;
+    line-height: 1.5;
+}
+
+/* Modal Summary */
+.confirm-modal-summary {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.confirm-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    color: #555;
+    padding: 6px 0;
+}
+
+.confirm-summary-row span:last-child {
+    font-weight: 600;
+    color: #333;
+}
+
+.confirm-discount-row {
+    color: var(--primary-red, #e74c3c) !important;
+}
+
+.confirm-discount-row span {
+    color: var(--primary-red, #e74c3c) !important;
+}
+
+.confirm-summary-divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 8px 0;
+}
+
+.confirm-total-row {
+    font-size: 16px !important;
+    font-weight: 700;
+    padding-top: 8px !important;
+}
+
+.confirm-total-row span:first-child {
+    color: #111;
+    font-weight: 700;
+}
+
+.confirm-total-row span:last-child {
+    color: var(--grab-green);
+    font-weight: 800;
+    font-size: 18px;
+}
+
+/* Modal Actions */
+.confirm-modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-confirm-cancel {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    color: #555;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-confirm-cancel:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.btn-confirm-submit {
+    flex: 1.3;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #00b14f 0%, #00c853 100%);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0, 177, 79, 0.3);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-confirm-submit:hover {
+    background: linear-gradient(135deg, #009b45 0%, #00b14f 100%);
+    box-shadow: 0 6px 20px rgba(0, 177, 79, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-confirm-submit:active {
+    transform: translateY(0);
+}
+
+.btn-confirm-submit i {
+    font-size: 14px;
+}
