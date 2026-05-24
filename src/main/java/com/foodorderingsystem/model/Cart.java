@@ -5,8 +5,14 @@ import java.util.Map;
 
 public class Cart {
     private Map<String, CartItem> items = new HashMap<>();
+    private Long restaurantId;
+    private String restaurantName;
 
     public void add(Food food, String optionsText, double extraPrice) {
+        if (items.isEmpty() && food.getRestaurant() != null) {
+            this.restaurantId = food.getRestaurant().getRestaurantId();
+            this.restaurantName = food.getRestaurant().getName();
+        }
         String cartItemId = food.getFoodId() + "-" + (optionsText != null ? optionsText.hashCode() : "0");
         CartItem item = items.get(cartItemId);
         if (item == null) {
@@ -29,12 +35,20 @@ public class Cart {
 
     public void remove(String cartItemId) {
         items.remove(cartItemId);
+        if (items.isEmpty()) {
+            this.restaurantId = null;
+            this.restaurantName = null;
+        }
     }
 
     public void updateQuantity(String cartItemId, int quantity) {
         if (items.containsKey(cartItemId)) {
             if (quantity <= 0) {
                 items.remove(cartItemId);
+                if (items.isEmpty()) {
+                    this.restaurantId = null;
+                    this.restaurantName = null;
+                }
             } else {
                 items.get(cartItemId).setQuantity(quantity);
             }
@@ -55,6 +69,8 @@ public class Cart {
 
     public void clear() {
         items.clear();
+        this.restaurantId = null;
+        this.restaurantName = null;
     }
 
     public Map<String, CartItem> getItems() {
@@ -62,24 +78,10 @@ public class Cart {
     }
 
     public Long getRestaurantId() {
-        if (items.isEmpty()) {
-            return null;
-        }
-        CartItem firstItem = items.values().iterator().next();
-        if (firstItem.getFood() != null && firstItem.getFood().getRestaurant() != null) {
-            return firstItem.getFood().getRestaurant().getRestaurantId();
-        }
-        return null;
+        return this.restaurantId;
     }
 
     public String getRestaurantName() {
-        if (items.isEmpty()) {
-            return null;
-        }
-        CartItem firstItem = items.values().iterator().next();
-        if (firstItem.getFood() != null && firstItem.getFood().getRestaurant() != null) {
-            return firstItem.getFood().getRestaurant().getName();
-        }
-        return null;
+        return this.restaurantName;
     }
 }
