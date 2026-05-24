@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="kitchen-head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Screen - LunoFood</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/kitchen-dashboard.css}">
+</head>
+
+<body>
+<div th:fragment="layout(content, activeMenu)" style="display:contents">
+    <aside class="sidebar">
+        <div class="sidebar-logo">🍳 <span>Bếp</span></div>
+        <div class="role-badge"><i class="fa-solid fa-hat-chef"></i> &nbsp;Nhân viên bếp</div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="/kitchen" th:classappend="${activeMenu == 'kitchen' ? 'active' : ''}">
+                    <i class="fa-solid fa-fire-burner"></i> Màn hình bếp
+                </a>
+            </li>
+            <li>
+                <a href="/kitchen/foods" th:classappend="${activeMenu == 'foods' ? 'active' : ''}">
+                    <i class="fa-solid fa-list-check"></i> Quản lý món
+                </a>
+            </li>
+            <li>
+                <a href="/kitchen/history" th:classappend="${activeMenu == 'history' ? 'active' : ''}">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử nấu
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="topbar">
+            <h1 th:text="${pageTitle ?: 'Màn Hình Bếp'}">Màn Hình Bếp</h1>
+            <div class="live-badge">
+                <span class="live-dot"></span> LIVE
+            </div>
+        </header>
+        <div class="content">
+            <div th:replace="${content}"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/staff-layout :: staff-head}">
+    <title>Đơn Chờ Xác Nhận</title>
+</head>
+<body>
+<div th:replace="~{fragments/staff-layout :: layout(~{::main-content}, 'orders')}">
+    <th:block th:fragment="main-content">
+
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Danh sách đơn PENDING -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">
+                    <i class="fa-solid fa-clock" style="color:#f97316"></i>
+                    Đơn hàng chờ xác nhận
+                    <span style="background:#fff7ed;color:#ea580c;padding:3px 10px;border-radius:20px;font-size:12px;margin-left:8px"
+                          th:text="${pendingPage.totalElements} + ' đơn'">0 đơn</span>
+                </span>
+            </div>
+            <div class="card-body">
+                <!-- Empty state -->
+                <div th:if="${pendingPage.content.empty}" class="empty-state">
+                    <i class="fa-solid fa-check-double" style="color:#22c55e;font-size:56px;"></i>
+                    <p style="font-size:18px;font-weight:700;color:#15803d;margin-top:16px">Tất cả đơn đã được xử lý!</p>
+                    <p style="color:#64748b;margin-top:6px">Không có đơn hàng nào đang chờ xác nhận.</p>
+                </div>
+
+                <!-- Table -->
+                <table th:if="${!pendingPage.content.empty}">
+                    <thead>
+                        <tr>
+                            <th>#Đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Nhà hàng</th>
+                            <th>Các món</th>
+                            <th>Tổng tiền</th>
+                            <th>Phương thức TT</th>
+                            <th>Đặt lúc</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${pendingPage.content}">
+                            <td><span class="order-id" th:text="'#' + ${order.orderId}"></span></td>
+                            <td>
+                                <div class="customer-info">
+                                    <span class="customer-name"
+                                          th:text="${order.user?.fullName ?: order.user?.username}">Khách</span>
+                                    <span class="customer-addr"
+                                          th:text="${order.user?.phone ?: '—'}">—</span>
+                                    <span class="customer-addr"
+                                          th:text="${order.deliveryAddress}">Địa chỉ</span>
+                                </div>
+                            </td>
+                            <td th:text="${order.restaurant?.name ?: '—'}">—</td>
+                            <td>
+                                <ul style="list-style:none;padding:0;margin:0">
+                                    <li th:each="item : ${order.orderItems}"
+                                        style="font-size:12px;padding:2px 0;color:#475569">
+                                        <span th:text="${item.quantity} + ' x ' + ${item.food?.foodName}">—</span>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="amount"
+                                      th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT') + 'đ'}">0đ</span>
+                                <div th:if="${order.discountAmount > 0}"
+                                     style="font-size:11px;color:#16a34a;margin-top:2px"
+                                     th:text="'Giảm: -' + ${#numbers.formatDecimal(order.discountAmount,0,'COMMA',0,'POINT')} + 'đ'">
+                                </div>
+                            </td>
+                            <td>
+                                <span style="font-size:12px;font-weight:600"
+                                      th:text="${order.paymentMethod}">CASH</span>
+                            </td>
+                            <td>
+                                <span style="font-size:12px"
+                                      th:text="${#temporals.format(order.orderDate,'dd/MM/yyyy HH:mm')}">—</span>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <form th:action="@{/staff/order/{id}/confirm(id=${order.orderId})}" method="post">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fa-solid fa-check"></i> Xác nhận
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/staff/order/{id}/cancel(id=${order.orderId})}" method="post">
+                                        <input type="hidden" name="reason" value="Nhân viên hủy đơn">
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Bạn có chắc muốn hủy đơn này không?')">
+                                            <i class="fa-solid fa-xmark"></i> Hủy
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div th:if="${pendingPage.totalPages > 1}"
+                     style="display:flex;justify-content:center;gap:8px;padding:20px">
+                    <a th:each="i : ${#numbers.sequence(0, pendingPage.totalPages - 1)}"
+                       th:href="@{/staff/orders(page=${i}, size=${pageSize})}"
+                       th:text="${i + 1}"
+                       th:style="${i == currentPage ? 'background:#f97316;color:#fff;' : 'background:#f1f5f9;color:#64748b;'}"
+                       style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </th:block>
+</div>
+</body>
+</html>

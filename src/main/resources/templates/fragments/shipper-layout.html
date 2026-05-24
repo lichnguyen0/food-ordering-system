@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="shipper-head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipper Dashboard - LunoFood</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/shipper-dashboard.css}">
+</head>
+
+<body>
+<div th:fragment="layout(content, activeMenu)" style="display:contents">
+    <aside class="sidebar">
+        <div class="sidebar-logo">🛵 <span>Shipper</span></div>
+        <div class="role-badge"><i class="fa-solid fa-motorcycle"></i> &nbsp;Giao hàng</div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="/shipper" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="/shipper/available" th:classappend="${activeMenu == 'available' ? 'active' : ''}">
+                    <i class="fa-solid fa-box-open"></i> Đơn chờ lấy
+                </a>
+            </li>
+            <li>
+                <a href="/shipper/history" th:classappend="${activeMenu == 'history' ? 'active' : ''}">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử giao hàng
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="topbar">
+            <h1 th:text="${pageTitle ?: 'Dashboard Shipper'}">Dashboard Shipper</h1>
+            <div class="user-info">
+                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                <span style="font-size:13px;font-weight:600"
+                      th:text="${#authentication != null ? #authentication.name : 'Shipper'}">Shipper</span>
+            </div>
+        </header>
+        <div class="content">
+            <div th:replace="${content}"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

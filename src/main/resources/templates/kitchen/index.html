@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/kitchen-layout :: kitchen-head}">
+    <title>Màn Hình Bếp</title>
+</head>
+<body>
+<div th:replace="~{fragments/kitchen-layout :: layout(~{::main-content}, 'kitchen')}">
+    <th:block th:fragment="main-content">
+        <meta http-equiv="refresh" content="30">
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <i class="fa-solid fa-circle-xmark"></i> <span th:text="${errorMessage}"></span>
+        </div>
+        <div th:if="${warningMessage}" class="alert alert-error">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${warningMessage}"></span>
+        </div>
+
+        <div class="columns">
+            <!-- CỘT TRÁI: CONFIRMED -->
+            <div>
+                <div class="col-header">
+                    <div class="col-title confirmed">
+                        <i class="fa-solid fa-bell"></i> Chờ chế biến
+                        <span class="col-count" th:text="${confirmedCount}">0</span>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(confirmedOrders)}" class="empty-col">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <p>Chưa có đơn mới</p>
+                </div>
+                <div th:each="order : ${confirmedOrders}" class="order-card confirmed-card">
+                    <div style="display:flex;justify-content:space-between">
+                        <div>
+                            <div class="order-num" th:text="'Đơn #' + ${order.orderId}"></div>
+                            <div class="order-meta" th:text="${order.restaurant?.name ?: '—'}"></div>
+                        </div>
+                        <span class="order-time" th:text="${#temporals.format(order.orderDate,'HH:mm')}"></span>
+                    </div>
+                    <div class="items-list">
+                        <div class="item-row" th:each="item : ${order.orderItems}">
+                            <div class="item-qty" th:text="${item.quantity}">1</div>
+                            <div class="item-info">
+                                <div class="item-name" th:text="${item.food?.foodName}">Món</div>
+                                <div class="item-opts" th:if="${item.optionsText}" th:text="${item.optionsText}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="note-box" th:if="${order.deliveryNote}">
+                        <i class="fa-solid fa-note-sticky"></i> <span th:text="${order.deliveryNote}"></span>
+                    </div>
+                    <form th:action="@{/kitchen/order/{id}/start(id=${order.orderId})}" method="post">
+                        <button type="submit" class="action-btn btn-start">
+                            <i class="fa-solid fa-fire"></i> Bắt đầu chế biến
+                        </button>
+                    </form>
+                    <button class="action-btn btn-cancel" th:onclick="'openCancelModal(' + ${order.orderId} + ')'">
+                        <i class="fa-solid fa-ban"></i> Hủy đơn (Hết nguyên liệu)
+                    </button>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: PREPARING -->
+            <div>
+                <div class="col-header">
+                    <div class="col-title preparing">
+                        <i class="fa-solid fa-fire-flame-curved"></i> Đang chế biến
+                        <span class="col-count" th:text="${preparingCount}">0</span>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(preparingOrders)}" class="empty-col">
+                    <i class="fa-solid fa-utensils"></i>
+                    <p>Chưa có đơn đang nấu</p>
+                </div>
+                <div th:each="order : ${preparingOrders}" class="order-card preparing-card">
+                    <div style="display:flex;justify-content:space-between">
+                        <div>
+                            <div class="order-num" th:text="'Đơn #' + ${order.orderId}"></div>
+                            <div class="order-meta" th:text="${order.restaurant?.name ?: '—'}"></div>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="order-time"
+                                  th:text="${order.preparingAt != null ? #temporals.format(order.preparingAt,'HH:mm') : #temporals.format(order.orderDate,'HH:mm')}"></span>
+                            <div class="elapsed">⏱ Đang nấu...</div>
+                        </div>
+                    </div>
+                    <div class="items-list">
+                        <div class="item-row" th:each="item : ${order.orderItems}">
+                            <div class="item-qty" th:text="${item.quantity}">1</div>
+                            <div class="item-info">
+                                <div class="item-name" th:text="${item.food?.foodName}">Món</div>
+                                <div class="item-opts" th:if="${item.optionsText}" th:text="${item.optionsText}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="note-box" th:if="${order.deliveryNote}">
+                        <i class="fa-solid fa-note-sticky"></i> <span th:text="${order.deliveryNote}"></span>
+                    </div>
+                    <form th:action="@{/kitchen/order/{id}/done(id=${order.orderId})}" method="post">
+                        <button type="submit" class="action-btn btn-done">
+                            <i class="fa-solid fa-check-double"></i> Hoàn tất — Sẵn sàng giao!
+                        </button>
+                    </form>
+                    <button class="action-btn btn-cancel" th:onclick="'openCancelModal(' + ${order.orderId} + ')'">
+                        <i class="fa-solid fa-ban"></i> Hủy đơn (Hết nguyên liệu)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ MODAL HỦY ĐƠN ═══ -->
+        <div id="cancel-modal" class="cancel-modal-overlay">
+            <div class="cancel-modal-box">
+                <div class="cancel-modal-header">
+                    <div class="cancel-modal-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <div class="cancel-modal-title">Hủy đơn hàng</div>
+                        <div class="cancel-modal-subtitle">Đơn <span id="cancel-order-id-display"></span></div>
+                    </div>
+                </div>
+                <form id="cancel-form" method="post" action="">
+                    <label class="cancel-label">Lý do hủy đơn</label>
+                    <select id="cancel-reason-select" class="cancel-select">
+                        <option value="Hết nguyên liệu">🥩 Hết nguyên liệu</option>
+                        <option value="Thiết bị bếp hỏng">🔧 Thiết bị bếp hỏng</option>
+                        <option value="Quá tải đơn hàng">📦 Quá tải đơn hàng</option>
+                        <option value="other">✏️ Lý do khác...</option>
+                    </select>
+                    <input type="text" id="cancel-reason-custom" name="reason" placeholder="Nhập lý do cụ thể..." class="cancel-input" style="display:none;" />
+                    <div class="cancel-actions">
+                        <button type="button" onclick="closeCancelModal()" class="cancel-btn-back">Quay lại</button>
+                        <button type="submit" class="cancel-btn-confirm"><i class="fa-solid fa-ban"></i> Xác nhận hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script th:src="@{/js/kitchen-screen.js}"></script>
+    </th:block>
+</div>
+</body>
+</html>

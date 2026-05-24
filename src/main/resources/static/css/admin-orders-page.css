@@ -1,0 +1,47 @@
+/* Admin Orders Page Styles */
+
+/* No-data message */
+.no-data-msg {
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    color: #64748b;
+    font-style: italic;
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.pagination a {
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #475569;
+    background: white;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.pagination span {
+    padding: 6px 10px;
+    color: #64748b;
+}
+
+.pagination .disabled {
+    color: #cbd5e1;
+    pointer-events: none;
+}

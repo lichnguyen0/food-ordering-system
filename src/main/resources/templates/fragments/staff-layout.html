@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="staff-head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - LunoFood</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/staff-dashboard.css}">
+</head>
+
+<body>
+<div th:fragment="layout(content, activeMenu)" style="display:contents">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">Luno<span>Food</span></div>
+        <div class="role-badge"><i class="fa-solid fa-user-tie"></i> &nbsp;Nhân viên</div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="/staff" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="/staff/orders" th:classappend="${activeMenu == 'orders' ? 'active' : ''}">
+                    <i class="fa-solid fa-list-check"></i> Đơn chờ xác nhận
+                </a>
+            </li>
+            <li>
+                <a href="/staff/all-orders" th:classappend="${activeMenu == 'all-orders' ? 'active' : ''}">
+                    <i class="fa-solid fa-rectangle-list"></i> Tất cả đơn hàng
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main">
+        <header class="topbar">
+            <h1 th:text="${pageTitle ?: 'Dashboard Nhân Viên'}">Dashboard Nhân Viên</h1>
+            <div class="topbar-right">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <span class="user-name"
+                          th:text="${#authentication != null ? #authentication.name : 'Staff'}">Staff</span>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <div th:replace="${content}"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

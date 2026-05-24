@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/shipper-layout :: shipper-head}">
+    <title>Lịch sử giao hàng</title>
+</head>
+
+<body>
+    <div th:replace="~{fragments/shipper-layout :: layout(~{::main-content}, 'history')}">
+        <th:block th:fragment="main-content">
+            <link rel="stylesheet" th:href="@{/css/shipper-history.css}">
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        Lịch sử giao hàng của tôi
+                    </span>
+                    <span class="card-subtitle" th:text="${#lists.size(historyOrders)} + ' chuyến'">0 chuyến</span>
+                </div>
+
+                <div th:if="${#lists.isEmpty(historyOrders)}" class="empty-state">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <p class="empty-state-text">Chưa có lịch sử giao hàng</p>
+                </div>
+
+                <table th:if="${!#lists.isEmpty(historyOrders)}">
+                    <thead>
+                        <tr>
+                            <th>#Đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Địa chỉ giao</th>
+                            <th>Nhà hàng</th>
+                            <th>Tiền hàng</th>
+                            <th>Giờ giao</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${historyOrders}">
+                            <td class="order-id-cell" th:text="'#' + ${order.orderId}"></td>
+                            <td>
+                                <div class="customer-name" th:text="${order.user?.fullName ?: order.user?.username}">—
+                                </div>
+                                <div class="customer-phone" th:text="${order.user?.phone ?: '—'}">—</div>
+                            </td>
+                            <td class="delivery-address" th:text="${order.deliveryAddress}">—</td>
+                            <td class="restaurant-name" th:text="${order.restaurant?.name ?: '—'}">—</td>
+                            <td class="order-amount"
+                                th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT') + 'đ'}">0đ</td>
+                            <td class="delivery-time"
+                                th:text="${order.deliveredAt != null ? #temporals.format(order.deliveredAt,'dd/MM HH:mm') : '—'}">
+                                —</td>
+                            <td>
+                                <span
+                                    th:if="${order.status.name() == 'DELIVERED' or order.status.name() == 'COMPLETED'}"
+                                    class="badge badge-delivered">
+                                    <i class="fa-solid fa-check-circle"></i> Đã giao
+                                </span>
+                                <span th:if="${order.status.name() == 'CANCELLED'}" class="badge badge-cancelled">
+                                    <i class="fa-solid fa-xmark-circle"></i> Thất bại
+                                </span>
+                                <div th:if="${order.status.name() == 'CANCELLED'}" class="cancel-reason"
+                                    th:text="${order.cancelReason}">Lý do</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </th:block>
+    </div>
+</body>
+
+</html>
