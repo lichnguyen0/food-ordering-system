@@ -10,6 +10,7 @@ import com.foodorderingsystem.model.order.OrderStatus;
 import com.foodorderingsystem.model.user.User;
 import com.foodorderingsystem.repository.coupon.CouponRepository;
 import com.foodorderingsystem.repository.user.UserRepository;
+import com.foodorderingsystem.service.CartService;
 import com.foodorderingsystem.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,13 +35,16 @@ public class OrderController {
     private final OrderService orderService;
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
+    private final CartService cartService;
 
     public OrderController(OrderService orderService,
                            UserRepository userRepository,
-                           CouponRepository couponRepository) {
+                           CouponRepository couponRepository,
+                           CartService cartService) {
         this.orderService = orderService;
         this.userRepository = userRepository;
         this.couponRepository = couponRepository;
+        this.cartService = cartService;
     }
 
 
@@ -87,6 +91,7 @@ public class OrderController {
     public String checkout(@ModelAttribute("cart") Cart cart,
                            @ModelAttribute CheckoutRequest request,
                            Principal principal,
+                           HttpSession session,
                            SessionStatus status) {
 
         Long userId = 1L; // Fallback
@@ -103,7 +108,14 @@ public class OrderController {
 
         Order order = orderService.createOrderFromCart(userId, cart, request);
 
-        // Đánh dấu phiên là hoàn tất để xóa giỏ hàng
+        // Xóa giỏ hàng persistent trong DB sau khi đặt hàng thành công
+        User currentUser = null;
+        if (principal != null) {
+            currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
+        }
+        cartService.clearCart(session, currentUser);
+
+        // Đánh dấu phiên là hoàn tất để xóa giỏ hàng session attribute
         status.setComplete();
 
         if (order != null) {

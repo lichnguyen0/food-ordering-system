@@ -86,4 +86,12 @@ public class Cart {
     public String getRestaurantName() {
         return this.restaurantName;
     }
+
+    public void setRestaurantId(Long restaurantId) {
+        this.restaurantId = restaurantId;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
 }

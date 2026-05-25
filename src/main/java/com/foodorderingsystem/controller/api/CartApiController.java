@@ -1,11 +1,17 @@
 package com.foodorderingsystem.controller.api;
 
 import com.foodorderingsystem.model.cart.Cart;
+import com.foodorderingsystem.model.cart.CartItem;
 import com.foodorderingsystem.model.coupon.Coupon;
 import com.foodorderingsystem.model.food.Food;
+import com.foodorderingsystem.model.user.User;
 import com.foodorderingsystem.repository.coupon.CouponRepository;
 import com.foodorderingsystem.repository.food.FoodRepository;
+import com.foodorderingsystem.repository.user.UserRepository;
+import com.foodorderingsystem.service.CartService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
@@ -14,117 +20,121 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/api/cart")
 public class CartApiController {
 
     private final FoodRepository foodRepository;
     private final CouponRepository couponRepository;
+    private final CartService cartService;
+    private final UserRepository userRepository;
 
-    public CartApiController(FoodRepository foodRepository, CouponRepository couponRepository) {
+    public CartApiController(FoodRepository foodRepository, CouponRepository couponRepository, CartService cartService, UserRepository userRepository) {
         this.foodRepository = foodRepository;
         this.couponRepository = couponRepository;
+        this.cartService = cartService;
+        this.userRepository = userRepository;
     }
 
     private Cart getCart(HttpSession session) {
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new Cart();
-            session.setAttribute("cart", cart);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = null;
+        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
+            String username = auth.getName();
+            user = userRepository.findByUsername(username).orElse(null);
         }
+        Cart cart = cartService.getOrCreateCart(session, user);
+        session.setAttribute("cart", cart);
         return cart;
     }
 
-    // Thêm nhanh mặc định mà không có tùy chọn
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String)) {
+            String username = auth.getName();
+            return userRepository.findByUsername(username).orElse(null);
+        }
+        return null;
+    }
+
     @PostMapping("/add/{id}")
     public CartResponse add(@PathVariable Long id, @RequestParam(required = false, defaultValue = "false") boolean force, HttpSession session) {
         Cart cart = getCart(session);
         Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
 
-        // Phát hiện xung đột: nhà hàng khác nhau
         Long currentRestId = cart.getRestaurantId();
         if (currentRestId != null && food.getRestaurant() != null && !currentRestId.equals(food.getRestaurant().getRestaurantId())) {
             if (force) {
-                cart.clear();
+                cart = cartService.clearCart(session, getCurrentUser());
             } else {
                 return createConflictResponse(cart, cart.getRestaurantName());
             }
         }
 
-        cart.add(food);
+        cart = cartService.addToCart(session, getCurrentUser(), id, null, 0, force);
         session.setAttribute("cart", cart);
         return createResponse(cart);
     }
 
-    // Thêm với các tùy chọn
     @PostMapping("/add-with-options/{id}")
     public CartResponse addWithOptions(@PathVariable Long id, @RequestBody AddToCartRequest req, @RequestParam(required = false, defaultValue = "false") boolean force, HttpSession session) {
         Cart cart = getCart(session);
         Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
 
-        // Phát hiện xung đột: nhà hàng khác nhau
         Long currentRestId = cart.getRestaurantId();
         if (currentRestId != null && food.getRestaurant() != null && !currentRestId.equals(food.getRestaurant().getRestaurantId())) {
             if (force) {
-                cart.clear();
+                cart = cartService.clearCart(session, getCurrentUser());
             } else {
                 return createConflictResponse(cart, cart.getRestaurantName());
             }
         }
 
-        cart.add(food, req.getOptionsText(), req.getExtraPrice());
+        cart = cartService.addToCart(session, getCurrentUser(), id, req.getOptionsText(), req.getExtraPrice(), force);
         session.setAttribute("cart", cart);
         return createResponse(cart);
     }
 
-    // Tăng bằng cartItemId (Chuỗi)
     @PostMapping("/increase/{cartItemId}")
     public CartResponse increase(@PathVariable String cartItemId, HttpSession session) {
         Cart cart = getCart(session);
         if (cart.getItems().containsKey(cartItemId)) {
             int currentQty = cart.getItems().get(cartItemId).getQuantity();
-            cart.updateQuantity(cartItemId, currentQty + 1);
+            cart = cartService.updateQuantity(session, getCurrentUser(), cartItemId, currentQty + 1);
             session.setAttribute("cart", cart);
         }
         return createResponse(cart);
     }
 
-    // Giảm bằng cartItemId (Chuỗi)
     @PostMapping("/decrease/{cartItemId}")
     public CartResponse decrease(@PathVariable String cartItemId, HttpSession session) {
         Cart cart = getCart(session);
         if (cart.getItems().containsKey(cartItemId)) {
             int currentQty = cart.getItems().get(cartItemId).getQuantity();
             if (currentQty <= 1) {
-                cart.remove(cartItemId);
+                cart = cartService.removeFromCart(session, getCurrentUser(), cartItemId);
             } else {
-                cart.updateQuantity(cartItemId, currentQty - 1);
+                cart = cartService.updateQuantity(session, getCurrentUser(), cartItemId, currentQty - 1);
             }
             session.setAttribute("cart", cart);
         }
         return createResponse(cart);
     }
 
-    //Xóa bằng cartItemId (Chuỗi)
     @PostMapping("/remove/{cartItemId}")
     public CartResponse remove(@PathVariable String cartItemId, HttpSession session) {
-        Cart cart = getCart(session);
-        cart.remove(cartItemId);
+        Cart cart = cartService.removeFromCart(session, getCurrentUser(), cartItemId);
         session.setAttribute("cart", cart);
         return createResponse(cart);
     }
 
-    // Giảm theo foodId (từ lưới menu)
     @PostMapping("/decrease-by-food/{foodId}")
     public CartResponse decreaseByFood(@PathVariable Long foodId, HttpSession session) {
         Cart cart = getCart(session);
         String targetCartItemId = null;
-        // Tìm mặt hàng giỏ hàng phù hợp đầu tiên cho thực phẩm này
         for (String key : cart.getItems().keySet()) {
             if (cart.getItems().get(key).getFood().getFoodId().equals(foodId)) {
                 targetCartItemId = key;
-                // Thích một trong những không có tùy chọn nếu có nhiều
                 if (key.endsWith("-0")) break;
             }
         }
@@ -132,9 +142,9 @@ public class CartApiController {
         if (targetCartItemId != null) {
             int currentQty = cart.getItems().get(targetCartItemId).getQuantity();
             if (currentQty <= 1) {
-                cart.remove(targetCartItemId);
+                cart = cartService.removeFromCart(session, getCurrentUser(), targetCartItemId);
             } else {
-                cart.updateQuantity(targetCartItemId, currentQty - 1);
+                cart = cartService.updateQuantity(session, getCurrentUser(), targetCartItemId, currentQty - 1);
             }
             session.setAttribute("cart", cart);
         }
@@ -166,7 +176,6 @@ public class CartApiController {
 
         cart.getItems().forEach((id, item) -> {
 
-            // Tổng hợp số lượng theo foodId cho các điều khiển lưới menu
             itemQuantities.merge(
                     item.getFood().getFoodId(),
                     item.getQuantity(),
@@ -337,7 +346,6 @@ public class CartApiController {
         }
     }
 
-    // Áp dụng phiếu giảm giá
     @PostMapping("/apply-coupon/{code}")
     public CouponResponse applyCoupon(@PathVariable String code,
                                       HttpSession session) {
@@ -398,14 +406,12 @@ public class CartApiController {
         );
     }
 
-    // Remove coupon
     @PostMapping("/remove-coupon")
     public CouponResponse removeCoupon(HttpSession session) {
         session.removeAttribute("appliedCouponCode");
         return new CouponResponse(true, "Đã hủy áp dụng mã giảm giá!", 0.0);
     }
 
-    // Liệt kê phiếu giảm giá đang hoạt động
     @GetMapping("/active-coupons")
     public List<Coupon> getActiveCoupons() {
         return couponRepository.findAllByActiveTrue();
