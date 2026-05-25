@@ -1,7 +1,23 @@
 package com.foodorderingsystem.service.impl;
 
-import com.foodorderingsystem.model.*;
-import com.foodorderingsystem.repository.*;
+import com.foodorderingsystem.model.cart.Cart;
+import com.foodorderingsystem.model.cart.CartItem;
+import com.foodorderingsystem.model.coupon.Coupon;
+import com.foodorderingsystem.model.food.Food;
+import com.foodorderingsystem.model.order.Order;
+import com.foodorderingsystem.model.order.OrderHistory;
+import com.foodorderingsystem.model.order.OrderItem;
+import com.foodorderingsystem.model.order.OrderStatus;
+import com.foodorderingsystem.model.restaurant.Restaurant;
+import com.foodorderingsystem.model.user.Address;
+import com.foodorderingsystem.model.user.User;
+import com.foodorderingsystem.repository.coupon.CouponRepository;
+import com.foodorderingsystem.repository.food.FoodRepository;
+import com.foodorderingsystem.repository.order.OrderHistoryRepository;
+import com.foodorderingsystem.repository.order.OrderItemRepository;
+import com.foodorderingsystem.repository.order.OrderRepository;
+import com.foodorderingsystem.repository.user.UserRepository;
+import com.foodorderingsystem.service.AddressService;
 import com.foodorderingsystem.service.OrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,19 +36,21 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderRepository        orderRepository;
-    private final OrderItemRepository    orderItemRepository;
-    private final UserRepository         userRepository;
-    private final FoodRepository         foodRepository;
-    private final com.foodorderingsystem.repository.CouponRepository couponRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final UserRepository userRepository;
+    private final FoodRepository foodRepository;
+    private final CouponRepository couponRepository;
     private final com.foodorderingsystem.service.InvoiceService invoiceService;
+    private final AddressService addressService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             UserRepository userRepository,
                             FoodRepository foodRepository,
                             OrderHistoryRepository orderHistoryRepository,
-                            com.foodorderingsystem.repository.CouponRepository couponRepository,
-                            com.foodorderingsystem.service.InvoiceService invoiceService) {
+                            CouponRepository couponRepository,
+                            com.foodorderingsystem.service.InvoiceService invoiceService,
+                            AddressService addressService) {
         this.orderRepository        = orderRepository;
         this.orderItemRepository    = orderItemRepository;
         this.userRepository         = userRepository;
@@ -40,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderHistoryRepository = orderHistoryRepository;
         this.couponRepository       = couponRepository;
         this.invoiceService         = invoiceService;
+        this.addressService         = addressService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -60,9 +79,32 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now());
 
         if (request != null) {
-            String fullAddress = request.getAddress() != null ? request.getAddress() : "";
-            if (request.getDetailAddress() != null && !request.getDetailAddress().isEmpty()) {
-                fullAddress = request.getDetailAddress() + ", " + fullAddress;
+            String fullAddress = "";
+            // If addressId is provided, use the saved address
+            if (request.getAddressId() != null) {
+                Address address = addressService.getAddressByIdAndUserId(request.getAddressId(), user.getUserId());
+                if (address != null) {
+                    fullAddress = address.getAddressLine();
+                    if (address.getWard() != null && !address.getWard().isEmpty()) {
+                        fullAddress += ", " + address.getWard();
+                    }
+                    if (address.getDistrict() != null && !address.getDistrict().isEmpty()) {
+                        fullAddress += ", " + address.getDistrict();
+                    }
+                    if (address.getCity() != null && !address.getCity().isEmpty()) {
+                        fullAddress += ", " + address.getCity();
+                    }
+                    if (address.getZipCode() != null && !address.getZipCode().isEmpty()) {
+                        fullAddress += " " + address.getZipCode();
+                    }
+                }
+            }
+            // Fallback to the old address/detailAddress fields
+            if (fullAddress.isEmpty()) {
+                fullAddress = request.getAddress() != null ? request.getAddress() : "";
+                if (request.getDetailAddress() != null && !request.getDetailAddress().isEmpty()) {
+                    fullAddress = request.getDetailAddress() + ", " + fullAddress;
+                }
             }
             order.setDeliveryAddress(fullAddress);
             order.setDeliveryNote(request.getNote());

@@ -1,9 +1,9 @@
 package com.foodorderingsystem.service;
 
 import com.foodorderingsystem.dto.MonthlyRevenue;
-import com.foodorderingsystem.model.Order;
-import com.foodorderingsystem.model.OrderStatus;
-import com.foodorderingsystem.repository.OrderRepository;
+import com.foodorderingsystem.model.order.Order;
+import com.foodorderingsystem.model.order.OrderStatus;
+import com.foodorderingsystem.repository.order.OrderRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;

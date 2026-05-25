@@ -1,8 +1,9 @@
 package com.foodorderingsystem.service;
 
-import com.foodorderingsystem.model.Cart;
-import com.foodorderingsystem.model.Order;
-import com.foodorderingsystem.model.OrderStatus;
+import com.foodorderingsystem.model.cart.Cart;
+import com.foodorderingsystem.model.order.Order;
+import com.foodorderingsystem.model.order.OrderStatus;
+import com.foodorderingsystem.model.restaurant.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -90,7 +91,7 @@ public interface OrderService {
     /**
      * Lịch sử nấu của bếp
      */
-    List<Order> getKitchenHistory(com.foodorderingsystem.model.Restaurant restaurant, LocalDateTime start, LocalDateTime end);
+    List<Order> getKitchenHistory(Restaurant restaurant, LocalDateTime start, LocalDateTime end);
 
     /**
      * Bếp báo hủy đơn đột xuất

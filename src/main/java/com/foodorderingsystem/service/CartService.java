@@ -1,7 +1,7 @@
 package com.foodorderingsystem.service;
 
-import com.foodorderingsystem.model.CartItem;
-import com.foodorderingsystem.model.Food;
+import com.foodorderingsystem.model.cart.CartItem;
+import com.foodorderingsystem.model.food.Food;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
