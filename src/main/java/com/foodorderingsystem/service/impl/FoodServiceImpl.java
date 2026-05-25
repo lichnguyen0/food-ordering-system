@@ -1,7 +1,8 @@
 package com.foodorderingsystem.service.impl;
 
-import com.foodorderingsystem.model.Food;
-import com.foodorderingsystem.repository.FoodRepository;
+import com.foodorderingsystem.model.food.Food;
+import com.foodorderingsystem.model.food.FoodStatus;
+import com.foodorderingsystem.repository.food.FoodRepository;
 import com.foodorderingsystem.service.FoodService;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +36,10 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public void toggleFoodStatus(Long foodId) {
         Food food = foodRepository.findById(foodId).orElseThrow(() -> new IllegalArgumentException("Món ăn không tồn tại"));
-        if (food.getStatus() == com.foodorderingsystem.model.FoodStatus.AVAILABLE) {
-            food.setStatus(com.foodorderingsystem.model.FoodStatus.SOLD_OUT);
+        if (food.getStatus() == FoodStatus.AVAILABLE) {
+            food.setStatus(FoodStatus.SOLD_OUT);
         } else {
-            food.setStatus(com.foodorderingsystem.model.FoodStatus.AVAILABLE);
+            food.setStatus(FoodStatus.AVAILABLE);
         }
         foodRepository.save(food);
     }

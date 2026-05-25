@@ -1,8 +1,10 @@
 package com.foodorderingsystem.config; //test nhanh // xoá dc có trog data r
 
-import com.foodorderingsystem.model.User;
-import com.foodorderingsystem.model.UserRole;
-import com.foodorderingsystem.repository.UserRepository;
+import com.foodorderingsystem.model.coupon.Coupon;
+import com.foodorderingsystem.model.user.User;
+import com.foodorderingsystem.model.user.UserRole;
+import com.foodorderingsystem.repository.coupon.CouponRepository;
+import com.foodorderingsystem.repository.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,12 +16,12 @@ public class DataInitializer implements CommandLineRunner { //
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final com.foodorderingsystem.repository.CouponRepository couponRepository;
+    private final CouponRepository couponRepository;
     private final JdbcTemplate jdbcTemplate;
 
     public DataInitializer(UserRepository userRepository, 
                            PasswordEncoder passwordEncoder, 
-                           com.foodorderingsystem.repository.CouponRepository couponRepository,
+                           CouponRepository couponRepository,
                            JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -106,7 +108,7 @@ public class DataInitializer implements CommandLineRunner { //
 
         // Phiếu giảm giá mặc định của hạt giống
         if (couponRepository.count() == 0) {
-            com.foodorderingsystem.model.Coupon percentageCoupon = new com.foodorderingsystem.model.Coupon();
+            Coupon percentageCoupon = new Coupon();
             percentageCoupon.setCode("LUNO20");
             percentageCoupon.setDescription("Giảm 20% tối đa 30K cho đơn từ 50K");
             percentageCoupon.setDiscountType("PERCENTAGE");  // PERCENTAGE kiểu tỉ lệ phần trăm
@@ -118,7 +120,7 @@ public class DataInitializer implements CommandLineRunner { //
             percentageCoupon.setActive(true); //đặt hoạt động
             couponRepository.save(percentageCoupon);
 
-            com.foodorderingsystem.model.Coupon fixedCoupon = new com.foodorderingsystem.model.Coupon();
+            Coupon fixedCoupon = new Coupon();
             fixedCoupon.setCode("FREESHIP");
             fixedCoupon.setDescription("Giảm ngay 16K cho đơn hàng từ 30K");
             fixedCoupon.setDiscountType("FIXED_AMOUNT");

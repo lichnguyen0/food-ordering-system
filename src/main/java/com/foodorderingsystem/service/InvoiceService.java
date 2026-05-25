@@ -1,11 +1,11 @@
 package com.foodorderingsystem.service;
 
-import com.foodorderingsystem.model.Invoice;
-import com.foodorderingsystem.model.Order;
-import com.foodorderingsystem.model.OrderStatus;
-import com.foodorderingsystem.model.PaymentStatus;
-import com.foodorderingsystem.repository.InvoiceRepository;
-import com.foodorderingsystem.repository.OrderRepository;
+import com.foodorderingsystem.model.payment.Invoice;
+import com.foodorderingsystem.model.order.Order;
+import com.foodorderingsystem.model.order.OrderStatus;
+import com.foodorderingsystem.model.payment.PaymentStatus;
+import com.foodorderingsystem.repository.payment.InvoiceRepository;
+import com.foodorderingsystem.repository.order.OrderRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

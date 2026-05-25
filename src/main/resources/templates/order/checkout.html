@@ -125,14 +125,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="input-group mt-3">
-                    <label>Hồ sơ</label>
-                    <div class="dropdown-header">
-                        <span class="dropdown-icon"><i class="fa-solid fa-user"></i></span>
-                        <span class="dropdown-text">Personal</span>
-                        <i class="fa-solid fa-chevron-down ms-auto dropdown-chevron"></i>
-                    </div>
-                </div>
+                 <div class="input-group mt-3">
+                     <label>Hồ sơ</label>
+                     <div class="custom-dropdown" id="addressDropdown">
+                         <input type="hidden" name="addressId" id="addressIdInput">
+                         <div class="dropdown-header" onclick="toggleAddressDropdown()">
+                             <span class="dropdown-icon"><i class="fa-solid fa-user"></i></span>
+                             <span class="dropdown-text">Chọn hồ sơ</span>
+                             <i class="fa-solid fa-chevron-down ms-auto dropdown-chevron"></i>
+                         </div>
+                         <div class="dropdown-list" id="addressDropdownList">
+                             <!-- Addresses will be populated here via JavaScript -->
+                         </div>
+                     </div>
+                 </div>
             </div>
         </div>
 
@@ -189,6 +195,43 @@
                 <span class="total-value" th:text="${#numbers.formatDecimal(cart.totalPrice + deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">75.000 ₫</span>
             </div>
             <button type="submit" form="checkoutForm" class="btn-place-order">Đặt đơn</button>
+        </div>
+    </div>
+
+    <!-- Modal Thêm địa chỉ mới vào hồ sơ -->
+    <div class="confirm-modal-overlay" id="addAddressModal">
+        <div class="confirm-modal" style="max-width: 440px;">
+            <div class="confirm-modal-icon">
+                <i class="fa-solid fa-map-marker-alt"></i>
+            </div>
+            <h3 class="confirm-modal-title">Thêm địa chỉ mới</h3>
+            <p class="confirm-modal-desc">Lưu vào hồ sơ để sử dụng lại khi đặt đơn sau</p>
+
+            <div style="padding: 8px 20px 0; text-align: left; max-height: 320px; overflow-y: auto;">
+                <div class="input-group" style="margin-bottom: 14px;">
+                    <label style="font-size: 13px; font-weight: 500; color: #444; display: block; margin-bottom: 5px;">Nhãn địa chỉ *</label>
+                    <input type="text" id="newAddrLabel" placeholder="Nhà riêng, Công ty, Trường học..." style="width: 100%; padding: 11px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="input-group" style="margin-bottom: 14px;">
+                    <label style="font-size: 13px; font-weight: 500; color: #444; display: block; margin-bottom: 5px;">Tên người nhận *</label>
+                    <input type="text" id="newAddrRecipient" placeholder="Nguyễn Văn A" style="width: 100%; padding: 11px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="input-group" style="margin-bottom: 14px;">
+                    <label style="font-size: 13px; font-weight: 500; color: #444; display: block; margin-bottom: 5px;">Số điện thoại *</label>
+                    <input type="tel" id="newAddrPhone" placeholder="0912 345 678" style="width: 100%; padding: 11px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="input-group" style="margin-bottom: 14px;">
+                    <label style="font-size: 13px; font-weight: 500; color: #444; display: block; margin-bottom: 5px;">Địa chỉ đầy đủ *</label>
+                    <input type="text" id="newAddrLine" placeholder="Số 45, Đường ABC, Phường Mỹ Đình" style="width: 100%; padding: 11px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;">
+                </div>
+            </div>
+
+            <div class="confirm-modal-actions" style="margin-top: 10px;">
+                <button type="button" class="btn-confirm-cancel" onclick="closeAddAddressModal()">Hủy</button>
+                <button type="button" class="btn-confirm-submit" onclick="submitNewAddressFromModal()">
+                    <i class="fa-solid fa-save"></i> Lưu vào hồ sơ
+                </button>
+            </div>
         </div>
     </div>
 

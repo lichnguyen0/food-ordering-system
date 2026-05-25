@@ -9,4 +9,5 @@ public class CheckoutRequest {
     private String note;
     private String paymentMethod;
     private String couponCode;
+    private Long addressId; // New field for selecting saved address
 }

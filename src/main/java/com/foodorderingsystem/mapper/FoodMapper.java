@@ -1,18 +1,23 @@
 package com.foodorderingsystem.mapper;
 //Mapper là lớp chuyên dùng để chuyển đổi object. Cụ thể Chuyển: DTO ↔ Entity
 import com.foodorderingsystem.dto.FoodDTO;
-import com.foodorderingsystem.model.Category;
-import com.foodorderingsystem.model.Food;
-import com.foodorderingsystem.repository.CategoryRepository;
+import com.foodorderingsystem.model.category.Category;
+import com.foodorderingsystem.model.food.Food;
+import com.foodorderingsystem.model.food.FoodImage;
+import com.foodorderingsystem.model.option.OptionGroup;
+import com.foodorderingsystem.model.option.OptionItem;
+import com.foodorderingsystem.model.restaurant.Restaurant;
+import com.foodorderingsystem.repository.category.CategoryRepository;
+import com.foodorderingsystem.repository.restaurant.RestaurantRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FoodMapper {
 
     private final CategoryRepository categoryRepository;
-    private final com.foodorderingsystem.repository.RestaurantRepository restaurantRepository;
+    private final RestaurantRepository restaurantRepository;
 
-    public FoodMapper(CategoryRepository categoryRepository, com.foodorderingsystem.repository.RestaurantRepository restaurantRepository) {
+    public FoodMapper(CategoryRepository categoryRepository, RestaurantRepository restaurantRepository) {
         this.categoryRepository = categoryRepository;
         this.restaurantRepository = restaurantRepository;
     }
@@ -38,7 +43,7 @@ public class FoodMapper {
         
         if (food.getImages() != null) {
             dto.setAdditionalImages(food.getImages().stream()
-                .map(com.foodorderingsystem.model.FoodImage::getImageUrl)
+                .map(FoodImage::getImageUrl)
                 .collect(java.util.stream.Collectors.toList()));
         }
         if (food.getOptionGroups() != null) {
@@ -81,21 +86,21 @@ public class FoodMapper {
         }
 
         if (dto.getRestaurantId() != null) {
-            com.foodorderingsystem.model.Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElse(null);
+            Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElse(null);
             food.setRestaurant(restaurant);
         }
 
         if (dto.getAdditionalImages() != null) {
             Food finalFood = food;
             food.setImages(dto.getAdditionalImages().stream()
-                .map(url -> new com.foodorderingsystem.model.FoodImage(url, finalFood))
+                .map(url -> new FoodImage(url, finalFood))
                 .collect(java.util.stream.Collectors.toList()));
         }
         
         if (dto.getOptionGroups() != null) {
             Food finalFood = food;
             food.setOptionGroups(dto.getOptionGroups().stream().map(gDTO -> {
-                com.foodorderingsystem.model.OptionGroup g = new com.foodorderingsystem.model.OptionGroup();
+                OptionGroup g = new OptionGroup();
                 g.setGroupId(gDTO.getGroupId());
                 g.setGroupName(gDTO.getGroupName());
                 g.setRequired(gDTO.isRequired());
@@ -104,7 +109,7 @@ public class FoodMapper {
                 
                 if (gDTO.getOptionItems() != null) {
                     g.setOptionItems(gDTO.getOptionItems().stream().map(iDTO -> {
-                        com.foodorderingsystem.model.OptionItem i = new com.foodorderingsystem.model.OptionItem();
+                        OptionItem i = new OptionItem();
                         i.setItemId(iDTO.getItemId());
                         i.setItemName(iDTO.getItemName());
                         i.setExtraPrice(iDTO.getExtraPrice());

@@ -1,6 +1,6 @@
 package com.foodorderingsystem.dto;
 
-import com.foodorderingsystem.model.FoodStatus;
+import com.foodorderingsystem.model.food.FoodStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
