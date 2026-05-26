@@ -1,0 +1,58 @@
+{
+  "_comment": "VIETNAM ADMINISTRATIVE DIVISIONS - 2026 (Post-Merger - 34 Tỉnh/Thành)",
+  "_instruction": "Cấu trúc sau sáp nhập 2025-2026: CHỈ CÓ Tỉnh/Thành phố → Phường/Xã (KHÔNG CÒN Quận/Huyện).\n\nHiện tại file này chỉ chứa dữ liệu MẪU để test form.\n\nCách cập nhật data thật (34 tỉnh/thành):\n1. Lấy dữ liệu mới nhất từ Tổng cục Thống kê (GSO) hoặc repo cộng đồng cập nhật sau sáp nhập (ví dụ kenzouno1/DiaGioiHanhChinhVN).\n2. Convert về đúng format:\n   provinces: [{ name, code, wards: [{name, code}, ...] }]\n3. Thay thế nội dung file này.\n\nSau khi thay data thật, form Admin sẽ có đầy đủ 34 tỉnh/thành.",
+  "provinces": [
+    {
+      "name": "Hà Nội",
+      "code": 1,
+      "wards": [
+        {"name": "Phường Phúc Xá", "code": 10101},
+        {"name": "Phường Trúc Bạch", "code": 10102},
+        {"name": "Phường Vĩnh Phúc", "code": 10103},
+        {"name": "Phường Chương Dương", "code": 10201}
+      ]
+    },
+    {
+      "name": "Hồ Chí Minh",
+      "code": 2,
+      "wards": [
+        {"name": "Phường Bến Nghé", "code": 20101},
+        {"name": "Phường Bến Thành", "code": 20102},
+        {"name": "Phường Cầu Kho", "code": 20103}
+      ]
+    },
+    {
+      "name": "Đà Nẵng",
+      "code": 3,
+      "wards": [
+        {"name": "Phường Hải Châu", "code": 30101},
+        {"name": "Phường Thanh Khê", "code": 30102}
+      ]
+    },
+    {
+      "name": "Hải Phòng",
+      "code": 4,
+      "wards": [
+        {"name": "Phường Hồng Bàng", "code": 40101},
+        {"name": "Phường Lê Chân", "code": 40102}
+      ]
+    },
+    {
+      "name": "Cần Thơ",
+      "code": 5,
+      "wards": [
+        {"name": "Phường Ninh Kiều", "code": 50101},
+        {"name": "Phường Bình Thủy", "code": 50102}
+      ]
+    },
+    {
+      "name": "Bắc Giang",
+      "code": 6,
+      "wards": [
+        {"name": "Phường Thọ Xương", "code": 60101},
+        {"name": "Phường Ngô Quyền", "code": 60102},
+        {"name": "Xã Nếnh", "code": 60103}
+      ]
+    }
+  ]
+}

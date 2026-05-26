@@ -13,6 +13,10 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:src="@{/js/location-service.js}" defer></script>
     <script th:src="@{/js/home.js}" defer></script>
     <style>
         .explore-food-card {
@@ -20,6 +24,34 @@
         }
         .hidden-food-item {
             display: none !important;
+        }
+        .location-detect-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        .location-detect-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .location-input-group {
+            position: relative;
+        }
+        .location-input-group input {
+            padding-right: 44px !important;
         }
     </style>
 </head>
@@ -32,15 +64,24 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
-            <form action="/foods" method="GET" class="hero-card">
+            <form action="/restaurant" method="GET" class="hero-card" id="heroSearchForm">
                 <span style="color: var(--text-muted); font-weight: 500; font-size: 15px;">Good Afternoon</span>
                 <h1 style="margin-top: 8px;">Where should we deliver your food today?</h1>
 
                 <div class="location-input-group">
                     <i class="fa-solid fa-location-dot"></i>
-                    <input type="text" name="address" placeholder="Mỹ Đình Từ Liêm Hà Nội - 133 Xuân Thủy..." required>
+                    <input type="text" id="deliveryAddressInput" name="address" placeholder="Mỹ Đình Từ Liêm Hà Nội - 133 Xuân Thủy..." required>
+                    <button type="button" id="detectLocationBtn" class="location-detect-btn" title="Dùng vị trí hiện tại của tôi">
+                        <i class="fa-solid fa-crosshairs"></i>
+                    </button>
+                </div>
+                <div id="locationStatus" style="font-size:12px; color:#666; margin-top:4px; display:none;">
+                    <i class="fa-solid fa-check-circle" style="color:#22c55e;"></i> 
+                    <span id="locationStatusText">Đang dùng vị trí của bạn</span>
                 </div>
 
+                <input type="hidden" name="userLat" id="heroUserLat">
+                <input type="hidden" name="userLng" id="heroUserLng">
                 <button type="submit" class="btn-hero-search">Tìm kiếm</button>
             </form>
         </div>
@@ -50,15 +91,24 @@
         <!-- Promotions Section -->
         <h2 class="section-title">Ưu đãi LunoFood tại <span style="color: var(--grab-green);">Hà Nội</span></h2>
 
-        <div class="promo-section-wrapper">
-            <!-- Arrows -->
-            <button class="carousel-arrow left" id="prevBtn"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="carousel-arrow right" id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="promo-section-wrapper">
+                <div class="section-header">
+                    <h2 class="section-title">Quán ăn đang có ưu đãi</h2>
+                    <a th:href="@{/restaurant}" class="see-all">Xem tất cả</a>
+                </div>
 
-            <div class="promo-carousel" id="promoCarousel">
+                <!-- Professional location filter notice on home -->
+                <div th:if="${isFilteredByLocation}" style="background:#f0f9ff; border:1px solid #bae6fd; padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:13px; color:#0369a1;">
+                    <i class="fa-solid fa-location-dot"></i> 
+                    Đang hiển thị quán ăn trong phạm vi <strong>7km</strong> từ vị trí của bạn.
+                </div>
+
+                <div class="promo-carousel" id="promoCarousel">
                 <!-- Dynamic restaurant cards from Database -->
-                <a th:each="r : ${restaurants}" th:href="@{/restaurant/{id}(id=${r.restaurantId})}"
-                    class="promo-card-link">
+                <a th:each="r : ${restaurants}" 
+                   th:href="@{/restaurant/{id}(id=${r.restaurantId}, userLat=${userLat}, userLng=${userLng})}"
+                   class="promo-card-link"
+                   th:attr="data-lat=${r.latitude}, data-lng=${r.longitude}, data-restaurant-id=${r.restaurantId}">
                     <div class="promo-card">
                         <div class="promo-img-wrapper">
                             <img th:if="${r.image != null}" th:src="${r.image}" th:alt="${r.name}">
@@ -74,8 +124,7 @@
                                         th:text="${r.rating != null ? r.rating : '4.5'}">4.5</span></span>
                                 <span><i class="fa-regular fa-clock"></i> <span th:text="${r.deliveryTime + ' phút'}">25
                                         phút</span></span>
-                                <span><i class="fa-solid fa-road"></i> <span th:text="${r.distance + ' km'}">1.5
-                                        km</span></span>
+                                <span><i class="fa-solid fa-road"></i> <span class="restaurant-distance" th:text="${r.distance + ' km'}">1.5 km</span></span>
                             </div>
                         </div>
                     </div>

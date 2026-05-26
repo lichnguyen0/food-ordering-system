@@ -150,6 +150,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.querySelectorAll('#addressDropdown .dropdown-item').forEach(i => i.classList.remove('selected'));
                             item.classList.add('selected');
                             document.getElementById('addressDropdown').classList.remove('open');
+
+                            // If the address has coordinates, notify checkout page to update map and shipping fee
+                            if (address.latitude && address.longitude) {
+                                try {
+                                    const ev = new CustomEvent('addressSelected', { detail: { lat: parseFloat(address.latitude), lng: parseFloat(address.longitude) } });
+                                    document.dispatchEvent(ev);
+                                } catch (err) {
+                                    console.warn('Failed to dispatch addressSelected event', err);
+                                }
+                            }
                         });
 
                         // Edit icon

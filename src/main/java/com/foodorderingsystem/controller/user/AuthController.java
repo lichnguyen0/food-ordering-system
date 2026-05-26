@@ -1,5 +1,6 @@
 package com.foodorderingsystem.controller.user;
 
+import com.foodorderingsystem.model.restaurant.Restaurant;
 import com.foodorderingsystem.model.user.User;
 import com.foodorderingsystem.model.user.UserRole;
 import com.foodorderingsystem.repository.category.CategoryRepository;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 public class AuthController {
 
@@ -20,17 +24,20 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final com.foodorderingsystem.service.FoodService foodService;
+    private final com.foodorderingsystem.service.DistanceService distanceService;
 
     public AuthController(CategoryRepository categoryRepository,
                           RestaurantRepository restaurantRepository,
                           UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
-                          com.foodorderingsystem.service.FoodService foodService) {
+                          com.foodorderingsystem.service.FoodService foodService,
+                          com.foodorderingsystem.service.DistanceService distanceService) {
         this.categoryRepository = categoryRepository;
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.foodService = foodService;
+        this.distanceService = distanceService;
     }
 
     @GetMapping("/login")
@@ -87,11 +94,34 @@ public class AuthController {
     }
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model,
+                        @RequestParam(required = false) Double userLat,
+                        @RequestParam(required = false) Double userLng) {
         model.addAttribute("categories", categoryRepository.findByActiveTrueOrderByDisplayOrderAsc());
-        // Chỉ lấy nhà hàng có ưu đãi đang hoạt động cho trang Home
-        model.addAttribute("restaurants", restaurantRepository.findActivePromos(java.time.LocalDate.now()));
+
+        List<Restaurant> promoRestaurants = 
+            restaurantRepository.findActivePromos(java.time.LocalDate.now());
+
+        boolean isFilteredByLocation = false;
+
+        // Lọc chuyên nghiệp: chỉ hiển thị các nhà hàng trong bán kính giao hàng 7km khi có vị trí
+        if (userLat != null && userLng != null) {
+            final double MAX_DISTANCE_KM = 7.0;
+            promoRestaurants = promoRestaurants.stream()
+                    .filter(r -> {
+                        if (!r.hasValidCoordinates()) return false;
+                        double dist = distanceService.calculateDistance(userLat, userLng, r.getLatitude(), r.getLongitude());
+                        return dist <= MAX_DISTANCE_KM;
+                    })
+                    .collect(Collectors.toList());
+            isFilteredByLocation = true;
+        }
+
+        model.addAttribute("restaurants", promoRestaurants);
         model.addAttribute("foods", foodService.getAllFoods());
+        model.addAttribute("userLat", userLat);
+        model.addAttribute("userLng", userLng);
+        model.addAttribute("isFilteredByLocation", isFilteredByLocation);
         return "user/home";
     }
 }

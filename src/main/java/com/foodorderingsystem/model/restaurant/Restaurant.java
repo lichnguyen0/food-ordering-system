@@ -83,6 +83,12 @@ public class Restaurant {
     }
 
     @Transient
+    public boolean hasValidCoordinates() {
+        return latitude != null && longitude != null 
+            && latitude != 0.0 && longitude != 0.0;
+    }
+
+    @Transient
     public boolean isOpen() {
         if (operatingHours == null || operatingHours.isEmpty()) {
             return false;

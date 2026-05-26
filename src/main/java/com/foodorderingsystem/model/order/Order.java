@@ -55,6 +55,29 @@ public class Order {
     private String couponCode;
     private double discountAmount = 0.0;
 
+    // Delivery coordinates (nullable). Marked transient for now to avoid DB schema changes.
+    @Transient
+    private Double deliveryLat;
+
+    @Transient
+    private Double deliveryLng;
+
+    public Double getDeliveryLat() {
+        return deliveryLat;
+    }
+
+    public void setDeliveryLat(Double deliveryLat) {
+        this.deliveryLat = deliveryLat;
+    }
+
+    public Double getDeliveryLng() {
+        return deliveryLng;
+    }
+
+    public void setDeliveryLng(Double deliveryLng) {
+        this.deliveryLng = deliveryLng;
+    }
+
     // ── Shipper được giao đơn này ──────────────────────────────────────────
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipper_id")
