@@ -8,6 +8,10 @@
     <link rel="stylesheet" th:href="@{/css/checkout.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet for potential map picker -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:src="@{/js/location-service.js}"></script>
 </head>
 <body class="checkout-body">
     <!-- Header Fragment -->
@@ -34,20 +38,38 @@
                 <div class="address-inputs">
                         <div class="input-group">
                             <label>Địa chỉ</label>
-                            <input type="text" name="address" value="Lô TT-02 Kdt Mon City, P.Mỹ Đình, Hà Nội" required>
+                             <input type="text" name="address" placeholder="Địa chỉ sẽ được tự động điền từ vị trí của bạn" required>
                         </div>
                         <div class="input-group">
                             <label>Chi tiết địa chỉ</label>
                             <input type="text" name="detailAddress" placeholder="Vd: tầng / tên toà nhà">
                         </div>
-                        <div class="input-group">
-                            <label>Ghi chú cho tài xế</label>
-                            <input type="text" name="note" placeholder="Hãy gặp tôi tại sảnh">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                         <div class="input-group">
+                             <label>Ghi chú cho tài xế</label>
+                             <input type="text" name="note" placeholder="Hãy gặp tôi tại sảnh">
+                         </div>
+                     </div>
+
+                     <!-- Delivery Map -->
+                     <div style="margin-top: 12px;">
+                         <div style="font-size: 12px; color: #666; margin-bottom: 6px;">
+                             <i class="fa-solid fa-map-marker-alt" style="color:#e11d48;"></i> Vị trí giao hàng
+                         </div>
+                         <div id="checkout-delivery-map" style="height: 180px; width: 100%; border-radius: 8px; border: 1px solid #eee;"></div>
+                     </div>
+
+                      <!-- Hidden restaurant coords for dynamic calculation -->
+                      <input type="hidden" id="restaurantLat" th:value="${restaurantLat}">
+                      <input type="hidden" id="restaurantLng" th:value="${restaurantLng}">
+
+                      <!-- Delivery not available warning -->
+                      <div th:if="${!deliveryAvailable}" style="margin-top: 12px; padding: 10px; background: #fff0f0; border: 1px solid #ffcccc; border-radius: 6px; color: #c53030; font-size: 13px;">
+                          <i class="fa-solid fa-exclamation-triangle"></i>
+                          <strong>Khoảng cách quá xa!</strong> Chúng tôi chỉ hỗ trợ giao hàng trong phạm vi 7km. Vui lòng chọn nhà hàng gần hơn.
+                      </div>
+                  </div>
+              </div>
+          </div>
 
         <!-- Section: Tóm tắt đơn hàng -->
         <div class="checkout-card">
@@ -79,9 +101,13 @@
                         <span>Tổng tạm tính</span>
                         <span id="subtotalText" th:data-price="${cart.totalPrice}" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">59.000 ₫</span>
                     </div>
-                    <div class="total-row">
+                    <div class="total-row" th:if="${deliveryAvailable}">
                         <span>Phí giao hàng và phí áp dụng <i class="fa-solid fa-circle-info"></i></span>
                         <span id="deliveryFeeText" th:data-price="${deliveryFee}" th:text="${#numbers.formatDecimal(deliveryFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">16.000 ₫</span>
+                    </div>
+                    <div class="total-row" th:unless="${deliveryAvailable}" style="color: #c53030;">
+                        <span>Phí giao hàng</span>
+                        <span style="font-weight: 600;">Không hỗ trợ</span>
                     </div>
                     <div class="total-row" id="discountRow" style="display: none; color: var(--primary-red); font-weight: 600;">
                         <span>Khuyến mãi giảm giá (<span id="appliedCodeDisplay"></span>)</span>
@@ -285,6 +311,258 @@
                 })
                 .catch(err => console.error("Error updating cart:", err));
         }
+
+        // Initialize delivery map + auto-detect address + dynamic time/distance in "Giao đến" section
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapContainer = document.getElementById('checkout-delivery-map');
+            const addressInput = document.querySelector('input[name="address"]');
+            const timeValueEl = document.querySelector('.time-value');
+
+            const restaurantLatEl = document.getElementById('restaurantLat');
+            const restaurantLngEl = document.getElementById('restaurantLng');
+            const restaurantLat = restaurantLatEl ? parseFloat(restaurantLatEl.value) : null;
+            const restaurantLng = restaurantLngEl ? parseFloat(restaurantLngEl.value) : null;
+
+            let currentUserLat = null;
+            let currentUserLng = null;
+
+            let map = null;
+            let marker = null;
+
+            const updateDeliveryInfo = (userLat, userLng) => {
+                if (!timeValueEl || !restaurantLat || !restaurantLng || !userLat || !userLng) return;
+
+                if (typeof LocationService !== 'undefined') {
+                    const locService = new LocationService();
+                    const distKm = locService.calculateHaversineDistance(userLat, userLng, restaurantLat, restaurantLng);
+                    const estimatedMinutes = 15 + Math.round(distKm * 5);
+
+                    timeValueEl.textContent = `${estimatedMinutes} phút (${distKm.toFixed(1)} km)`;
+
+                    // Update delivery fee based on new tiers
+                    const deliveryFeeEl = document.getElementById('deliveryFeeText');
+                    if (deliveryFeeEl) {
+                        let newFee = 0;
+                        if (distKm <= 3) newFee = 15000;
+                        else if (distKm <= 5) newFee = 25000;
+                        else if (distKm <= 7) newFee = 35000;
+                        else newFee = -1;
+
+                        if (newFee > 0) {
+                            deliveryFeeEl.textContent = newFee.toLocaleString('vi-VN') + ' ₫';
+                            deliveryFeeEl.style.color = '';
+                        } else {
+                            deliveryFeeEl.textContent = 'Không hỗ trợ';
+                            deliveryFeeEl.style.color = '#c53030';
+                        }
+                    }
+                }
+            };
+
+            const makeAddressReadonlyWithEdit = (input, displayName) => {
+                if (!input) return;
+
+                input.value = displayName;
+                input.readOnly = true;
+                input.style.backgroundColor = '#f8fafc';
+                input.style.borderColor = '#cbd5e1';
+                input.style.cursor = 'not-allowed';
+                input.style.paddingRight = '60px'; // space for the button inside - kéo dài input đến sát nút
+                input.style.width = '100%';
+                input.style.boxSizing = 'border-box';
+
+                const inputGroup = input.parentElement; // .input-group
+                if (!inputGroup) return;
+
+                // Create a relative wrapper inside .input-group for the input + button
+                let inputWrapper = inputGroup.querySelector('.address-input-wrapper');
+                if (!inputWrapper) {
+                    inputWrapper = document.createElement('div');
+                    inputWrapper.className = 'address-input-wrapper';
+                    inputWrapper.style.position = 'relative';
+                    inputWrapper.style.width = '100%';
+
+                    // Insert wrapper before the input, then move input inside it
+                    inputGroup.insertBefore(inputWrapper, input);
+                    inputWrapper.appendChild(input);
+                }
+
+                // Add the edit button inside the wrapper (appears on the right of the input)
+                if (!inputWrapper.querySelector('.edit-address-btn')) {
+                    const editBtn = document.createElement('button');
+                    editBtn.type = 'button';
+                    editBtn.className = 'edit-address-btn';
+                    editBtn.textContent = 'Thay đổi';
+                    editBtn.style.cssText = `
+                        position: absolute;
+                        right: 6px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        font-size: 11px;
+                        padding: 2px 8px;
+                        border: 1px solid #cbd5e1;
+                        background: #f1f5f9;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        color: #64748b;
+                        z-index: 2;
+                        white-space: nowrap;
+                    `;
+
+                    editBtn.addEventListener('click', () => {
+                        input.readOnly = false;
+                        input.style.backgroundColor = '';
+                        input.style.borderColor = '';
+                        input.style.cursor = '';
+                        input.style.paddingRight = '';
+                        editBtn.style.display = 'none';
+                        input.dataset.userEdited = 'true';   // prevent future auto-overwrite
+                        input.focus();
+                    });
+
+                    inputWrapper.appendChild(editBtn);
+                }
+            };
+
+            const tryAutoFillAddress = async (lat, lng) => {
+                if (!addressInput) return;
+
+                // Only skip if user has explicitly chosen to edit the address (after clicking "Thay đổi")
+                if (addressInput.dataset.userEdited === 'true') return;
+
+                if (typeof LocationService !== 'undefined') {
+                    try {
+                        const locService = new LocationService();
+                        const result = await locService.reverseGeocode(lat, lng);
+                        if (result && result.displayName) {
+                            // Always prefer the detected location on initial load
+                            makeAddressReadonlyWithEdit(addressInput, result.displayName);
+                        }
+                    } catch (e) {
+                        console.log('Reverse geocoding failed');
+                    }
+                }
+            };
+
+            // Initialize map
+            if (mapContainer && typeof L !== 'undefined') {
+                let centerLat = 21.0285;
+                let centerLng = 105.8542;
+                let zoom = 13;
+
+                if (typeof LocationService !== 'undefined') {
+                    const locService = new LocationService();
+                    const stored = locService.getStoredLocation();
+                    if (stored) {
+                        centerLat = stored.lat;
+                        centerLng = stored.lng;
+                        zoom = 15;
+                        currentUserLat = centerLat;
+                        currentUserLng = centerLng;
+
+                        tryAutoFillAddress(centerLat, centerLng);
+                        updateDeliveryInfo(centerLat, centerLng);
+                    }
+                }
+
+                map = L.map(mapContainer, {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView([centerLat, centerLng], zoom);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                marker = L.marker([centerLat, centerLng])
+                    .addTo(map)
+                    .bindPopup('Vị trí giao hàng')
+                    .openPopup();
+            }
+
+            // When user manually edits the address after clicking "Thay đổi", geocode and update time/km + map
+            if (addressInput) {
+                addressInput.addEventListener('blur', async () => {
+                    if (addressInput.readOnly) return; // only when user is editing
+
+                    const addressValue = addressInput.value.trim();
+                    if (!addressValue || addressValue.length < 5) return;
+
+                    if (typeof LocationService === 'undefined') return;
+
+                    try {
+                        const locService = new LocationService();
+                        const result = await locService.geocodeAddress(addressValue);
+
+                        if (result && result.lat && result.lng) {
+                            currentUserLat = result.lat;
+                            currentUserLng = result.lng;
+
+                            // Update map marker and center
+                            if (map && marker) {
+                                marker.setLatLng([result.lat, result.lng]);
+                                map.setView([result.lat, result.lng], 15);
+                            }
+
+                            // Recalculate and update delivery time + fee
+                            updateDeliveryInfo(result.lat, result.lng);
+                        }
+                    } catch (e) {
+                        console.log('Geocoding manual address change failed');
+                    }
+                });
+
+                // Also support Enter key to trigger update immediately
+                addressInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !addressInput.readOnly) {
+                        addressInput.blur(); // trigger the blur handler above
+                    }
+                });
+            }
+
+            // Detect location if none stored
+            if (typeof LocationService !== 'undefined' && addressInput) {
+                const locService = new LocationService();
+                const stored = locService.getStoredLocation();
+
+                if (!stored) {
+                    locService.detectUserLocation().then(loc => {
+                        currentUserLat = loc.lat;
+                        currentUserLng = loc.lng;
+
+                        tryAutoFillAddress(loc.lat, loc.lng);
+                        updateDeliveryInfo(loc.lat, loc.lng);
+                    }).catch(() => {});
+                }
+            }
+
+            // Listen for address selection from address dropdown (profiles)
+            document.addEventListener('addressSelected', function(e) {
+                const d = e.detail || {};
+                if (!d.lat || !d.lng) return;
+                currentUserLat = d.lat;
+                currentUserLng = d.lng;
+
+                // Update map marker
+                if (map) {
+                    if (marker) marker.setLatLng([d.lat, d.lng]);
+                    else {
+                        marker = L.marker([d.lat, d.lng]).addTo(map).bindPopup('Vị trí giao hàng').openPopup();
+                    }
+                    map.setView([d.lat, d.lng], 15);
+                }
+
+                // Make address input readonly (it's a selected profile)
+                if (addressInput) {
+                    addressInput.value = addressInput.value || '';
+                    addressInput.readOnly = true;
+                    addressInput.style.backgroundColor = '#f8fafc';
+                    addressInput.dataset.userEdited = 'true';
+                }
+
+                // Update delivery info
+                updateDeliveryInfo(d.lat, d.lng);
+            });
+        });
+    </script>
     </script>
 </body>
 </html>

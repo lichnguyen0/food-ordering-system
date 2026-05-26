@@ -7,10 +7,13 @@ import com.foodorderingsystem.model.food.Food;
 import com.foodorderingsystem.model.order.Order;
 import com.foodorderingsystem.model.order.OrderItem;
 import com.foodorderingsystem.model.order.OrderStatus;
+import com.foodorderingsystem.model.restaurant.Restaurant;
 import com.foodorderingsystem.model.user.User;
 import com.foodorderingsystem.repository.coupon.CouponRepository;
+import com.foodorderingsystem.repository.restaurant.RestaurantRepository;
 import com.foodorderingsystem.repository.user.UserRepository;
 import com.foodorderingsystem.service.CartService;
+import com.foodorderingsystem.service.DistanceService;
 import com.foodorderingsystem.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -36,20 +40,29 @@ public class OrderController {
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
     private final CartService cartService;
+    private final DistanceService distanceService;
+    private final RestaurantRepository restaurantRepository;
 
     public OrderController(OrderService orderService,
                            UserRepository userRepository,
                            CouponRepository couponRepository,
-                           CartService cartService) {
+                           CartService cartService,
+                           DistanceService distanceService,
+                           RestaurantRepository restaurantRepository) {
         this.orderService = orderService;
         this.userRepository = userRepository;
         this.couponRepository = couponRepository;
         this.cartService = cartService;
+        this.distanceService = distanceService;
+        this.restaurantRepository = restaurantRepository;
     }
 
 
     @GetMapping("/checkout")
-    public String checkoutPage(Model model, @ModelAttribute("cart") Cart cart) {
+    public String checkoutPage(Model model, 
+                               @ModelAttribute("cart") Cart cart,
+                               @RequestParam(required = false) Double userLat,
+                               @RequestParam(required = false) Double userLng) {
 
         if (cart == null || cart.getItems().isEmpty()) {
             return "redirect:/"; // Chuyển hướng về trang chủ nếu giỏ hàng trống
@@ -61,27 +74,51 @@ public class OrderController {
 
         CartItem firstItem = cart.getItems().values().iterator().next();
 
+        Restaurant restaurant = null;
+
         if (firstItem.getFood() != null
                 && firstItem.getFood().getRestaurant() != null) {
 
-            Long rId = firstItem.getFood().getRestaurant().getRestaurantId();
+            Long restaurantId = firstItem.getFood().getRestaurant().getRestaurantId();
+            
+            // Tải nhà hàng một cách an toàn để tránh LazyInitializationException
+            restaurant = restaurantRepository.findById(restaurantId).orElse(null);
+        }
 
-            distance = (rId == null)
-                    ? 1.5
-                    : (0.5 + (double) (rId % 9) * 0.5);
+        if (restaurant != null) {
+            // Tính toán khoảng cách bằng cách sử dụng tọa độ thực tế nếu có
+            if (userLat != null && userLng != null 
+                    && restaurant.hasValidCoordinates()) {
+                distance = distanceService.calculateDistance(
+                    userLat, userLng,
+                    restaurant.getLatitude(), restaurant.getLongitude()
+                );
+            } else if (restaurant.getRestaurantId() != null) {
+                // Dự phòng về khoảng cách giả ngẫu nhiên dựa trên ID
+                distance = 0.5 + (double) (restaurant.getRestaurantId() % 9) * 0.5;
+            }
 
-            deliveryTime = (rId == null)
-                    ? 25
-                    : (15 + (int) (rId % 6) * 5);
-
-            deliveryFee = 5000.0 + (distance * 5000.0);
+            deliveryTime = distanceService.calculateDeliveryTime(distance);
+            double rawFee = distanceService.calculateTieredDeliveryFee(distance);
+            deliveryFee = (rawFee < 0) ? 0 : rawFee;
         }
 
         model.addAttribute("cart", cart);
         model.addAttribute("deliveryFee", deliveryFee);
         model.addAttribute("deliveryDistance", distance);
         model.addAttribute("deliveryTime", deliveryTime);
+
+        boolean deliveryAvailable = distanceService.isDeliveryAvailable(distance);
+        model.addAttribute("deliveryAvailable", deliveryAvailable);
         model.addAttribute("activeCoupons", couponRepository.findAllByActiveTrue());
+        model.addAttribute("userLat", userLat);
+        model.addAttribute("userLng", userLng);
+
+        // Expose restaurant coordinates for frontend dynamic calculation
+        if (restaurant != null) {
+            model.addAttribute("restaurantLat", restaurant.getLatitude());
+            model.addAttribute("restaurantLng", restaurant.getLongitude());
+        }
 
         return "order/checkout";
     }
@@ -209,8 +246,8 @@ public class OrderController {
 
     @PostMapping("/order/reorder/{id}")
     public String reorder(@PathVariable("id") Long id,
-                          HttpSession session,
-                          RedirectAttributes redirectAttributes) {
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
 
         Order order = orderService.getOrderById(id);
 
@@ -241,6 +278,8 @@ public class OrderController {
             );
             return "redirect:/checkout";
         }
+
         return "redirect:/orders";
     }
+
 }

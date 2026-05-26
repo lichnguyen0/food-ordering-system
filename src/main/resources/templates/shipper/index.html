@@ -40,6 +40,21 @@
             </div>
         </div>
 
+        <!-- Shipper Mini Map -->
+        <div class="card" style="margin-top:16px;">
+            <div class="card-header">
+                <span class="card-title"><i class="fa-solid fa-map-location-dot" style="color:#06b6d4"></i> Bản đồ vị trí của bạn</span>
+            </div>
+            <div style="padding:16px;">
+                <div id="shipper-map" style="height: 260px; width: 100%; border-radius:8px; border:1px solid #eee; overflow:hidden;"></div>
+                <div style="margin-top:8px; display:flex; gap:8px;">
+                    <button id="centerOnMeBtn" class="btn btn-sm" style="background:#06b6d4;color:#fff;border:none;">Tập trung vị trí</button>
+                    <span style="align-self:center; color:#64748b; font-size:13px;">Vị trí cập nhật tự động</span>
+                </div>
+            </div>
+        </div>
+
+        
         <!-- Đơn đang giao -->
         <div class="card">
             <div class="card-header">
@@ -57,7 +72,7 @@
                     </a>
                 </div>
 
-                <div th:each="order : ${myDeliveries}" class="order-card delivering">
+                <div th:each="order : ${myDeliveries}" class="order-card delivering" th:attr="data-dest-lat=${order.deliveryLat}, data-dest-lng=${order.deliveryLng}, data-order-id=${order.orderId}">
                     <div class="info-row">
                         <div>
                             <div class="order-num" th:text="'Đơn #' + ${order.orderId}"></div>

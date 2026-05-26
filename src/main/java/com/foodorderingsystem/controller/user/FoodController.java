@@ -24,8 +24,10 @@ public class FoodController {
     }
     @GetMapping
     public String menu(Model model,
-                       @RequestParam(required = false) String keyword,
-                       @RequestParam(required = false) Long categoryId) {
+                        @RequestParam(required = false) String keyword,
+                        @RequestParam(required = false) Long categoryId,
+                        @RequestParam(required = false) Double userLat,
+                        @RequestParam(required = false) Double userLng) {
 
         List<Food> foods = foodService.search(keyword, categoryId);
 
@@ -33,6 +35,8 @@ public class FoodController {
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("keyword", keyword);
         model.addAttribute("categoryId", categoryId);
+        model.addAttribute("userLat", userLat);
+        model.addAttribute("userLng", userLng);
 
         return "user/menu";
     }

@@ -45,11 +45,62 @@
                             </div>
                         </div>
 
+                        <!-- Structured Location (Vietnam Provinces) -->
                         <div class="admin-form-group form-group-full">
-                            <label class="admin-form-label">Address</label>
-                            <div class="input-with-icon">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <input type="text" th:field="*{address}" class="admin-input" placeholder="Nhập địa chỉ đầy đủ" required>
+                            <label class="admin-form-label">Địa chỉ (có cấu trúc)</label>
+                            
+                            <div style="display: grid; grid-template-columns: 260px 1fr; gap: 12px; margin-bottom: 12px;">
+                                <!-- Province / City -->
+                                <div>
+                                    <label style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">Tỉnh / Thành phố</label>
+                                    <select id="provinceSelect" class="admin-input">
+                                        <option value="">-- Chọn Tỉnh/TP --</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Ward / Commune (post-2026 structure) -->
+                                <div style="max-width: 420px;">
+                                    <label style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">Phường / Xã</label>
+                                    <select id="wardSelect" class="admin-input" disabled>
+                                        <option value="">-- Chọn Phường/Xã --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Street detail -->
+                            <div style="margin-bottom: 10px; max-width: 480px;">
+                                <label style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">Địa chỉ chi tiết (số nhà, tên đường...)</label>
+                                <input type="text" id="streetDetailInput" class="admin-input" placeholder="Ví dụ: 123 Đường ABC">
+                            </div>
+
+                            <!-- Full Address (auto-generated) -->
+                            <div style="margin-bottom: 10px;">
+                                <label class="admin-form-label">Địa chỉ đầy đủ (tự động ghép)</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <input type="text" th:field="*{address}" id="fullAddressInput" class="admin-input" placeholder="Địa chỉ sẽ tự động ghép khi chọn xong" readonly>
+                                </div>
+                            </div>
+
+                            <!-- Coordinates -->
+                            <div style="display: grid; grid-template-columns: 160px 160px auto; gap: 18px; align-items: end;">
+                                <div>
+                                    <label style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">Vĩ độ (Latitude)</label>
+                                    <input type="text" th:field="*{latitude}" id="latitudeInput" class="admin-input" placeholder="21.0285" readonly style="width: 100%; box-sizing: border-box;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">Kinh độ (Longitude)</label>
+                                    <input type="text" th:field="*{longitude}" id="longitudeInput" class="admin-input" placeholder="105.8542" readonly style="width: 100%; box-sizing: border-box;">
+                                </div>
+                                <div style="padding-bottom: 1px;">
+                                    <button type="button" id="manualGeocodeBtn" class="btn-save-modern" style="padding: 8px 14px; font-size: 13px; height: 38px; white-space: nowrap;">
+                                        <i class="fa-solid fa-sync"></i> Lấy lại tọa độ
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 8px; font-size: 12px; color: #22c55e; display: none;" id="geoStatus">
+                                <i class="fa-solid fa-check-circle"></i> Đã lấy tọa độ tự động
                             </div>
                         </div>
 
@@ -87,7 +138,7 @@
                         <!-- Chi tiết ưu đãi (hiện khi bật toggle) -->
                         <div class="promo-detail-section" id="promoDetailSection">
                             <div class="admin-form-group">
-                                <label class="admin-form-label"><i class="fa-solid fa-percent"></i> Mức giảm giá (%)</label>
+                                 <label class="admin-form-label" style="white-space: nowrap;"><i class="fa-solid fa-percent"></i> Mức giảm giá (%)</label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-percent"></i>
                                     <input type="number" th:field="*{promoDiscount}" class="admin-input"

@@ -9,6 +9,10 @@
     <link rel="stylesheet" th:href="@{/css/restaurant-detail.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:src="@{/js/location-service.js}"></script>
 </head>
 
 <body>
@@ -47,15 +51,18 @@
                                 <span class="meta-sub">(500+ đánh giá)</span>
                             </div>
                             <span class="meta-sep">•</span>
-                            <div class="meta-pill-small">
+                            <div class="meta-pill-small" id="delivery-time-pill">
                                 <i class="fa-solid fa-clock"></i>
-                                <span>25 phút</span>
+                                <span th:text="${estimatedDeliveryTime != null ? estimatedDeliveryTime + ' phút' : '25 phút'}">25 phút</span>
                             </div>
                             <span class="meta-sep">•</span>
-                            <div class="meta-pill-small">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span>1.5 km</span>
-                            </div>
+                            <div class="meta-pill-small" id="delivery-distance-pill" 
+                                 th:attr="data-rest-lat=${restaurant.latitude}, data-rest-lng=${restaurant.longitude}">
+                                 <i class="fa-solid fa-location-dot"></i>
+                                 <span th:if="${calculatedDistance != null}" 
+                                       th:text="${#numbers.formatDecimal(calculatedDistance, 1, 1)} + ' km'">1.5 km</span>
+                                 <span th:unless="${calculatedDistance != null}">1.5 km</span>
+                             </div>
                         </div>
 
                         <!-- Opening Hours -->
@@ -100,7 +107,12 @@
                             <!-- Khoảng cách & Freeship tự động tính -->
                             <div class="offer-item" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; background: #F0FFF4; border: 1px solid #C6F6D5;">
                                 <i class="fa-solid fa-truck-fast" style="color: #38A169;"></i>
-                                <span style="font-weight: 500; color: #276749;" th:text="'Freeship trong phạm vi ' + ${#numbers.formatDecimal(restaurant.getDistance() + 0.5, 0, 'COMMA', 1, 'POINT')} + ' km'">Freeship 2km</span>
+                                <span th:if="${calculatedDistance != null}" 
+                                      style="font-weight: 500; color: #276749;"
+                                      th:text="'Freeship trong phạm vi ' + ${#numbers.formatDecimal(calculatedDistance + 0.5, 0, 'COMMA', 1, 'POINT')} + ' km'">Freeship 2km</span>
+                                <span th:unless="${calculatedDistance != null}" 
+                                      style="font-weight: 500; color: #276749;"
+                                      th:text="'Freeship trong phạm vi ' + ${#numbers.formatDecimal(restaurant.getDistance() + 0.5, 0, 'COMMA', 1, 'POINT')} + ' km'">Freeship 2km</span>
                             </div>
 
                             <!-- Mã giảm giá hoạt động trên hệ thống -->
@@ -114,6 +126,8 @@
                 </div>
             </div>
         </section>
+
+
 
         <!-- Category Tabs (sticky) -->
         <nav class="category-tabs-container">
@@ -256,5 +270,46 @@
 
     <!-- Scripts -->
     <script th:src="@{/js/restaurant-detail.js}"></script>
+    <script th:inline="javascript">
+        /* Initialize mini map if restaurant has coordinates */
+        (function() {
+            /* === Client-side distance & time override for consistency with Home === */
+            if (typeof LocationService !== 'undefined') {
+                const locationService = new LocationService();
+                const distancePill = document.getElementById('delivery-distance-pill');
+                const timePill = document.getElementById('delivery-time-pill');
+
+                const rLat = parseFloat(distancePill?.dataset.restLat);
+                const rLng = parseFloat(distancePill?.dataset.restLng);
+
+                // Try to get user location (from URL params rendered by Thymeleaf or from storage)
+                const urlParams = new URLSearchParams(window.location.search);
+                let userLat = parseFloat(urlParams.get('userLat')) || null;
+                let userLng = parseFloat(urlParams.get('userLng')) || null;
+
+                if (!userLat || !userLng) {
+                    const stored = locationService.getStoredLocation();
+                    if (stored) {
+                        userLat = stored.lat;
+                        userLng = stored.lng;
+                    }
+                }
+
+                if (userLat && userLng && rLat && rLng && distancePill && timePill) {
+                    const distKm = locationService.calculateHaversineDistance(userLat, userLng, rLat, rLng);
+                    const distText = locationService.formatDistance(distKm);
+
+                    // Update distance
+                    const distSpan = distancePill.querySelector('span');
+                    if (distSpan) distSpan.textContent = distText;
+
+                    // Update time (same formula as backend DistanceService)
+                    const estimatedMinutes = 15 + Math.round(distKm * 5);
+                    const timeSpan = timePill.querySelector('span');
+                    if (timeSpan) timeSpan.textContent = estimatedMinutes + ' phút';
+                }
+            }
+        })();
+    </script>
 </body>
 </html>

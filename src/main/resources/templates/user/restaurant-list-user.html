@@ -11,6 +11,10 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/restaurant-list.css(v=1.0)}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Location & Map support -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:src="@{/js/location-service.js}"></script>
 </head>
 <body>
 
@@ -44,18 +48,38 @@
                 </a>
             </div>
 
+            <!-- Professional location filter notice -->
+            <div th:if="${isFilteredByLocation}" class="location-filter-notice" style="background:#f0f9ff; border:1px solid #bae6fd; padding:12px 16px; border-radius:8px; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                <i class="fa-solid fa-location-dot" style="color:#0369a1; font-size:16px;"></i>
+                <span style="color:#0369a1; font-size:14px;">
+                    Đang hiển thị nhà hàng trong phạm vi <strong>7km</strong> từ vị trí của bạn.
+                </span>
+            </div>
+
             <!-- Restaurant Grid -->
             <div class="restaurant-grid">
 
                 <!-- Empty State -->
                 <div th:if="${restaurants.empty}" class="empty-res">
                     <i class="fa-solid fa-store-slash"></i>
-                    <h3>Chưa có nhà hàng nào</h3>
-                    <p>Hiện tại chưa có quán ăn nào phục vụ danh mục này. Bạn vui lòng chọn danh mục khác nhé!</p>
+                    <h3 th:if="${isFilteredByLocation}">Không có nhà hàng trong phạm vi 7km</h3>
+                    <h3 th:unless="${isFilteredByLocation}">Chưa có nhà hàng nào</h3>
+
+                    <p th:if="${isFilteredByLocation}">
+                        Hiện tại chưa có quán ăn nào trong bán kính 7km từ vị trí của bạn. 
+                        Hãy thử bật vị trí khác hoặc <a th:href="@{/restaurant}">xem tất cả nhà hàng</a>.
+                    </p>
+                    <p th:unless="${isFilteredByLocation}">
+                        Hiện tại chưa có quán ăn nào phục vụ danh mục này. Bạn vui lòng chọn danh mục khác nhé!
+                    </p>
                 </div>
 
                 <!-- Cards -->
-                <a th:each="r : ${restaurants}" th:href="@{/restaurant/{id}(id=${r.restaurantId})}" class="res-card-link">
+                <a th:each="r : ${restaurants}" 
+                   th:href="@{/restaurant/{id}(id=${r.restaurantId}, userLat=${userLat}, userLng=${userLng})}" 
+                   class="res-card-link"
+                   th:attr="data-lat=${r.latitude}, data-lng=${r.longitude}">
+
                     <div class="res-card">
                         <div class="res-img-wrapper">
                             <img th:if="${r.image != null}" th:src="${r.image}" th:alt="${r.name}">
@@ -77,7 +101,7 @@
                                 </span>
                                 <span>
                                     <i class="fa-solid fa-road"></i>
-                                    <span th:text="${r.distance + ' km'}">2.5 km</span>
+                                    <span class="restaurant-distance" th:text="${r.distance + ' km'}">2.5 km</span>
                                 </span>
                             </div>
                         </div>
@@ -89,5 +113,34 @@
         </div>
     </div>
 
+    <script th:src="@{/js/location-service.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationService = new LocationService();
+            
+            // Apply real distances if we have user location from server or storage
+            const serverLat = /*[[${userLat}]]*/ null;
+            const serverLng = /*[[${userLng}]]*/ null;
+            
+            let userLoc = null;
+            if (serverLat && serverLng) {
+                userLoc = {lat: serverLat, lng: serverLng};
+            } else {
+                userLoc = locationService.getStoredLocation();
+            }
+            
+            if (userLoc) {
+                document.querySelectorAll('.res-card-link[data-lat][data-lng]').forEach(function(card) {
+                    const rLat = parseFloat(card.dataset.lat);
+                    const rLng = parseFloat(card.dataset.lng);
+                    const distSpan = card.querySelector('.restaurant-distance');
+                    if (!isNaN(rLat) && !isNaN(rLng) && distSpan) {
+                        const d = locationService.calculateHaversineDistance(userLoc.lat, userLoc.lng, rLat, rLng);
+                        distSpan.textContent = locationService.formatDistance(d);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
