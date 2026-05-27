@@ -101,7 +101,8 @@ class LocationService {
             return {
                 lat: parseFloat(result.lat),
                 lng: parseFloat(result.lon),
-                displayName: result.display_name
+                displayName: result.display_name,
+                address: result.address || {}
             };
         } catch (error) {
             console.error('Geocoding error:', error);
