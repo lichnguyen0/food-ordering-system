@@ -38,7 +38,7 @@ public class StaffController {
         Pageable top10 = PageRequest.of(0, 10, Sort.by("orderId").descending());
 
         long pendingCount    = orderService.countByStatus(OrderStatus.PENDING);
-        long confirmedCount  = orderService.countByStatus(OrderStatus.CONFIRMED);
+        long confirmedCount  = orderService.countConfirmedToday();
         long cancelledToday  = orderService.countCancelledToday();
 
         model.addAttribute("pendingCount",   pendingCount);
