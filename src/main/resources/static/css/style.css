@@ -988,3 +988,23 @@ body {
 .view-cart-btn:hover {
     background: #009b45;
 }
+
+.btn-checkout {
+    background: var(--grab-green);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-checkout:hover {
+    background: #009944;
+    color: #fff;
+}
