@@ -104,6 +104,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         document.querySelectorAll('#addressDropdown .dropdown-item').forEach(i => i.classList.remove('selected'));
                         document.getElementById('addressDropdown').classList.remove('open');
+
+                        // Reset to default fee when clearing selection
+                        const defaultFee = 16000;
+                        const deliveryFeeEl = document.getElementById('deliveryFeeText');
+                        if (deliveryFeeEl) {
+                            deliveryFeeEl.textContent = defaultFee.toLocaleString('vi-VN') + ' ₫';
+                            const subtotalEl = document.getElementById('subtotalText');
+                            const subtotal = parseFloat(subtotalEl?.dataset?.price || 0);
+                            const finalEl = document.getElementById('finalTotalText');
+                            if (finalEl) finalEl.textContent = (subtotal + defaultFee).toLocaleString('vi-VN') + ' ₫';
+                            const totalDisplay = document.querySelector('.total-value');
+                            if (totalDisplay) totalDisplay.textContent = (subtotal + defaultFee).toLocaleString('vi-VN') + ' ₫';
+                        }
                     });
                     dropdownList.appendChild(clearItem);
 
@@ -151,15 +164,28 @@ document.addEventListener('DOMContentLoaded', function() {
                             item.classList.add('selected');
                             document.getElementById('addressDropdown').classList.remove('open');
 
-                            // If the address has coordinates, notify checkout page to update map and shipping fee
-                            if (address.latitude && address.longitude) {
-                                try {
-                                    const ev = new CustomEvent('addressSelected', { detail: { lat: parseFloat(address.latitude), lng: parseFloat(address.longitude) } });
-                                    document.dispatchEvent(ev);
-                                } catch (err) {
-                                    console.warn('Failed to dispatch addressSelected event', err);
-                                }
-                            }
+                            // Fetch delivery fee based on address zone
+                            fetch(`/api/addresses/${address.id}/delivery-fee`, { credentials: 'same-origin' })
+                                .then(r => r.ok ? r.json() : null)
+                                .then(fee => {
+                                    if (fee != null) {
+                                        const deliveryFeeEl = document.getElementById('deliveryFeeText');
+                                        if (deliveryFeeEl) {
+                                            deliveryFeeEl.textContent = fee.toLocaleString('vi-VN') + ' ₫';
+                                            const subtotalEl = document.getElementById('subtotalText');
+                                            const subtotal = parseFloat(subtotalEl?.dataset?.price || 0);
+                                            const finalEl = document.getElementById('finalTotalText');
+                                            if (finalEl) {
+                                                finalEl.textContent = (subtotal + fee).toLocaleString('vi-VN') + ' ₫';
+                                            }
+                                            const totalDisplay = document.querySelector('.total-value');
+                                            if (totalDisplay) {
+                                                totalDisplay.textContent = (subtotal + fee).toLocaleString('vi-VN') + ' ₫';
+                                            }
+                                        }
+                                    }
+                                })
+                                .catch(() => {});
                         });
 
                         // Edit icon

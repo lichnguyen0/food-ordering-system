@@ -17,6 +17,8 @@ import com.foodorderingsystem.repository.order.OrderHistoryRepository;
 import com.foodorderingsystem.repository.order.OrderItemRepository;
 import com.foodorderingsystem.repository.order.OrderRepository;
 import com.foodorderingsystem.repository.user.UserRepository;
+import com.foodorderingsystem.repository.user.AddressZoneRepository;
+import com.foodorderingsystem.model.user.AddressZone;
 import com.foodorderingsystem.service.AddressService;
 import com.foodorderingsystem.service.OrderService;
 import org.springframework.stereotype.Service;
@@ -42,15 +44,19 @@ public class OrderServiceImpl implements OrderService {
     private final CouponRepository couponRepository;
     private final com.foodorderingsystem.service.InvoiceService invoiceService;
     private final AddressService addressService;
+    private final AddressZoneRepository addressZoneRepository;
+    private final com.foodorderingsystem.service.DistanceService distanceService;
 
-    public OrderServiceImpl(OrderRepository orderRepository,
-                            OrderItemRepository orderItemRepository,
-                            UserRepository userRepository,
-                            FoodRepository foodRepository,
-                            OrderHistoryRepository orderHistoryRepository,
-                            CouponRepository couponRepository,
-                            com.foodorderingsystem.service.InvoiceService invoiceService,
-                            AddressService addressService) {
+public OrderServiceImpl(OrderRepository orderRepository,
+                             OrderItemRepository orderItemRepository,
+                             UserRepository userRepository,
+                             FoodRepository foodRepository,
+                             OrderHistoryRepository orderHistoryRepository,
+                             CouponRepository couponRepository,
+                             com.foodorderingsystem.service.InvoiceService invoiceService,
+                             AddressService addressService,
+                             AddressZoneRepository addressZoneRepository,
+                             com.foodorderingsystem.service.DistanceService distanceService) {
         this.orderRepository        = orderRepository;
         this.orderItemRepository    = orderItemRepository;
         this.userRepository         = userRepository;
@@ -59,6 +65,8 @@ public class OrderServiceImpl implements OrderService {
         this.couponRepository       = couponRepository;
         this.invoiceService         = invoiceService;
         this.addressService         = addressService;
+        this.addressZoneRepository  = addressZoneRepository;
+        this.distanceService        = distanceService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -135,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(orderItems);
 
-        // Delivery fee
+        // Delivery fee based on address zone
         Restaurant restaurant = null;
         for (CartItem item : cart.getItems().values()) {
             if (item.getFood() != null && item.getFood().getRestaurant() != null) {
@@ -144,14 +152,11 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        double deliveryFee = 16000.0;
+        double deliveryFee = calculateDeliveryFeeByAddress(request, user, restaurant);
+        order.setDeliveryFee(deliveryFee);
         if (restaurant != null) {
             order.setRestaurant(restaurant);
-            Long rId = restaurant.getRestaurantId();
-            double distance = (rId == null) ? 1.5 : (0.5 + (double)(rId % 9) * 0.5);
-            deliveryFee = 5000.0 + (distance * 5000.0);
         }
-        order.setDeliveryFee(deliveryFee);
 
         // Coupon
         double discountAmount = 0.0;
@@ -451,5 +456,29 @@ public class OrderServiceImpl implements OrderService {
 
         orderHistoryRepository.save(new OrderHistory(order, OrderStatus.CANCELLED, LocalDateTime.now()));
         invoiceService.updateInvoiceStatusBasedOnOrder(orderId, OrderStatus.CANCELLED);
+    }
+
+    private double calculateDeliveryFeeByAddress(com.foodorderingsystem.dto.CheckoutRequest request, User user, Restaurant restaurant) {
+        double baseFee = 16000.0;
+        if (request != null && request.getAddressId() != null) {
+            Address address = addressService.getAddressByIdAndUserId(request.getAddressId(), user.getUserId());
+            if (address != null && address.getWard() != null && address.getCity() != null) {
+                var zone = addressZoneRepository.findByWardAndCity(address.getWard(), address.getCity());
+                if (zone.isPresent()) {
+                    AddressZone z = zone.get();
+                    if (restaurant != null && address.hasValidCoordinates() && restaurant.hasValidCoordinates()) {
+                        double distance = distanceService.calculateDistance(
+                            address.getLatitude(), address.getLongitude(),
+                            restaurant.getLatitude(), restaurant.getLongitude());
+                        return z.calculateFee(distance);
+                    }
+                    return z.getBaseFee();
+                }
+            }
+        }
+        if (restaurant != null) {
+            return distanceService.calculateTieredDeliveryFee(1.5); // fallback
+        }
+        return baseFee;
     }
 }
