@@ -468,19 +468,69 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Apply Promo Code
-    window.applyPromoCode = function(code) {
+    window.applyPromoCode = function(code, buttonElement = null) {
         if (!code || code.trim() === '') return;
+        
+        // Reset styles first
+        const inputField = document.getElementById('promoInput');
+        const btnApplyPromo = document.getElementById('btnApplyPromo');
+        const promoMessage = document.getElementById('promoMessage');
+        
+        // Reset all list buttons
+        document.querySelectorAll('.btn-use-promo').forEach(btn => {
+            btn.innerHTML = 'ÁP DỤNG';
+            btn.style.background = 'transparent';
+            btn.style.color = 'var(--primary-red)';
+        });
         
         fetch(`/api/cart/apply-coupon/${code}`, { method: 'POST' })
             .then(res => res.json())
             .then(data => {
+                if (promoMessage) {
+                    promoMessage.style.display = 'flex';
+                }
+                
                 if (data.success) {
-                    // Update input value
-                    const inputField = document.getElementById('promoInput');
-                    if (inputField) inputField.value = data.code;
+                    // Update input value & style
+                    if (inputField) {
+                        inputField.value = data.code;
+                        inputField.style.borderColor = '#10b981';
+                        inputField.style.backgroundColor = '#f0fdf4';
+                        inputField.readOnly = true;
+                    }
                     
                     const hiddenInput = document.getElementById('couponCodeInput');
                     if (hiddenInput) hiddenInput.value = data.code;
+                    
+                    // Update main apply button
+                    if (btnApplyPromo) {
+                        btnApplyPromo.innerHTML = '<i class="fa-solid fa-check"></i> Đã áp dụng';
+                        btnApplyPromo.style.background = '#10b981';
+                        btnApplyPromo.style.pointerEvents = 'none'; // Prevent double click
+                    }
+                    
+                    // Update list button if clicked from list
+                    if (buttonElement) {
+                        buttonElement.innerHTML = '<i class="fa-solid fa-check"></i> ĐÃ ÁP DỤNG';
+                        buttonElement.style.background = '#10b981';
+                        buttonElement.style.color = '#fff';
+                        buttonElement.style.borderColor = '#10b981';
+                    } else {
+                        // Find the corresponding button in the list and update it
+                        const listBtn = document.querySelector(`.btn-use-promo[data-code="${data.code}"]`);
+                        if (listBtn) {
+                            listBtn.innerHTML = '<i class="fa-solid fa-check"></i> ĐÃ ÁP DỤNG';
+                            listBtn.style.background = '#10b981';
+                            listBtn.style.color = '#fff';
+                            listBtn.style.borderColor = '#10b981';
+                        }
+                    }
+                    
+                    // Show success message
+                    if (promoMessage) {
+                        promoMessage.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${data.message}`;
+                        promoMessage.style.color = '#10b981';
+                    }
                     
                     // Display discount row
                     const discountRow = document.getElementById('discountRow');
@@ -511,24 +561,49 @@ document.addEventListener('DOMContentLoaded', function() {
                             finalTotalText.textContent = new Intl.NumberFormat('vi-VN').format(finalTotal) + ' ₫';
                         }
                     }
-                    
-                    alert(data.message);
                 } else {
-                    alert(data.message);
+                    // Show error message
+                    if (promoMessage) {
+                        promoMessage.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${data.message}`;
+                        promoMessage.style.color = 'var(--primary-red)';
+                    }
+                    if (inputField) {
+                        inputField.style.borderColor = 'var(--primary-red)';
+                        inputField.style.backgroundColor = '#fff0f0';
+                        inputField.readOnly = false;
+                    }
+                    if (btnApplyPromo) {
+                        btnApplyPromo.innerHTML = 'Áp dụng';
+                        btnApplyPromo.style.background = 'var(--primary-red)';
+                        btnApplyPromo.style.pointerEvents = 'auto';
+                    }
                 }
             })
             .catch(err => {
                 console.error("Error applying promo:", err);
-                alert("Đã xảy ra lỗi khi áp dụng mã giảm giá!");
+                if (promoMessage) {
+                    promoMessage.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Đã xảy ra lỗi khi áp dụng mã giảm giá!`;
+                    promoMessage.style.color = 'var(--primary-red)';
+                    promoMessage.style.display = 'flex';
+                }
             });
     };
 
     window.applyPromoInput = function() {
         const inputField = document.getElementById('promoInput');
+        const promoMessage = document.getElementById('promoMessage');
+        
         if (inputField && inputField.value.trim() !== '') {
             applyPromoCode(inputField.value.trim().toUpperCase());
         } else {
-            alert("Vui lòng nhập mã giảm giá trước!");
+            if (promoMessage) {
+                promoMessage.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập mã giảm giá trước!`;
+                promoMessage.style.color = 'var(--primary-red)';
+                promoMessage.style.display = 'flex';
+            }
+            if (inputField) {
+                inputField.style.borderColor = 'var(--primary-red)';
+            }
         }
     };
 });

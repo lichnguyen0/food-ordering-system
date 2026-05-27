@@ -120,9 +120,8 @@
                             <div class="promo-meta">
                                 <span><i class="fa-solid fa-star"></i> <span
                                         th:text="${r.rating != null ? r.rating : '4.5'}">4.5</span></span>
-                                <span><i class="fa-regular fa-clock"></i> <span th:text="${r.deliveryTime + ' phút'}">25
-                                        phút</span></span>
-                                <span><i class="fa-solid fa-road"></i> <span class="restaurant-distance" th:text="${r.distance + ' km'}">1.5 km</span></span>
+                                <span><i class="fa-regular fa-clock"></i> <span th:text="${r.deliveryTime != null ? r.deliveryTime + ' phút' : '15 phút'}">25 phút</span></span>
+                                <span><i class="fa-solid fa-road"></i> <span class="restaurant-distance" th:text="${r.distance != null ? #numbers.formatDecimal(r.distance, 1, 1) + ' km' : '---'}">1.5 km</span></span>
                             </div>
                         </div>
                     </div>

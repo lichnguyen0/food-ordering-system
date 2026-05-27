@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Helper: Calculate delivery time based on distance (matches backend DistanceService)
      function calculateDeliveryTime(distanceKm) {
          if (distanceKm <= 0) return 15;
-         return 15 + Math.round(distanceKm * 5);
+         return 15 + Math.round(distanceKm * 3);
      }
 
      // Helper: Vietnamese city center coordinates for fallback
