@@ -47,7 +47,9 @@ public class Address {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // PrePersist and PreUpdate callbacks for timestamps
+    private Double latitude;
+    private Double longitude;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -57,5 +59,11 @@ public class Address {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    @Transient
+    public boolean hasValidCoordinates() {
+        return latitude != null && longitude != null
+                && latitude != 0.0 && longitude != 0.0;
     }
 }

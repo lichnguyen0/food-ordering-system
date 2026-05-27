@@ -58,26 +58,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const heroLatInput = document.getElementById('heroUserLat');
     const heroLngInput = document.getElementById('heroUserLng');
 
-    // Helper: Update all restaurant distance displays
-    function updateRestaurantDistances(userLat, userLng) {
-        const cards = document.querySelectorAll('.promo-card-link[data-lat][data-lng]');
-        
-        cards.forEach(card => {
-            const restLat = parseFloat(card.dataset.lat);
-            const restLng = parseFloat(card.dataset.lng);
-            const distanceSpan = card.querySelector('.restaurant-distance');
-            
-            if (!isNaN(restLat) && !isNaN(restLng) && distanceSpan) {
-                const distKm = locationService.calculateHaversineDistance(userLat, userLng, restLat, restLng);
-                distanceSpan.textContent = locationService.formatDistance(distKm);
-                
-                // Also update the href to include current user location for restaurant detail page
-                const baseHref = card.getAttribute('href').split('?')[0];
-                const newHref = `${baseHref}?userLat=${userLat}&userLng=${userLng}`;
-                card.setAttribute('href', newHref);
-            }
-        });
-    }
+// Helper: Calculate delivery time based on distance (matches backend DistanceService)
+     function calculateDeliveryTime(distanceKm) {
+         if (distanceKm <= 0) return 15;
+         return 15 + Math.round(distanceKm * 5);
+     }
+
+     // Helper: Update all restaurant distance displays
+     function updateRestaurantDistances(userLat, userLng) {
+         const cards = document.querySelectorAll('.promo-card-link[data-lat][data-lng]');
+         
+         cards.forEach(card => {
+             const restLat = parseFloat(card.dataset.lat);
+             const restLng = parseFloat(card.dataset.lng);
+             const distanceSpan = card.querySelector('.restaurant-distance');
+             const timeSpan = card.querySelector('.promo-meta span:nth-child(2) span');
+             
+             if (!isNaN(restLat) && !isNaN(restLng) && distanceSpan) {
+                 const distKm = locationService.calculateHaversineDistance(userLat, userLng, restLat, restLng);
+                 distanceSpan.textContent = locationService.formatDistance(distKm);
+                 
+                 // Update delivery time based on calculated distance
+                 if (timeSpan) {
+                     const deliveryTime = calculateDeliveryTime(distKm);
+                     timeSpan.textContent = deliveryTime + ' phút';
+                 }
+                 
+                 // Also update the href to include current user location for restaurant detail page
+                 const baseHref = card.getAttribute('href').split('?')[0];
+                 const newHref = `${baseHref}?userLat=${userLat}&userLng=${userLng}`;
+                 card.setAttribute('href', newHref);
+             }
+         });
+     }
 
     // Helper: Set hidden fields and update UI
     function applyUserLocation(lat, lng, source = 'current', addressLabel = null) {
