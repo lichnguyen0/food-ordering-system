@@ -634,21 +634,7 @@
     color: #888;
 }
 
-.btn-checkout {
-    background: var(--grab-green);
-    color: #fff;
-    border: none;
-    padding: 12px 32px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s;
-}
 
-.btn-checkout:hover {
-    background: #009944;
-}
 
 /* ══════════════════════════════════
    RESPONSIVE
