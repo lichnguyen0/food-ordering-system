@@ -36,6 +36,9 @@ public interface OrderService {
     /** Đếm đơn theo trạng thái (dùng cho badge / dashboard count) */
     long countByStatus(OrderStatus status);
 
+    /** Đếm đơn đã xác nhận trong ngày hôm nay */
+    long countConfirmedToday();
+
     /** Đếm đơn bị hủy trong ngày hôm nay */
     long countCancelledToday();
 

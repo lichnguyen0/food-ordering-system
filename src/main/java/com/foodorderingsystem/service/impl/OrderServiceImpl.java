@@ -282,10 +282,18 @@ public OrderServiceImpl(OrderRepository orderRepository,
     }
 
     @Override
+    public long countConfirmedToday() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay   = startOfDay.plusDays(1);
+        return orderHistoryRepository.countByStatusAndUpdateTimeBetween(
+                OrderStatus.CONFIRMED, startOfDay, endOfDay);
+    }
+
+    @Override
     public long countCancelledToday() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay   = startOfDay.plusDays(1);
-        return orderRepository.countByStatusAndOrderDateBetween(
+        return orderHistoryRepository.countByStatusAndUpdateTimeBetween(
                 OrderStatus.CANCELLED, startOfDay, endOfDay);
     }
 
