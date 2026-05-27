@@ -62,7 +62,7 @@ public class DistanceService {
         if (distanceKm <= 0) {
             return 15;
         }
-        return 15 + (int) (distanceKm * 5);
+        return 15 + (int) Math.round(distanceKm * 3);
     }
 
     /**
