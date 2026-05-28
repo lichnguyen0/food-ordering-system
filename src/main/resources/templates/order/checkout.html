@@ -182,7 +182,7 @@
                 <div id="promoMessage" style="margin-top: -12px; margin-bottom: 15px; font-size: 13.5px; font-weight: 500; display: none; align-items: center; gap: 5px;"></div>
                 
                 <div class="promo-list" style="display: flex; flex-direction: column; gap: 15px;">
-                    <div th:each="coupon : ${activeCoupons}" class="promo-item" style="border: 1px dashed #ffbaba; background: #fffcfc; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;">
+                    <div th:each="coupon : ${activeCoupons}" class="promo-item" style="border: 1px dashed #fecdd3; background: #fff1f2; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; box-shadow: 0 2px 8px rgba(225, 29, 72, 0.05);">
                         <div class="promo-details">
                             <h4 th:text="${coupon.description}" style="margin:0 0 5px 0; font-size: 15px; font-weight: 700; color:#333;">Giảm 30K</h4>
                             <p class="promo-code" style="margin: 0 0 4px 0; font-size: 13px; font-weight: 600; color: var(--primary-red);">Mã: <span th:text="${coupon.code}">HANOUTERNEWUSER</span></p>
