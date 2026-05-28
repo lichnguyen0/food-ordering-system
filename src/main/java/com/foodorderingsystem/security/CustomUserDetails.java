@@ -22,7 +22,20 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        java.util.Set<SimpleGrantedAuthority> authorities = new java.util.HashSet<>();
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            for (com.foodorderingsystem.model.role.Role role : user.getRoles()) {
+                authorities.add(new SimpleGrantedAuthority(role.getCode()));
+                if (role.getPermissions() != null) {
+                    for (com.foodorderingsystem.model.role.Permission p : role.getPermissions()) {
+                        authorities.add(new SimpleGrantedAuthority(p.getCode()));
+                    }
+                }
+            }
+        } else if (user.getRole() != null) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        }
+        return authorities;
     }
 
     @Override

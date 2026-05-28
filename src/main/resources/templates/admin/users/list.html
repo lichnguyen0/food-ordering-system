@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-role-list.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-user.css}">
+</head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'users', '')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main">Quản lý người dùng &amp; nhân viên</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" class="breadcrumb-link"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <span class="breadcrumb-current">Người dùng</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flash messages -->
+            <div th:if="${successMessage}" class="alert-success">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert-danger">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div class="user-list-card">
+                <div class="user-card-header">
+                    <h5 class="user-card-title">Danh sách tài khoản</h5>
+                    <form th:action="@{/admin/users}" method="get" class="user-search-form">
+                        <div class="user-search-wrapper">
+                            Search: 
+                            <div class="user-search-input-box">
+                                <input type="text" name="search" th:value="${search}" class="table-search-input" placeholder="Tìm người dùng...">
+                                <span class="user-search-icon">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                            </div>
+                            <a th:if="${search != null && !search.trim().isEmpty()}" th:href="@{/admin/users}" class="clear-filter-btn" title="Xóa tìm kiếm">Xóa lọc</a>
+                        </div>
+                    </form>
+                </div>
+                <table class="food-management-table user-table">
+                    <thead>
+                        <tr>
+                            <th class="th-id">ID</th>
+                            <th class="th-account">TÀI KHOẢN</th>
+                            <th class="th-contact">LIÊN HỆ</th>
+                            <th class="th-main-role">VAI TRÒ CHÍNH</th>
+                            <th class="th-rbac-role">VAI TRÒ BẢO MẬT (RBAC)</th>
+                            <th class="th-actions">THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}">
+                            <td class="td-id" th:text="'#' + ${u.userId}">#1</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <span class="user-fullname" th:text="${u.fullName}">Default User</span>
+                                    <span class="user-username" th:text="'@' + ${u.username}">@user</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-contact-info">
+                                    <div><i class="fa-regular fa-envelope"></i> <span th:text="${u.email}">user@email.com</span></div>
+                                    <div th:if="${u.phone}"><i class="fa-solid fa-phone"></i> <span th:text="${u.phone}">0900000000</span></div>
+                                    <div th:if="${u.address}"><i class="fa-solid fa-location-dot"></i> <span th:text="${u.address}">Địa chỉ</span></div>
+                                </div>
+                            </td>
+                            <td class="td-main-role">
+                                <span class="user-role-badge" 
+                                      th:classappend="${#strings.toLowerCase(u.role)}" 
+                                      th:text="${u.role}">USER</span>
+                            </td>
+                            <td>
+                                <div class="perm-chips">
+                                    <span th:each="r : ${u.roles}" class="perm-chip" th:text="${r.name}">Khách hàng</span>
+                                    <span th:if="${u.roles == null || u.roles.empty}" class="perm-empty">Chưa gán vai trò RBAC</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns td-actions">
+                                    <a th:href="@{/admin/users/edit/{id}(id=${u.userId})}" class="action-btn edit" title="Phân quyền & Chỉnh sửa"><i class="fa-solid fa-user-gear"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${users.empty}">
+                            <td colspan="6" class="td-empty">
+                                Không tìm thấy người dùng nào phù hợp.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

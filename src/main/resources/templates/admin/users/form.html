@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-role-form.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-user.css}">
+</head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'users', '')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main">Phân quyền người dùng</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" class="breadcrumb-link"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <a href="/admin/users" class="breadcrumb-link">Người dùng</a> /
+                        <span class="breadcrumb-current" th:text="${user.fullName}">Tên người dùng</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <form th:action="@{/admin/users/save}" method="post">
+                    <input type="hidden" name="userId" th:value="${user.userId}" />
+
+                    <!-- User Detail Info (Read-only for security) -->
+                    <div class="user-profile-summary-card">
+                        <img th:src="'https://ui-avatars.com/api/?name=' + ${user.fullName} + '&background=random&size=80'" class="user-profile-avatar" alt="User Avatar" />
+                        <div>
+                            <h3 class="user-profile-name" th:text="${user.fullName}">Họ Tên</h3>
+                            <div class="user-profile-meta-item"><i class="fa-regular fa-user"></i> <strong th:text="'@' + ${user.username}">username</strong></div>
+                            <div class="user-profile-meta-item-last"><i class="fa-regular fa-envelope"></i> <span th:text="${user.email}">email@domain.com</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 1. Legacy UserRole Selection -->
+                    <div class="form-group">
+                        <label for="role">Vai trò chính (Phân quyền cũ) <span style="color: #ff0018;">*</span></label>
+                        <select id="role" name="role" class="form-control">
+                            <option th:each="r : ${userRoles}" 
+                                    th:value="${r}" 
+                                    th:text="${r}"
+                                    th:selected="${r == user.role}"></option>
+                        </select>
+                        <p class="form-field-info">Lưu ý: Vai trò này quy định các màn hình mặc định và luồng công việc truyền thống (Staff xử lý đơn, Kitchen chuẩn bị món, Shipper giao đơn...).</p>
+                    </div>
+
+                    <!-- 2. Dynamic RBAC Roles Checkboxes -->
+                    <div class="permissions-section" style="margin-top: 30px;">
+                        <h2 class="rbac-section-header">Vai trò bảo mật nâng cao (RBAC)</h2>
+                        <p class="rbac-section-desc">Gán các vai trò chi tiết để cấp quyền thao tác trên giao diện quản trị nâng cao. Bạn có thể gán nhiều vai trò cùng lúc.</p>
+                        
+                        <div class="role-cards-grid">
+                            <label th:each="r : ${allRoles}" class="role-checkbox-card">
+                                <input type="checkbox" 
+                                       name="roleIds" 
+                                       th:value="${r.id}" 
+                                       th:checked="${assignedRoleIds.contains(r.id)}" />
+                                <span class="role-info">
+                                    <span class="role-title" th:text="${r.name}">Tên vai trò</span>
+                                    <span class="role-code" th:text="${r.code}">ROLE_CODE</span>
+                                    <span class="role-desc" th:text="${r.description}">Mô tả vai trò</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/admin/users" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+                        <button type="submit" class="btn btn-primary" style="background-color: #ff0018 !important;"><i class="fa-solid fa-floppy-disk"></i> Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -53,7 +53,7 @@ public class SecurityConfig {
                 ).permitAll()
 
                 // ── ADMIN only ─────────────────────────────────────────────────
-                .requestMatchers("/admin/users/**").hasRole("ADMIN")
+                .requestMatchers("/admin/users/**", "/admin/roles/**").hasRole("ADMIN")
 
                 // ── ADMIN + STAFF (quản lý nội dung & đơn hàng toàn hệ thống) ─
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "STAFF")

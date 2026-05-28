@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-role-list.css}">
+</head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'roles', '')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main">Quản lý vai trò &amp; phân quyền</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" style="color: var(--primary-red); text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <span style="color: var(--text-dark);">Vai trò</span>
+                    </div>
+                </div>
+                <a href="/admin/roles/create" class="btn-add-new">
+                    <i class="fa-solid fa-plus"></i> Thêm vai trò mới
+                </a>
+            </div>
+
+            <!-- Flash messages -->
+            <div th:if="${successMessage}" class="alert-success">
+                <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i> <span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert-danger">
+                <i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div class="product-list-card">
+                <table class="food-management-table role-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">ID</th>
+                            <th style="width: 140px;">MÃ VAI TRÒ</th>
+                            <th style="width: 140px;">TÊN VAI TRÒ</th>
+                            <th>QUYỀN HẠN</th>
+                            <th style="width: 90px; text-align: center;">LOẠI</th>
+                            <th style="width: 80px; text-align: center;">THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${roles}">
+                            <td th:text="'#' + ${r.id}">#1</td>
+                            <td>
+                                <span class="role-code-text" th:text="${r.code}">ROLE_ADMIN</span>
+                            </td>
+                            <td>
+                                <div class="role-name-cell">
+                                    <span class="role-name-text" th:text="${r.name}">Quản trị viên</span>
+                                    <span class="role-desc-text" th:if="${r.description != null}" th:text="${r.description}">Mô tả</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="perm-chips">
+                                    <span th:each="p : ${r.permissions}" class="perm-chip" th:text="${p.name}">Quản lý</span>
+                                    <span th:if="${r.permissions.empty}" class="perm-empty">—</span>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span th:if="${r.code == 'ROLE_ADMIN' or r.code == 'ROLE_STAFF' or r.code == 'ROLE_KITCHEN' or r.code == 'ROLE_SHIPPER' or r.code == 'ROLE_USER'}" 
+                                      class="role-type-badge system">Hệ thống</span>
+                                <span th:unless="${r.code == 'ROLE_ADMIN' or r.code == 'ROLE_STAFF' or r.code == 'ROLE_KITCHEN' or r.code == 'ROLE_SHIPPER' or r.code == 'ROLE_USER'}" 
+                                      class="role-type-badge custom">Tùy biến</span>
+                            </td>
+                            <td>
+                                <div class="action-btns" style="justify-content: center; gap: 6px;">
+                                    <a th:href="@{/admin/roles/edit/{id}(id=${r.id})}" class="action-btn edit" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></a>
+                                    
+                                    <form th:unless="${r.code == 'ROLE_ADMIN' or r.code == 'ROLE_STAFF' or r.code == 'ROLE_KITCHEN' or r.code == 'ROLE_SHIPPER' or r.code == 'ROLE_USER'}" 
+                                          th:action="@{/admin/roles/delete/{id}(id=${r.id})}" 
+                                          method="post" 
+                                          style="display: inline;" 
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa vai trò này?')">
+                                        <button type="submit" class="action-btn delete" style="border: none; cursor: pointer; background: none; font-size: inherit;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${roles.empty}">
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                Chưa có vai trò nào được định nghĩa trong hệ thống.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
