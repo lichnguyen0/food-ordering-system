@@ -73,7 +73,6 @@ public class DistanceService {
      * >7km = unsupported (-1)
      */
     public double calculateTieredDeliveryFee(double distanceKm) {
-        if (distanceKm < 0) return 15000;
         if (distanceKm <= 3) return 15000;
         if (distanceKm <= 5) return 25000;
         if (distanceKm <= 7) return 35000;
