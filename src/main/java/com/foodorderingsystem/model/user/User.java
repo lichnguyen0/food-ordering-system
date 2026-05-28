@@ -35,6 +35,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private java.util.Set<com.foodorderingsystem.model.role.Role> roles;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Order> orders;

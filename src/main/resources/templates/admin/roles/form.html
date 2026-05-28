@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: admin-head}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/admin-role-form.css}">
+</head>
+<body class="admin-body">
+
+    <div th:replace="~{fragments/admin-layout :: layout (~{::main}, 'roles', '')}">
+        <main>
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title-main" th:text="${roleRequest.id != null ? 'Chỉnh sửa vai trò' : 'Thêm vai trò mới'}">Thêm vai trò</h1>
+                    <div class="breadcrumb">
+                        <a href="/admin" style="color: var(--primary-red); text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a> / 
+                        <a href="/admin/roles" style="color: var(--primary-red); text-decoration: none;">Vai trò</a> /
+                        <span style="color: var(--text-dark);" th:text="${roleRequest.id != null ? 'Chỉnh sửa' : 'Thêm mới'}">Thêm mới</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <form th:action="@{/admin/roles/save}" th:object="${roleRequest}" method="post">
+                    <input type="hidden" th:field="*{id}" />
+
+                    <!-- Warning for System Roles -->
+                    <div th:if="${roleRequest.code == 'ROLE_ADMIN' or roleRequest.code == 'ROLE_STAFF' or roleRequest.code == 'ROLE_KITCHEN' or roleRequest.code == 'ROLE_SHIPPER' or roleRequest.code == 'ROLE_USER'}" 
+                         class="system-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Đây là vai trò mặc định của hệ thống. Bạn không thể thay đổi mã của vai trò này để đảm bảo tính ổn định của hệ thống.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="code">Mã vai trò <span style="color: #ff0018;">*</span></label>
+                        <!-- For system roles, keep disabled or read-only but send hidden field to avoid losing it -->
+                        <div th:if="${roleRequest.code == 'ROLE_ADMIN' or roleRequest.code == 'ROLE_STAFF' or roleRequest.code == 'ROLE_KITCHEN' or roleRequest.code == 'ROLE_SHIPPER' or roleRequest.code == 'ROLE_USER'}">
+                            <input type="text" class="form-control" th:value="${roleRequest.code}" disabled />
+                            <input type="hidden" th:field="*{code}" />
+                        </div>
+                        <div th:unless="${roleRequest.code == 'ROLE_ADMIN' or roleRequest.code == 'ROLE_STAFF' or roleRequest.code == 'ROLE_KITCHEN' or roleRequest.code == 'ROLE_SHIPPER' or roleRequest.code == 'ROLE_USER'}">
+                            <input type="text" id="code" th:field="*{code}" class="form-control" placeholder="Ví dụ: INVENTORY_STAFF (Tự động thêm ROLE_ nếu thiếu)" />
+                        </div>
+                        <div class="error-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Tên vai trò <span style="color: #ff0018;">*</span></label>
+                        <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Ví dụ: Nhân viên quản lý kho" />
+                        <div class="error-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" th:field="*{description}" class="form-control" rows="3" placeholder="Mô tả quyền hạn và vị trí của vai trò này..."></textarea>
+                    </div>
+
+                    <div class="permissions-section">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: #333; border-left: 4px solid #ff0018; padding-left: 10px; margin-bottom: 5px;">Chọn các quyền hạn</h2>
+                        <p style="color: #666; font-size: 0.85rem; margin-bottom: 20px;">Gán các quyền cụ thể để cấu hình các thao tác vai trò này được phép thực hiện trên hệ thống.</p>
+                        
+                        <div class="permissions-grid">
+                            <label th:each="p : ${allPermissions}" class="permission-checkbox-card">
+                                <input type="checkbox" 
+                                       th:field="*{permissionIds}" 
+                                       th:value="${p.id}" />
+                                <span class="permission-info">
+                                    <span class="permission-name" th:text="${p.name}">Quản lý món ăn</span>
+                                    <span class="permission-code" th:text="${p.code}">MANAGE_FOOD</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/admin/roles" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu lại</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

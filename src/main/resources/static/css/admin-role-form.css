@@ -1,0 +1,161 @@
+/* admin-role-form.css */
+
+.form-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #ff0018;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 0, 24, 0.1);
+}
+
+.form-control:disabled {
+    background-color: #f5f5f5;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.error-feedback {
+    color: #ff0018;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.permissions-section {
+    margin-top: 30px;
+}
+
+.permissions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.permission-checkbox-card {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.permission-checkbox-card:hover {
+    border-color: rgba(255, 0, 24, 0.2);
+    background: rgba(255, 0, 24, 0.01);
+    transform: translateY(-2px);
+}
+
+.permission-checkbox-card input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff0018;
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+.permission-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.permission-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.permission-code {
+    color: #888;
+    font-size: 0.75rem;
+    font-family: monospace;
+    margin-top: 2px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secondary {
+    background-color: #e5e5e5;
+    color: #333;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background-color: #d5d5d5;
+}
+
+.btn-primary {
+    background-color: #ff0018;
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.system-warning {
+    background-color: rgba(255, 0, 24, 0.05);
+    border: 1px solid rgba(255, 0, 24, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ff0018;
+    font-size: 0.9rem;
+    font-weight: 500;
+}

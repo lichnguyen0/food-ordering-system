@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.foodorderingsystem.repository.role.RoleRepository;
+import com.foodorderingsystem.model.role.Role;
+import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,19 +28,22 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final com.foodorderingsystem.service.FoodService foodService;
     private final com.foodorderingsystem.service.DistanceService distanceService;
+    private final RoleRepository roleRepository;
 
     public AuthController(CategoryRepository categoryRepository,
                           RestaurantRepository restaurantRepository,
                           UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
                           com.foodorderingsystem.service.FoodService foodService,
-                          com.foodorderingsystem.service.DistanceService distanceService) {
+                          com.foodorderingsystem.service.DistanceService distanceService,
+                          RoleRepository roleRepository) {
         this.categoryRepository = categoryRepository;
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.foodService = foodService;
         this.distanceService = distanceService;
+        this.roleRepository = roleRepository;
     }
 
     @GetMapping("/login")
@@ -87,6 +93,11 @@ public class AuthController {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(UserRole.USER); // Mặc định đăng ký mới là USER
+        
+        // Gán Role thực tế từ database cho RBAC
+        roleRepository.findByCode("ROLE_USER").ifPresent(defaultRole -> {
+            user.setRoles(Set.of(defaultRole));
+        });
         
         userRepository.save(user);
         
