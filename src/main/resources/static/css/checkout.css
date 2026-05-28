@@ -314,74 +314,122 @@ body.checkout-body {
 .promo-input-row {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .promo-input-row input {
     flex: 1;
     padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.promo-input-row input:focus {
+    border-color: var(--grab-green);
+    outline: none;
 }
 
 .btn-apply-promo {
-    background: #e0e0e0;
-    color: #a0a0a0;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: var(--grab-green);
+    color: #fff;
     border: none;
-    padding: 0 20px;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: not-allowed;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.btn-apply-promo:hover {
+    background: #009b45;
+}
+
+.promo-message {
+    margin-top: -12px;
+    margin-bottom: 15px;
+    font-size: 13.5px;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    gap: 5px;
+}
+
+.promo-empty-msg {
+    text-align: center;
+    color: #999;
+    padding: 15px;
+    font-size: 13px;
 }
 
 .promo-list {
     display: flex;
+    flex-direction: column;
     gap: 15px;
-    overflow-x: auto;
-    padding-bottom: 10px;
 }
 
 .promo-item {
-    min-width: 250px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border: 1px dashed #fecdd3;
+    background: #fff1f2;
     padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.05);
+}
+
+.promo-details {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    background: #fff;
 }
 
 .promo-item h4 {
-    font-size: 14px;
+    margin: 0 0 5px 0;
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 5px;
+    color: #333;
 }
 
 .promo-code {
-    font-size: 12px;
-    color: var(--grab-green);
+    margin: 0 0 4px 0;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 2px;
+    color: #555;
+}
+
+.promo-code span {
+    color: #00b14f;
+    font-weight: 700;
+    font-size: 14px;
 }
 
 .promo-expiry {
-    font-size: 11px;
-    color: var(--text-gray);
+    margin: 0;
+    font-size: 12px;
+    color: #777;
 }
 
 .btn-use-promo {
-    align-self: flex-end;
-    background: none;
-    border: 1px solid var(--grab-green);
-    color: var(--grab-green);
-    padding: 5px 15px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--primary-red, #ff0018);
+    background: transparent;
+    color: var(--primary-red, #ff0018);
     font-weight: 700;
     cursor: pointer;
-    margin-top: 10px;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.btn-use-promo:hover {
+    background: var(--primary-red, #ff0018);
+    color: #fff;
 }
 
 /* App Promo Banner */

@@ -175,22 +175,22 @@
             </div>
             <div class="card-content promo-content">
                 <input type="hidden" name="couponCode" id="couponCodeInput">
-                <div class="promo-input-row" style="display: flex; gap: 10px; margin-bottom: 20px; position: relative;">
-                    <input type="text" id="promoInput" placeholder="Nhập mã khuyến mãi" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-weight: 500; transition: all 0.3s;">
-                    <button type="button" id="btnApplyPromo" class="btn-apply-promo" onclick="applyPromoInput()" style="padding: 12px 24px; border-radius: 8px; background: var(--primary-red); color:#fff; border:none; font-weight:600; cursor:pointer; transition: all 0.3s;">Áp dụng</button>
+                <div class="promo-input-row">
+                    <input type="text" id="promoInput" placeholder="Nhập mã khuyến mãi">
+                    <button type="button" id="btnApplyPromo" class="btn-apply-promo" onclick="applyPromoInput()">Áp dụng</button>
                 </div>
-                <div id="promoMessage" style="margin-top: -12px; margin-bottom: 15px; font-size: 13.5px; font-weight: 500; display: none; align-items: center; gap: 5px;"></div>
+                <div id="promoMessage" class="promo-message"></div>
                 
-                <div class="promo-list" style="display: flex; flex-direction: column; gap: 15px;">
-                    <div th:each="coupon : ${activeCoupons}" class="promo-item" style="border: 1px dashed #fecdd3; background: #fff1f2; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; box-shadow: 0 2px 8px rgba(225, 29, 72, 0.05);">
+                <div class="promo-list">
+                    <div th:each="coupon : ${activeCoupons}" class="promo-item">
                         <div class="promo-details">
-                            <h4 th:text="${coupon.description}" style="margin:0 0 5px 0; font-size: 15px; font-weight: 700; color:#333;">Giảm 30K</h4>
-                            <p class="promo-code" style="margin: 0 0 4px 0; font-size: 13px; font-weight: 600; color: var(--primary-red);">Mã: <span th:text="${coupon.code}">HANOUTERNEWUSER</span></p>
-                            <p class="promo-expiry" style="margin: 0; font-size: 12px; color: #777;">Hạn dùng: <span th:text="${coupon.expiryDate}">2027-01-03</span> | Đơn tối thiểu: <span th:text="${#numbers.formatDecimal(coupon.minOrderValue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50K</span></p>
+                            <h4 th:text="${coupon.description}">Giảm 30K</h4>
+                            <p class="promo-code">Mã: <span th:text="${coupon.code}">HANOUTERNEWUSER</span></p>
+                            <p class="promo-expiry">Hạn dùng: <span th:text="${coupon.expiryDate}">2027-01-03</span> | Đơn tối thiểu: <span th:text="${#numbers.formatDecimal(coupon.minOrderValue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50K</span></p>
                         </div>
-                        <button type="button" class="btn-use-promo" th:data-code="${coupon.code}" onclick="applyPromoCode(this.getAttribute('data-code'), this)" style="padding: 8px 16px; border-radius: 20px; border: 1px solid var(--primary-red); background: transparent; color: var(--primary-red); font-weight: 700; cursor: pointer; font-size: 13px; transition: all 0.2s;">ÁP DỤNG</button>
+                        <button type="button" class="btn-use-promo" th:data-code="${coupon.code}" onclick="applyPromoCode(this.getAttribute('data-code'), this)">ÁP DỤNG</button>
                     </div>
-                    <div th:if="${activeCoupons.empty}" style="text-align: center; color: #999; padding: 15px;">
+                    <div th:if="${activeCoupons.empty}" class="promo-empty-msg">
                         Không có mã giảm giá nào khả dụng lúc này.
                     </div>
                 </div>
