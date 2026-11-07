@@ -26,9 +26,11 @@ public class FoodOrderingSystemApplication {
             System.out.println("ℹ️ Không thể load application.properties để dọn dẹp trước: " + e.getMessage());
         }
 
-        String dbUrl = props.getProperty("spring.datasource.url", "jdbc:mysql://localhost:3306/food_ordering_system?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
-        String dbUser = props.getProperty("spring.datasource.username", "root");
-        String dbPass = props.getProperty("spring.datasource.password", "123456");
+        String dbUrl = resolveEnvProperty(
+                props.getProperty("spring.datasource.url"),
+                "jdbc:mysql://localhost:3306/food_ordering_system?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        String dbUser = resolveEnvProperty(props.getProperty("spring.datasource.username"), "root");
+        String dbPass = resolveEnvProperty(props.getProperty("spring.datasource.password"), "123456");
 
         try {
             // Đăng ký Driver MySQL thủ công để chắc chắn driver được load
@@ -75,6 +77,37 @@ public class FoodOrderingSystemApplication {
         // ────────────────────────────────────────────────────────────────────────
 
         SpringApplication.run(FoodOrderingSystemApplication.class, args);
+    }
+
+    /**
+     * Phân giải các biến placeholder dạng ${VAR_NAME:default_value} thành giá trị thực
+     * khi đọc file properties bằng java.util.Properties thuần.
+     */
+    private static String resolveEnvProperty(String rawValue, String defaultValue) {
+        if (rawValue == null || rawValue.trim().isEmpty()) {
+            return defaultValue;
+        }
+        String val = rawValue.trim();
+        if (val.startsWith("${") && val.endsWith("}")) {
+            String inner = val.substring(2, val.length() - 1);
+            String envName = inner;
+            String fallback = defaultValue;
+            if (inner.contains(":")) {
+                int colonIdx = inner.indexOf(':');
+                envName = inner.substring(0, colonIdx);
+                fallback = inner.substring(colonIdx + 1);
+            }
+            String envVal = System.getenv(envName);
+            if (envVal != null && !envVal.isEmpty()) {
+                return envVal;
+            }
+            String sysProp = System.getProperty(envName);
+            if (sysProp != null && !sysProp.isEmpty()) {
+                return sysProp;
+            }
+            return fallback;
+        }
+        return val;
     }
 
 }
