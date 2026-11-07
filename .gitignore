@@ -35,3 +35,19 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### OS and Temporary Files ###
+desktop.ini
+Thumbs.db
+.DS_Store
+
+### Environment Variables ###
+.env
+.env.*
+!.env.example
+
+### Uploads junk & temp files ###
+uploads/*.txt
+uploads/*.zip
+uploads/role_temp/
+uploads/các*

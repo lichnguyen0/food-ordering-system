@@ -1,5 +1,6 @@
 package com.foodorderingsystem.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -19,6 +20,9 @@ import java.util.Set;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+
+    @Value("${app.security.remember-me-key:foodOrderingSystemSecretRememberMeKey}")
+    private String rememberMeKey;
 
     public SecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -93,7 +97,7 @@ public class SecurityConfig {
             )
             .rememberMe(rememberMe -> rememberMe
                 .userDetailsService(userDetailsService)
-                .key("foodOrderingSystemSecretRememberMeKey")
+                .key(rememberMeKey)
                 .tokenValiditySeconds(86400 * 14) // 14 ngày
                 .rememberMeParameter("remember-me")
             )

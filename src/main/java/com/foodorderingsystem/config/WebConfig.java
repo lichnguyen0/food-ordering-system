@@ -17,14 +17,17 @@ public class WebConfig implements WebMvcConfigurer {
         exposeDirectory("uploads", registry);
     }
 
-    //biến folder local thành URL public
+    //biến folder local thành URL public (hỗ trợ cả Windows & Linux/Docker)
     private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {
-        Path uploadDir = Paths.get(dirName);  //lấy đường dẫn thật
-        String uploadPath = uploadDir.toFile().getAbsolutePath();
+        Path uploadDir = Paths.get(dirName);
+        String uploadUri = uploadDir.toFile().toURI().toString();
+        if (!uploadUri.endsWith("/")) {
+            uploadUri += "/";
+        }
         
         if (dirName.startsWith("../")) dirName = dirName.replace("../", ""); //xử lý bảo mật đường dẫn
         
         registry.addResourceHandler("/" + dirName + "/**") //Khi người dùng truy cập URL /uploads/... thì Spring sẽ lấy file tương ứng thư mục thật trên ổ đĩa.
-                .addResourceLocations("file:/" + uploadPath + "/");
+                .addResourceLocations(uploadUri);
     }
 }
